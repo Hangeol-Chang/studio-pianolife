@@ -3,22 +3,22 @@
     color: #fff;
     padding: 20px 0;
     text-align: center;
-  }
-  
-  .footer-content {
+}
+
+.footer-content {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     gap: 10px; /* 텍스트와 아이콘 간 간격 */
-  }
-  
-  .footer-content a {
+}
+
+.footer-content a {
     color: #fff;
     text-decoration: none;
     transition: color 0.3s ease;
-  }
-  
-  .footer-content a:hover {
-    color: #ccc;
-  }
-  
+}
+
+.footer-content a:hover {
+  color: #ccc;
+}

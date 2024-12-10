@@ -1,5 +1,6 @@
 'use client';
-import './header.css'
+import Link from 'next/link';
+import './header.scss'
 import { useState } from 'react'
 
 export default function Header() {
@@ -26,32 +27,38 @@ export default function Header() {
             <button className="close-btn" onClick={toggleMenu}>×</button>
             <ul className="menu">
                 <li className="menu-item">
-                    Home
-                    <ul className="submenu">
+                    <Link href="/">
+                        Home
+                    </Link>
+                    {/* <ul className="submenu">
                         <li>Introduction</li>
                         <li>Gallery</li>
-                    </ul>
+                    </ul> */}
                 </li>
                 <li className="menu-item">
-                    About
-                    <ul className="submenu">
-                    <li>Team</li>
-                    <li>History</li>
-                    </ul>
+                    <Link href="/about">
+                        About
+                    </Link>                    
+                    {/* <ul className="submenu">
+                        <li>Team</li>
+                        <li>History</li>
+                    </ul> */}
                 </li>
                 <li className="menu-item">
-                    Services
-                    <ul className="submenu">
-                    <li>Consulting</li>
-                    <li>Development</li>
-                    </ul>
+                    <Link href="/fourmusics">
+                        포뮤직스
+                    </Link>
+                    {/* <ul className="submenu">
+                        <li>Consulting</li>
+                        <li>Development</li>
+                    </ul> */}
                 </li>
                 <li className="menu-item">
                     Contact
-                    <ul className="submenu">
-                    <li>Email</li>
-                    <li>Phone</li>
-                    </ul>
+                    {/* <ul className="submenu">
+                        <li>Email</li>
+                        <li>Phone</li>
+                    </ul> */}
                 </li>
             </ul>
         </div>
