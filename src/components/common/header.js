@@ -7,6 +7,7 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const toggleMenu = () => {
+        console.log("toggleMenu");
         setIsMenuOpen(!isMenuOpen);
     };
 
@@ -21,44 +22,29 @@ export default function Header() {
                 </button>
             </header>
             {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
-        
-            
+
             <div className={`side-menu ${isMenuOpen ? "open" : ""}`}>
             <button className="close-btn" onClick={toggleMenu}>×</button>
             <ul className="menu">
                 <li className="menu-item">
-                    <Link href="/">
+                    <Link href="/" onClick={toggleMenu}>
                         Home
                     </Link>
-                    {/* <ul className="submenu">
-                        <li>Introduction</li>
-                        <li>Gallery</li>
-                    </ul> */}
                 </li>
                 <li className="menu-item">
-                    <Link href="/about">
+                    <Link href="/about" onClick={toggleMenu}>
                         About
                     </Link>                    
-                    {/* <ul className="submenu">
-                        <li>Team</li>
-                        <li>History</li>
-                    </ul> */}
                 </li>
                 <li className="menu-item">
-                    <Link href="/fourmusics">
+                    <Link href="/fourmusics" onClick={toggleMenu}>
                         포뮤직스
                     </Link>
-                    {/* <ul className="submenu">
-                        <li>Consulting</li>
-                        <li>Development</li>
-                    </ul> */}
                 </li>
                 <li className="menu-item">
-                    Contact
-                    {/* <ul className="submenu">
-                        <li>Email</li>
-                        <li>Phone</li>
-                    </ul> */}
+                    <Link href="/contact" onClick={toggleMenu}>
+                        Contact
+                    </Link>
                 </li>
             </ul>
         </div>
