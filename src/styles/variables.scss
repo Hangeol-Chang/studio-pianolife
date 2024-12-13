@@ -1,6 +1,66 @@
+// 기본 색상 정의
+$primary: #3498db;
+$secondary: #2ecc71;
+$third: #e74c3c;
 
-// variables.scss
-$primary-color: #3498db;
-$secondary-color: #2ecc71;
-$text-color: #333333;
-$background-color: #f9f9f9;
+// 유틸리티 함수
+@function intensed($color) {
+  @return darken($color, 10%);
+}
+
+@function disabled($color) {
+  @return mix($color, #ccc, 50%);
+}
+
+@function outline($color) {
+  @return mix($color, #fff, 80%);
+}
+
+@function dark-mode($color) {
+  @return lighten($color, 20%);
+}
+
+// 색상 팔레트 생성
+$colors: (
+  primary: (
+    default: $primary,
+    intensed: intensed($primary),
+    disabled: disabled($primary),
+    outline: outline($primary),
+    dark: dark-mode($primary)
+  ),
+  secondary: (
+    default: $secondary,
+    intensed: intensed($secondary),
+    disabled: disabled($secondary),
+    outline: outline($secondary),
+    dark: dark-mode($secondary)
+  ),
+  third: (
+    default: $third,
+    intensed: intensed($third),
+    disabled: disabled($third),
+    outline: outline($third),
+    dark: dark-mode($third)
+  )
+);
+
+// 사용 예제
+// .button-primary {
+//   background-color: map-get(map-get($colors, primary), default);
+//   border: 1px solid map-get(map-get($colors, primary), outline);
+//   &:hover {
+//     background-color: map-get(map-get($colors, primary), intensed);
+//   }
+//   &:disabled {
+//     background-color: map-get(map-get($colors, primary), disabled);
+//   }
+// }
+
+// // 다크 모드
+// @media (prefers-color-scheme: dark) {
+//   .button-primary {
+//     background-color: map-get(map-get($colors, primary), dark);
+//     border-color: map-get(map-get($colors, primary), outline);
+//   }
+// }
