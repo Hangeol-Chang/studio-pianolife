@@ -1,30 +1,12 @@
 'use client';
 import Link from 'next/link';
-import './header.scss'
+import '@/styles/common/header.scss';
 import { useState } from 'react'
 
-export default function Header() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const toggleMenu = () => {
-        console.log("toggleMenu");
-        setIsMenuOpen(!isMenuOpen);
-    };
-
+const HeaderMenu = ({toggleMenu}) => {
     return (
-        <div>
-            <header className="header">
-                <div className="logo">Studio Pianolife</div>
-                <button className="hamburger" onClick={toggleMenu}>
-                    <span className="line"></span>
-                    <span className="line"></span>
-                    <span className="line"></span>
-                </button>
-            </header>
-            {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
-
-            <div className={`side-menu ${isMenuOpen ? "open" : ""}`}>
-            <button className="close-btn" onClick={toggleMenu}>×</button>
+        <div className="header-menu">
             <ul className="menu">
                 <li className="menu-item">
                     <Link href="/" onClick={toggleMenu}>
@@ -48,8 +30,39 @@ export default function Header() {
                 </li>
             </ul>
         </div>
+    )
+}
 
+export default function Header() {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
+    return (
+        <div className="haeder-container">
+            <header className="header">
+                <Link href="/">
+                    <div className="logo">Studio Pianolife</div>
+                </Link>
+
+                <nav className="nav-menu">
+                    <HeaderMenu toggleMenu={() => {}} />
+                </nav>
+
+                <button className="hamburger-menu" onClick={toggleMenu}>
+                    <span className="line"></span>
+                    <span className="line"></span>
+                    <span className="line"></span>
+                </button>
+            </header>
+
+            <div className={`overlay ${isMenuOpen ? "open" : ""}`} onClick={toggleMenu}></div>
+            <div className={`side-menu ${isMenuOpen ? "open" : ""}`}>
+                <button className="close-btn" onClick={toggleMenu}>×</button>
+                <HeaderMenu toggleMenu={toggleMenu} />
+            </div>
         </div>
-    );
+    )
 }

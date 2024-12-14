@@ -1,4 +1,4 @@
-import './globals.scss'
+import '@/styles/globals.scss'
 import { Inter } from 'next/font/google'
 import Header from '@/components/common/header'
 import Footer from '@/components/common/footer'
@@ -12,15 +12,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="en" style={
-            {
-                margin: 'auto',
-            }
-        }>
+        <html lang="en">
             <head>
                 <title>{metadata.title}</title>
                 <meta name="description" content={metadata.description} />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+                <meta name="viewpo rt" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+                <link rel="icon" type="image/x-icon" href="/common/icon.ico"></link>
+
             </head>
             <body className={inter.className}>
                 <Header />
