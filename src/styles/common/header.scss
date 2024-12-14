@@ -2,7 +2,7 @@
 @import '../variables';
 
 .haeder-container {
-	border-bottom: 1px solid $white1;
+	// border-bottom: 1px solid $white1;
 	box-shadow: 0 4px 6px rgba(250, 250, 250, 0.1);
 
 	position : fixed;
@@ -11,7 +11,6 @@
 	z-index: 100;
 	height: 60px;
 }
-
 .header {
 	display: flex;
 	justify-content: space-between;
@@ -24,7 +23,6 @@
 	);
 	color: black;
 }
-
 .logo {
 	font-size: 20px;
 	font-weight: bold;
@@ -49,7 +47,7 @@
 }
 .nav-menu .menu .menu-item:hover {
 	color: map-get(map-get($pallete, primary), intensed);
-	background-color: $white2;
+	background-color: $white1;
 }
 
 // mobile //
@@ -107,6 +105,7 @@
 	width: 300px;
 	height: 100%;
 	background-color: $white2;
+	opacity: 0.9;
 	box-shadow: -4px 0 6px rgba(50, 50, 50, 0.2);
 	transition: transform 0.3s ease-in-out;
 	transform: translateX(0);
@@ -140,4 +139,19 @@
 	height: 100%;
 	background-color: rgba(230, 230, 230, 0.5);
 	z-index: 0;
+}
+
+.scroll-progress-container {
+	position: fixed;
+	top: 60px;
+	left: 0;
+	width: 100%;
+	height: 3px;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+.scroll-progress-bar {
+	width : 0;
+	height:  100%;
+	background-color: $primary;
+	transition: width 0.25s ease;
 }
