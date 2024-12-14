@@ -6,9 +6,24 @@ import getScrollProgress from "./api/client/getScrollProgress";
 // css 분리 등의 작업 해야함.
 
 export default function Home() {
+
+    const controlBackgroundColor = () => {
+
+    }
+
     const updateScrollBar = () => {
         // scrollPosition, scrollPercent
         const scrollData = getScrollProgress();
+        mainImageControl(scrollData);
+        mainTextControl(scrollData);
+    }
+
+    const mainImageControl = (scrollData) => {
+        document.querySelector('.main-image').style.right = `${-scrollData.scrollPosition * 40 / 1000 - 20}%`;
+
+    }
+    const mainTextControl = (scrollData) => {
+        // document.querySelector('.main-text').style
     }
     
     useEffect(() => {
@@ -18,56 +33,54 @@ export default function Home() {
             window.removeEventListener('scroll', updateScrollBar);
             window.removeEventListener('resize', updateScrollBar);
         }
-    })
+    }, [])
 
 
     return (
-        <div
-            style={{
-                overflow: "hidden",
-                position: "relative",
-                width: "100%",
-            }}
-        >
-            {/* <Image src="/background/sunset-field.jpg" alt="field-bg" 
-                width={2000} height={0} 
-                layout="intrinsic"
-                style={{
-                    position: "absolute",
-                    left: 0,    
-                    scale: 2
-                }}
-            /> */}
-
-            <Image src="/gallary/gallary_3_tp.png" alt="piano" 
-                width={2000} height={0} 
-                layout="intrinsic"
-                style={{
-                    position: "absolute",
-                    top: '100px',
-                    right: "-20%",
-                    scale: 1.5,
-                    // right:  "50%",
-                    // transform: "translate(-50%, -50%)"
-                }}
-            /> 
+        <div>
             <div
                 style={{
-                    position: "absolute",
-                    top: "100px",
-                    left: "60px",
-                    width: "100%",
-                    height: "5px",
+                    height: '1000px',
+                    
                 }}
             >
-                <h1>Gong Pira</h1>
-                <h3> this is subtitle </h3>
-                <p>
-                    this is content
-                    simple description
-                </p>
+                <Image src="/gallary/gallary_3_tp.png" alt="piano" 
+                    width={2000} height={0} 
+                    layout="intrinsic"
+                    className={'main-image'}
+
+                    style={{
+                        position: "absolute",
+                        top: '100px',
+                        right: "-20%",
+                        scale: 1.5,
+                        // right:  "50%",
+                        // transform: "translate(-50%, -50%)"
+                    }}
+                /> 
+                <div 
+                    style={{
+                        position: "absolute",
+                        top: "100px",
+                        left: "60px",
+                        width: '200px',
+                        height: "5px",
+                        scale : 1.2,
+                    }}
+                >
+                    <h1>공 피 라</h1>
+                    <h3>공대생의 Piano Life </h3>
+                    <p>
+                        this is content
+                        <br></br>
+                        simple description
+                    </p>
 
             </div>
+
+            </div>
+                <hr>
+                </hr>
         </div>
     )
 }

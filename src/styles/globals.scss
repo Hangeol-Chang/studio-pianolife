@@ -1,10 +1,14 @@
 @import './colors';
+@import './variables.scss';
 
 :root {
---border-radius: 12px;
---font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
-    'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
-    'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+    --max-width: #{$max-width};
+    --min-width: #{$min-width};
+
+    --border-radius: 12px;
+    --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
+        'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
+        'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -63,4 +67,51 @@ a {
 
     display : flex;
     justify-content: center;
+}
+.content > * {
+    overflow : hidden;
+    position: relative;
+    width: 100%;
+}
+
+// 가로 사이즈에 따른 글자 크기 세팅.
+
+@mixin font-size-calc($min, $max) {
+    font-size: calc(#{$min}px + (#{$max} - #{$min}) * ((100vw - 320px) / (768px - 320px)));
+}
+  
+@media (max-width: $min-width) {
+    h1 {
+        font-size: 24px;
+    }
+    h3 {
+        font-size: 14px;
+    }
+    p {
+        font-size: 12px;
+    }
+}
+  
+@media (min-width: $min-width) and (max-width: $max-width) {
+    h1 {
+        font-size: 32px;
+    }
+    h3 {
+        font-size: 18px;
+    }
+    p {
+        font-size: 14px;
+    }
+}
+  
+@media (min-width: $max-width) {
+    h1 {
+        font-size: 40px;
+    }
+    h3 {
+        font-size: 22px;
+    }
+    p {
+        font-size: 16px;
+    }
 }
