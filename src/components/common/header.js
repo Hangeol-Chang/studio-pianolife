@@ -3,7 +3,6 @@ import Link from 'next/link';
 import '@/styles/common/header.scss';
 import { useState } from 'react'
 
-
 const HeaderMenu = ({toggleMenu}) => {
     return (
         <div className="header-menu">
