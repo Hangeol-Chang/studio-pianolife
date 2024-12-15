@@ -1,0 +1,23 @@
+
+
+.main-image {
+    position: absolute;
+    top: 250px;
+    right: -20%;
+    scale: 1.7;
+    
+    animation: image-init-slide 1s ease-in-out forwards;
+}
+@keyframes image-init-slide {
+    from {  right: -60%; }
+    to {    right: -20%; }
+}
+
+.main-text {
+    position: absolute;
+    top: 100px;
+    left: 10vw;
+    width: 200px;
+    height: 5px;
+    scale: 1.2;
+}

@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import '@/styles/common/header.scss';
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import getScrollProgress from '@/app/api/client/getScrollProgress';
 
 const HeaderMenu = ({toggleMenu}) => {
     return (
@@ -39,6 +40,22 @@ export default function Header() {
         setIsMenuOpen(!isMenuOpen);
     };
 
+    const updateScrollBar = () => {
+        // scrollPosition, scrollPercent
+        const scrollData = getScrollProgress();
+        document.querySelector('.scroll-progress-bar').style.width = `${scrollData.scrollPercent}%`;
+    }
+    
+    useEffect(() => {
+        window.addEventListener('scroll', updateScrollBar);
+        window.addEventListener('resize', updateScrollBar);
+        return () => {
+            window.removeEventListener('scroll', updateScrollBar);
+            window.removeEventListener('resize', updateScrollBar);
+        }
+    })
+
+
     return (
         <div className="haeder-container">
             <header className="header">
@@ -61,6 +78,10 @@ export default function Header() {
             <div className={`side-menu ${isMenuOpen ? "open" : ""}`}>
                 <button className="close-btn" onClick={toggleMenu}>×</button>
                 <HeaderMenu toggleMenu={toggleMenu} />
+            </div>
+
+            <div className="scroll-progress-container">
+                <div className="scroll-progress-bar"></div>
             </div>
         </div>
     )
