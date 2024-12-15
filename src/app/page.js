@@ -1,6 +1,6 @@
 'use client';
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import getScrollProgress from "./api/client/getScrollProgress";
 import '@/styles/common/musicsheet.scss'
 import '@/styles/pages/mainpage.scss'
@@ -29,10 +29,6 @@ const VerticalLine = ({left, top}) => {
     return (
         <div className={'vertical-line'}
             style={{
-                position: 'absolute',
-                width: '2px',
-                backgroundColor: 'black',
-                height: '50px',
                 left: left,
                 top: top,
             }}
@@ -42,12 +38,39 @@ const VerticalLine = ({left, top}) => {
 
 const Note = ({index, width, left, top, flip = false}) => {
     // var randInt = Math.floor(Math.random() * 100);
-    const filename = index < 10 ? '0' + index : index.toString();
-    const rot = flip ? 180 : 0;
+    const filename = index < 10 ? '0' + index : index.toString();    
+    const [topPos, setTopPos] = useState(top);
+    const [rot, setRot] = useState(flip ? 180 : 0);
+    let scrollConst = 1;
+    let rotConst = 1;
+
+    const updateScrollBar = () => {
+        const scrollData = getScrollProgress();
+        
+        if(scrollData.scrollPosition < 200) {
+            setTopPos(top);
+            setRot(flip ? 180 : 0);
+        }
+        else {
+            setTopPos(top + (scrollData.scrollPosition - 200) * scrollConst);
+            setRot( (flip ? 180 : 0) + (scrollData.scrollPosition - 200)/20 * rotConst);
+        }
+        // document.querySelector('.note').style.top = `${scrollData.scrollPosition * width + 100}px`;
+        // console.log(index, scrollData.scrollPosition * width + 100);
+    }
 
     useEffect(() => {
+        // 스크롤 상수 지정.
+        scrollConst =  Math.floor((Math.random() * 1 - 0.3)*10)/10;
+        rotConst =  Math.floor((Math.random() * 1 - 0.5)*10)/10;
 
-    }, [])
+        window.addEventListener('scroll', () => updateScrollBar());
+        window.addEventListener('resize', () => updateScrollBar());
+        return () => {
+            window.removeEventListener('scroll', () => updateScrollBar());
+            window.removeEventListener('resize', () => updateScrollBar());
+        }
+    }, []);
 
     return (
         <div className={'note'}>
@@ -57,7 +80,7 @@ const Note = ({index, width, left, top, flip = false}) => {
                 style={{
                     position: 'absolute',
                     left: left,
-                    top: top,
+                    top: topPos,
                     transform: `rotate(${rot}deg)`,
                 }}
             />
@@ -102,7 +125,8 @@ export default function Home() {
         <div>
             <div
                 style={{
-                    height: '120vw',
+                    height: '125vw',
+                    minHeight: 650,
                     maxHeight: 900,
                 }}
             >

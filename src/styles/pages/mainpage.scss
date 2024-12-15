@@ -16,7 +16,7 @@
 .main-text {
     position: absolute;
     top: 100px;
-    left: 10vw;
+    left: calc(min(10vw, 100px));
     width: 200px;
     height: 5px;
     scale: 1.2;
