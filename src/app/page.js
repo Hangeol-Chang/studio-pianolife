@@ -179,6 +179,17 @@ export default function Home() {
 
             </div>
 
+            <Image src="/gallary/gallary_11.png" alt="piano" 
+                width={2000} height={0} 
+                layout="intrinsic"
+                style={{
+                    opacity: 0.1,
+                }}
+            />
+            <div>
+                Who Am I?
+            </div>
+
 
             <div className={'description-container'}
                 style={{
