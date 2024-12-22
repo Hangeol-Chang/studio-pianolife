@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import '@/styles/common/header.scss';
+import './header.scss';
 import { useEffect, useState } from 'react'
 import getScrollProgress from '@/app/api/client/getScrollProgress';
 

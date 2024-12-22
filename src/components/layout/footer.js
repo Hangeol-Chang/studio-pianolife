@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import '@/styles/common/footer.scss';
+import './footer.scss';
 import { FaGithub } from "react-icons/fa"; // react-icons를 설치해야 사용 가능
 
 export default function Footer() {

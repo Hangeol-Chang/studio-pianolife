@@ -2,8 +2,10 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import getScrollProgress from "./api/client/getScrollProgress";
-import '@/styles/common/musicsheet.scss'
-import '@/styles/pages/mainpage.scss'
+import '@/components/music/musicsheet.scss';   // 이거 지워져야함
+import './page.module.scss';
+import { Title1, Title2 } from "@/components/common/title";
+import { Note } from "@/components/music/sheet";
 
 // css 분리 등의 작업 해야함.
 
@@ -35,68 +37,6 @@ const VerticalLine = ({left, top}) => {
         />
     )
 }
-const VerticalLineSingle = ({left, top}) => {
-    return (
-        <div className={'vertical-line-single'}
-            style={{
-                left: left,
-                top: top,
-            }}
-        />
-    )
-}
-
-const Note = ({index, width, left, top, flip = false}) => {
-    // var randInt = Math.floor(Math.random() * 100);
-    const filename = index < 10 ? '0' + index : index.toString();    
-    const [topPos, setTopPos] = useState(top);
-    const [rot, setRot] = useState(flip ? 180 : 0);
-    let scrollConst = 1;
-    let rotConst = 1;
-
-    const updateScrollBar = () => {
-        const scrollData = getScrollProgress();
-        
-        if(scrollData.scrollPosition < 0) {
-            setTopPos(top);
-            setRot(flip ? 180 : 0);
-        }
-        else {
-            setTopPos(top + (scrollData.scrollPosition - 0) * scrollConst);
-            setRot( (flip ? 180 : 0) + (scrollData.scrollPosition - 0)/20 * rotConst);
-        }
-        // document.querySelector('.note').style.top = `${scrollData.scrollPosition * width + 100}px`;
-        // console.log(index, scrollData.scrollPosition * width + 100);
-    }
-
-    useEffect(() => {
-        // 스크롤 상수 지정.
-        scrollConst =  Math.floor((Math.random() * 1 - 0.3)*10)/10;
-        rotConst =  Math.floor((Math.random() * 1 - 0.5)*10)/10;
-
-        window.addEventListener('scroll', () => updateScrollBar());
-        window.addEventListener('resize', () => updateScrollBar());
-        return () => {
-            window.removeEventListener('scroll', () => updateScrollBar());
-            window.removeEventListener('resize', () => updateScrollBar());
-        }
-    }, []);
-
-    return (
-        <div className={'note'}>
-            <Image src={`/note/note_${filename}.png`} alt="note" 
-                width={width} height={0} layout="intrinsic"
-
-                style={{
-                    position: 'absolute',
-                    left: left,
-                    top: topPos,
-                    transform: `rotate(${rot}deg)`,
-                }}
-            />
-        </div>
-    )
-}
 
 export default function Home() {
 
@@ -124,61 +64,10 @@ export default function Home() {
 
     return (
         <div>
-            <div
-                style={{
-                    minHeight: 100,
-                    maxHeight: 400,
-                }}
-            >
-                <div className={'main-text'}>
-                    <h1>공 피 라</h1>
-                    <div 
-                        style={{
-                            height: '1px',
-                        }}
-                    >
-                        {/* <div className={'music-sheet'} */}
-                        <div
-                            style={{
-                                    position: "relative",
-                                    width: '100%',
-                                }}
-                            >
-                            <hr className={'music-sheet-line-single'}/>
-
-                            {/* 이렇게 많이 넣지 말고, 한마디씩 가능한걸로 ㄱㄱ */}
-
-                            <Note index={21} width={20} left={'1vw'} top={-25} />
-                            
-                            <div
-                                style={{
-                                    width: 'min(30vw, 200px)',
-                                    right: '0',
-                                    position: 'absolute',
-                                }}
-                            >
-                                <Note index={7} width={20} left={0} top={-20} />
-                                <VerticalLineSingle left={40} top={-7.5} />
-
-                                <Note index={1} width={12} left={55} top={-30} />
-                                <Note index={3} width={18} left={80} top={-15} flip={true} />
-                                <Note index={14} width={40} left={100} top={-10} />
-                                <Note index={3} width={18} left={155} top={-20} flip={true} />
-                                <VerticalLineSingle left={180} top={-7.5} />
-
-                            </div>
-                        </div>
-                    </div>
-                    <h3>공대생의 Piano Life </h3>
-                </div>
-            </div>
-            
+            <Title1 title={'공 피 라'} subTitle={'공대생의 Piano Life'} />
 
             <div style={{height:'100px'}}></div>
-            <h2>
-                Who Am I?
-            </h2>
-            <hr />
+            <Title2 title={'Who Am I?'} />
             <p>
                 안녕하세요, 저는 피아니스트 A입니다.<br />
                 다양한 연주회를 통해 관객들에게 음악의 아름다움을 전하고 있습니다.<br /><br />
@@ -191,10 +80,7 @@ export default function Home() {
 
 
             <div style={{height:'100px'}}></div>
-            <h2>
-                What I do?
-            </h2>
-            <hr />
+            <Title2 title={'What I Do'} />
             <p>
                 저는 음악 스튜디오를 운영하며 다양한 음악적 활동을 이어가고 있습니다.<br />
                 스튜디오에서는 녹음, 편곡, 연주 영상 제작과 같은 서비스를 제공하며,<br />
