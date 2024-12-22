@@ -1,23 +1,7 @@
-
-
-.main-image {
-    position: absolute;
-    top: 250px;
-    right: -20%;
-    scale: 1.7;
-    
-    animation: image-init-slide 1s ease-in-out forwards;
-}
-@keyframes image-init-slide {
-    from {  right: -60%; }
-    to {    right: -20%; }
-}
-
 .main-text {
     position: absolute;
-    top: 100px;
-    left: calc(min(10vw, 100px));
-    width: 200px;
-    height: 5px;
-    scale: 1.2;
+    top: 10px;
+    // left: calc(min(10vw, 100px));
+    width: 100%;
+    scale: 1;
 }

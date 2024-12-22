@@ -35,6 +35,16 @@ const VerticalLine = ({left, top}) => {
         />
     )
 }
+const VerticalLineSingle = ({left, top}) => {
+    return (
+        <div className={'vertical-line-single'}
+            style={{
+                left: left,
+                top: top,
+            }}
+        />
+    )
+}
 
 const Note = ({index, width, left, top, flip = false}) => {
     // var randInt = Math.floor(Math.random() * 100);
@@ -47,13 +57,13 @@ const Note = ({index, width, left, top, flip = false}) => {
     const updateScrollBar = () => {
         const scrollData = getScrollProgress();
         
-        if(scrollData.scrollPosition < 200) {
+        if(scrollData.scrollPosition < 0) {
             setTopPos(top);
             setRot(flip ? 180 : 0);
         }
         else {
-            setTopPos(top + (scrollData.scrollPosition - 200) * scrollConst);
-            setRot( (flip ? 180 : 0) + (scrollData.scrollPosition - 200)/20 * rotConst);
+            setTopPos(top + (scrollData.scrollPosition - 0) * scrollConst);
+            setRot( (flip ? 180 : 0) + (scrollData.scrollPosition - 0)/20 * rotConst);
         }
         // document.querySelector('.note').style.top = `${scrollData.scrollPosition * width + 100}px`;
         // console.log(index, scrollData.scrollPosition * width + 100);
@@ -93,24 +103,15 @@ export default function Home() {
     const updateScrollBar = () => {
         // scrollPosition, scrollPercent
         const scrollData = getScrollProgress();
-        mainImageControl(scrollData);
         mainTextControl(scrollData);
     }
 
-    const mainImageControl = (scrollData) => {
-        const mainImage = document.querySelector('.main-image');
-        mainImage.style.right = `${-scrollData.scrollPosition * 40 / 1000 - 20}%`;
-    }
+
     const mainTextControl = (scrollData) => {
-        document.querySelector('.main-text').style.top = `${scrollData.scrollPosition * 40 / 70 + 100}px`;
+        // document.querySelector('.main-text').style.top = `${scrollData.scrollPosition * 40 / 70 + 100}px`;
     }
     
     useEffect(() => {
-        const mainImage = document.querySelector('.main-image');
-        mainImage.addEventListener('animationend', () => {
-            mainImage.style.animation = 'none'; 
-        });
-
         window.addEventListener('scroll', updateScrollBar);
         window.addEventListener('resize', updateScrollBar);
         return () => {
@@ -125,30 +126,109 @@ export default function Home() {
         <div>
             <div
                 style={{
-                    height: '125vw',
-                    minHeight: 650,
-                    maxHeight: 900,
+                    minHeight: 100,
+                    maxHeight: 400,
                 }}
             >
-                <Image className={'main-image'}
-                    src="/gallary/gallary_3_tp.png" alt="piano" 
-                    width={2000} height={0} 
-                    layout="intrinsic"
-                /> 
                 <div className={'main-text'}>
                     <h1>공 피 라</h1>
-                    <h3>공대생의 Piano Life </h3>
-                    <p>
-                        this is content
-                        <br></br>
-                        simple description
-                    </p>
+                    <div 
+                        // className={'music-sheet-container'}
+                        style={{
+                            height: '1px',
+                            // padding: '4px',
+                        }}
+                    >
+                        {/* <div className={'music-sheet'} */}
+                        <div
+                            style={{
+                                    position: "relative",
+                                    width: '100%',
+                                }}
+                            >
+                            <hr className={'music-sheet-line-single'}/>
 
+                            {/* 이렇게 많이 넣지 말고, 한마디씩 가능한걸로 ㄱㄱ */}
+
+                            <Note index={21} width={20} left={'1vw'} top={-25} />
+                            <Note index={7} width={20} left={210} top={-20} />
+                            <VerticalLineSingle left={250} top={-7.5} />
+
+                            <Note index={1} width={12} left={265} top={-30} />
+                            <Note index={3} width={18} left={290} top={-15} flip={true} />
+                            <Note index={14} width={40} left={310} top={-10} />
+                            <Note index={3} width={18} left={365} top={-20} flip={true} />
+                            <VerticalLineSingle left={390} top={-7.5} />
+
+
+                            <Note index={23} width={8} left={405} top={-9} />
+                            <Note index={10} width={28} left={425} top={-15} flip={true} />
+                            <Note index={1} width={12} left={460} top={-16} />
+                            <Note index={2} width={12} left={480} top={-10} />
+                            <VerticalLineSingle left={505} top={-7.5} />
+
+                            <Note index={10} width={28} left={520} top={-16} />
+                            <Note index={10} width={28} left={560} top={-20} />
+                            <Note index={10} width={28} left={600} top={-20} flip={true} />
+                            <Note index={10} width={28} left={630} top={-10} />
+                            <VerticalLineSingle left={670} top={-7.5} />
+                            
+                            <Note index={1} width={12} left={685} top={-10} flip={true} />
+                            <Note index={10} width={28} left={705} top={-30} />
+                            <Note index={7} width={20} left={700} top={7} flip={true} />
+                            <Note index={10} width={28} left={740} top={-10} />
+
+                        </div>
+
+                    </div>
+                    <h3>공대생의 Piano Life </h3>
                 </div> 
 
 
             </div>
             
+
+
+            <p>
+                this is content
+                <br></br>
+                simple description
+            </p>
+
+
+
+            <Image src="/gallary/gallary_11.png" alt="piano" 
+                width={2000} height={0} 
+                layout="intrinsic"
+                style={{
+                    opacity: 0.1,
+                }}
+            />
+            <div>
+                Who Am I?
+            </div>
+
+
+            <div>
+                What I do?
+            </div>
+
+            <div className={'description-container'}
+                style={{
+                    height: '3000px',
+                    backgroundColor: '#DDDDDD',
+                }}
+            >
+                <div
+                    style={{
+                        padding: '20px',
+                    }}
+                >
+                    스크롤 테스트를 위한 더미입니다.
+                </div>
+            </div>
+            
+            {/* full music sheet bk */}
             <div className={'music-sheet-container'}>
                 <MusicSheet />
                 
@@ -177,33 +257,6 @@ export default function Home() {
                 <Note index={7} width={28} left={745} top={80} flip={true} />
 
 
-            </div>
-
-            <Image src="/gallary/gallary_11.png" alt="piano" 
-                width={2000} height={0} 
-                layout="intrinsic"
-                style={{
-                    opacity: 0.1,
-                }}
-            />
-            <div>
-                Who Am I?
-            </div>
-
-
-            <div className={'description-container'}
-                style={{
-                    height: '3000px',
-                    backgroundColor: '#DDDDDD',
-                }}
-            >
-                <div
-                    style={{
-                        padding: '20px',
-                    }}
-                >
-                    스크롤 테스트를 위한 더미입니다.
-                </div>
             </div>
         </div>
     )
