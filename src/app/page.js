@@ -151,16 +151,26 @@ export default function Home() {
                             {/* 이렇게 많이 넣지 말고, 한마디씩 가능한걸로 ㄱㄱ */}
 
                             <Note index={21} width={20} left={'1vw'} top={-25} />
-                            <Note index={7} width={20} left={210} top={-20} />
-                            <VerticalLineSingle left={250} top={-7.5} />
+                            
+                            <div
+                                style={{
+                                    width: 'min(30vw, 200px)',
+                                    right: '0',
+                                    position: 'absolute',
+                                }}
+                            >
+                                <Note index={7} width={20} left={0} top={-20} />
+                                <VerticalLineSingle left={40} top={-7.5} />
 
-                            <Note index={1} width={12} left={265} top={-30} />
-                            <Note index={3} width={18} left={290} top={-15} flip={true} />
-                            <Note index={14} width={40} left={310} top={-10} />
-                            <Note index={3} width={18} left={365} top={-20} flip={true} />
-                            <VerticalLineSingle left={390} top={-7.5} />
+                                <Note index={1} width={12} left={55} top={-30} />
+                                <Note index={3} width={18} left={80} top={-15} flip={true} />
+                                <Note index={14} width={40} left={100} top={-10} />
+                                <Note index={3} width={18} left={155} top={-20} flip={true} />
+                                <VerticalLineSingle left={180} top={-7.5} />
 
+                            </div>
 
+{/* 
                             <Note index={23} width={8} left={405} top={-9} />
                             <Note index={10} width={28} left={425} top={-15} flip={true} />
                             <Note index={1} width={12} left={460} top={-16} />
@@ -176,7 +186,7 @@ export default function Home() {
                             <Note index={1} width={12} left={685} top={-10} flip={true} />
                             <Note index={10} width={28} left={705} top={-30} />
                             <Note index={7} width={20} left={700} top={7} flip={true} />
-                            <Note index={10} width={28} left={740} top={-10} />
+                            <Note index={10} width={28} left={740} top={-10} /> */}
 
                         </div>
 
