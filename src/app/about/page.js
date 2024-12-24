@@ -10,8 +10,6 @@ export default function About() {
         mainTextControl(scrollData);
     }
 
-    mainImageControl(scrollData);
-
     const mainImageControl = (scrollData) => {
         const mainImage = document.querySelector('.main-image');
         mainImage.style.right = `${-scrollData.scrollPosition * 40 / 1000 - 20}%`;
