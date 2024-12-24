@@ -10,13 +10,7 @@ const Title1 = ({title, subTitle, }) => {
                     height: '1px',
                 }}
             >
-                {/* <div className={'music-sheet'} */}
-                <div
-                    style={{
-                            position: "relative",
-                            width: '100%',
-                        }}
-                    >
+                <div className='music-sheet-container-single'>
                     <hr className={'music-sheet-line-single'}/>
 
                     {/* 이렇게 많이 넣지 말고, 한마디씩 가능한걸로 ㄱㄱ */}
@@ -50,8 +44,25 @@ const Title1 = ({title, subTitle, }) => {
 const Title2 = ({title, }) => {
     return (
         <>
-            <h2>{title}</h2>
-            <hr />
+            <h2>
+                {title}                
+                <div className='music-sheet-container-single'>
+                        <hr className={'music-sheet-line-single'}/>
+                        <div
+                            style={{
+                                width: 'min(30vw, 200px)',
+                                right: '0',
+                                position: 'absolute',
+                            }}
+                        >
+                            <Note index={1} width={12} left={100} top={-15} flip={true} />
+                            <Note index={12} width={28} left={120} top={-10} />
+                            <Note index={3} width={18} left={165} top={-20} flip={true} />
+                    </div>
+                </div>
+                
+            </h2>
+
         </>
     )
 }

@@ -2,7 +2,7 @@
 
 import getScrollProgress from "@/app/api/client/getScrollProgress";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 
 const VerticalLineSingle = ({left, top}) => {
     return (
@@ -18,30 +18,34 @@ const VerticalLineSingle = ({left, top}) => {
 
 const Note = ({index, width, left, top, flip = false}) => {
     // var randInt = Math.floor(Math.random() * 100);
-    const filename = index < 10 ? '0' + index : index.toString();    
+    const filename = index < 10 ? '0' + index : index.toString();
     const [topPos, setTopPos] = useState(top);
     const [rot, setRot] = useState(flip ? 180 : 0);
+    const ref = useRef(null);
+
     let scrollConst = 1;
     let rotConst = 1;
 
     const updateScrollBar = () => {
         const scrollData = getScrollProgress();
         
-        if(scrollData.scrollPosition < 0) {
+        let yPos = ref.current.getBoundingClientRect().top - 300;
+        if(yPos < 0) yPos = 0;
+        if(scrollData.scrollPosition < yPos) {
             setTopPos(top);
             setRot(flip ? 180 : 0);
         }
         else {
-            setTopPos(top + (scrollData.scrollPosition - 0) * scrollConst);
-            setRot( (flip ? 180 : 0) + (scrollData.scrollPosition - 0)/20 * rotConst);
+            setTopPos(top + (scrollData.scrollPosition - yPos) * scrollConst);
+            setRot( (flip ? 180 : 0) + (scrollData.scrollPosition - yPos)/20 * rotConst);
         }
-        // document.querySelector('.note').style.top = `${scrollData.scrollPosition * width + 100}px`;
-        // console.log(index, scrollData.scrollPosition * width + 100);
     }
 
     useEffect(() => {
+        // yPosition 세팅.
+
         // 스크롤 상수 지정.
-        scrollConst =  Math.floor((Math.random() * 1 - 0.3)*10)/10;
+        scrollConst =  Math.floor((Math.random() * 1 - 0.3)*6)/10;
         rotConst =  Math.floor((Math.random() * 1 - 0.5)*10)/10;
 
         window.addEventListener('scroll', () => updateScrollBar());
@@ -53,7 +57,7 @@ const Note = ({index, width, left, top, flip = false}) => {
     }, []);
 
     return (
-        <div className={'note'}>
+        <div ref={ref} className={'note'}>
             <Image src={`/note/note_${filename}.png`} alt="note" 
                 width={width} height={0} layout="intrinsic"
 
