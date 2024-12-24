@@ -5,11 +5,7 @@ const Title1 = ({title, subTitle, }) => {
     return (
         <div className={'title-text'}>
             <h1>{title}</h1>
-            <div 
-                style={{
-                    height: '1px',
-                }}
-            >
+            <div >
                 <div className='music-sheet-container-single'>
                     <hr className={'music-sheet-line-single'}/>
 
@@ -47,7 +43,7 @@ const Title2 = ({title, }) => {
             <h2>
                 {title}                
                 <div className='music-sheet-container-single'>
-                        <hr className={'music-sheet-line-single'}/>
+                        <hr className={'music-sheet-line-single-light'}/>
                         <div
                             style={{
                                 width: 'min(30vw, 200px)',

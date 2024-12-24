@@ -4,18 +4,6 @@ import getScrollProgress from "@/app/api/client/getScrollProgress";
 import Image from "next/image";
 import { useEffect, useReducer, useRef, useState } from "react";
 
-const VerticalLineSingle = ({left, top}) => {
-    return (
-        <div className={'vertical-line-single'}
-            style={{
-                left: left,
-                top: top,
-            }}
-        />
-    )
-}
-
-
 const Note = ({index, width, left, top, flip = false}) => {
     // var randInt = Math.floor(Math.random() * 100);
     const filename = index < 10 ? '0' + index : index.toString();
@@ -69,6 +57,17 @@ const Note = ({index, width, left, top, flip = false}) => {
                 }}
             />
         </div>
+    )
+}
+
+const VerticalLineSingle = ({left, top}) => {
+    return (
+        <div className={'vertical-line-single'}
+            style={{
+                left: left,
+                top: top,
+            }}
+        />
     )
 }
 

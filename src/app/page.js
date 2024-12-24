@@ -6,6 +6,7 @@ import '@/components/music/musicsheet.scss';   // 이거 지워져야함
 import './page.module.scss';
 import { Title1, Title2 } from "@/components/common/title";
 import { Note } from "@/components/music/sheet";
+import Carousel from "@/components/layout/carousel";
 
 // css 분리 등의 작업 해야함.
 
@@ -27,7 +28,7 @@ const MusicSheet = () => {
     )
 }
 
-const VerticalLine = ({left, top}) => {
+const VerticalLine = ({left, top}) => { // 지울 코드
     return (
         <div className={'vertical-line'}
             style={{
@@ -35,6 +36,12 @@ const VerticalLine = ({left, top}) => {
                 top: top,
             }}
         />
+    )
+}
+
+const Spacer = ({height}) => {
+    return (
+        <div style={{height: height}}></div>
     )
 }
 
@@ -64,6 +71,7 @@ export default function Home() {
 
     return (
         <div>
+            <Spacer height={'30px'} />
             <Title1 title={'공 피 라'} subTitle={'공대생의 Piano Life'} />
 
             <div style={{height:'100px'}}></div>
@@ -77,9 +85,8 @@ export default function Home() {
                 연주를 통해 사람들의 마음을 움직이는 것을 목표로 하고 있습니다.<br /><br />
                 무대 위에서 관객과 교감하는 순간은 제가 음악을 계속하는 이유입니다.
             </p>
+            <Spacer height={'100px'} />
 
-
-            <div style={{height:'100px'}}></div>
             <Title2 title={'What I Do'} />
             <p>
                 저는 음악 스튜디오를 운영하며 다양한 음악적 활동을 이어가고 있습니다.<br />
@@ -89,8 +96,10 @@ export default function Home() {
                 제 경험과 기술을 나누고자 노력하고 있습니다.<br /><br />
                 스튜디오에서의 활동은 저에게 새로운 영감과 도전의 기회를 선사합니다.
             </p>
+            <Spacer height={'100px'} />
 
-
+            <Title2 title={'Gallary'} />
+            <Carousel />
 
             <div className={'description-container'}
                 style={{
@@ -106,6 +115,7 @@ export default function Home() {
                     스크롤 테스트를 위한 더미입니다.
                 </div>
             </div>
+
             
             {/* full music sheet bk */}
             <div className={'music-sheet-container'}>
