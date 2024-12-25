@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { useEffect } from "react";
+import getScrollProgress from "../api/client/getScrollProgress";
 
 export default function About() {
     const updateScrollBar = () => {
-        // scrollPosition, scrollPercent
         const scrollData = getScrollProgress();
         mainTextControl(scrollData);
     }
@@ -30,16 +30,21 @@ export default function About() {
 
     }, []);
 
+    /*
+    // 배경색 
+    f1dddf
+    f2dfe1
+
+    */
+
     return (
         <div>
             <h1>About</h1>
             <p>This is the about page.</p>
             <Image className={'main-image'}
-                src="/gallary/gallary_3_tp.png" alt="piano" 
-                // width={1000} height={0} 
-                fill
-                // layout="intrinsic"
-                style={{objectFit: 'cover'}}
+                src="/profile/jungwoo_profile.jpg" alt="piano" 
+                width={500} height={0}
+                layout="intrinsic"
             />
         </div>
     );
