@@ -24,7 +24,7 @@ export default function Carousel() {
         let topPos = carouselRef.current.getBoundingClientRect().top - 500;
         if(topPos < 0) {  
             setImageTop(-100 + topPos * 0.4); 
-            setImageScale(1 - topPos * 0.0001);
+            // setImageScale(1 - topPos * 0.0001);
         }
     }
 
