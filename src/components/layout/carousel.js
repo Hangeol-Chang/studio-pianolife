@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import styles from './carousel.module.scss';
+import getScrollProgress from '@/app/api/client/getScrollProgress';
 
 const images = [
   '/gallary/gallary_1.jpg',
@@ -14,8 +15,18 @@ export default function Carousel() {
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const carouselRef = useRef(null);
+    const [imageTop, setImageTop] = useState(-100);
+    const [imageScale, setImageScale] = useState(1);
 
-    const [wid, setWidth] = useState(0);
+
+    const updateScrollBar = () => {
+        const scrollData = getScrollProgress();       
+        let topPos = carouselRef.current.getBoundingClientRect().top - 500;
+        if(topPos < 0) {  
+            setImageTop(-100 + topPos * 0.4); 
+            setImageScale(1 - topPos * 0.0001);
+        }
+    }
 
     const onMouseDown = (e) => {
         setIsDragging(true);
@@ -40,6 +51,17 @@ export default function Carousel() {
     };
 
 
+    useEffect(() => {
+        window.addEventListener('scroll', updateScrollBar);
+        window.addEventListener('resize', updateScrollBar);
+        return () => {
+            window.removeEventListener('scroll', updateScrollBar);
+            window.removeEventListener('resize', updateScrollBar);
+        };
+        images = document.querySelectorAll('.image');
+
+    }, []);
+
     return (
         <div
             className={styles.carousel_container}
@@ -51,12 +73,14 @@ export default function Carousel() {
         >
         {images.map((src, index) => (
             <div key={src} className={styles.image_wrapper}>
-            <Image 
-                src={src} 
-                alt={`Image ${index + 1}`} 
-                layout="intrinsic"
-                width={1000} height={300}
-                objectFit="cover" // to make sure the image covers the entire space
+            <Image src={src}  alt={`Image ${index + 1}`} layout="intrinsic"
+                width={1000} height={300} objectFit="cover" 
+                style={{
+                    position: 'absolute',
+                    top: imageTop,
+                    zIndex: 0,
+                    scale: imageScale,
+                }}
             />
             </div>
         ))}

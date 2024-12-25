@@ -36,8 +36,10 @@ export default function About() {
             <p>This is the about page.</p>
             <Image className={'main-image'}
                 src="/gallary/gallary_3_tp.png" alt="piano" 
-                width={2000} height={0} 
-                layout="intrinsic"
+                // width={1000} height={0} 
+                fill
+                // layout="intrinsic"
+                style={{objectFit: 'cover'}}
             />
         </div>
     );

@@ -54,6 +54,7 @@ const Note = ({index, width, left, top, flip = false}) => {
                     left: left,
                     top: topPos,
                     transform: `rotate(${rot}deg)`,
+                    zIndex: 10,
                 }}
             />
         </div>
