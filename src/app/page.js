@@ -47,24 +47,18 @@ const Spacer = ({height}) => {
 
 export default function Home() {
 
-    const updateScrollBar = () => {
-        // scrollPosition, scrollPercent
-        const scrollData = getScrollProgress();
-        mainTextControl(scrollData);
-    }
-
-
-    const mainTextControl = (scrollData) => {
-        // document.querySelector('.main-text').style.top = `${scrollData.scrollPosition * 40 / 70 + 100}px`;
-    }
+    // const updateScrollBar = () => {
+    //     // scrollPosition, scrollPercent
+    //     const scrollData = getScrollProgress();
+    // }
     
     useEffect(() => {
-        window.addEventListener('scroll', updateScrollBar);
-        window.addEventListener('resize', updateScrollBar);
-        return () => {
-            window.removeEventListener('scroll', updateScrollBar);
-            window.removeEventListener('resize', updateScrollBar);
-        }
+        // window.addEventListener('scroll', updateScrollBar);
+        // window.addEventListener('resize', updateScrollBar);
+        // return () => {
+        //     window.removeEventListener('scroll', updateScrollBar);
+        //     window.removeEventListener('resize', updateScrollBar);
+        // }
 
     }, [])
 
@@ -75,7 +69,7 @@ export default function Home() {
             <Title1 title={'공 피 라'} subTitle={'공대생의 Piano Life'} />
 
             <div style={{height:'100px'}}></div>
-            <Title2 title={'Who Am I?'} />
+            <Title2 title={'Who Am I?'} idf={1} />
             <p>
                 안녕하세요, 저는 피아니스트 A입니다.<br />
                 다양한 연주회를 통해 관객들에게 음악의 아름다움을 전하고 있습니다.<br /><br />
@@ -87,7 +81,7 @@ export default function Home() {
             </p>
             <Spacer height={'100px'} />
 
-            <Title2 title={'What I Do'} />
+            <Title2 title={'What I Do'} idf={2} />
             <p>
                 저는 음악 스튜디오를 운영하며 다양한 음악적 활동을 이어가고 있습니다.<br />
                 스튜디오에서는 녹음, 편곡, 연주 영상 제작과 같은 서비스를 제공하며,<br />
@@ -98,7 +92,7 @@ export default function Home() {
             </p>
             <Spacer height={'100px'} />
 
-            <Title2 title={'Gallary'} />
+            <Title2 title={'Gallary'} idf={3} />
             <Carousel />
 
             <div className={'description-container'}
