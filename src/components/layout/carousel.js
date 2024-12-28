@@ -18,7 +18,6 @@ export default function Carousel() {
     const [imageTop, setImageTop] = useState(-100);
     const [imageScale, setImageScale] = useState(1);
 
-
     const updateScrollBar = () => {
         const scrollData = getScrollProgress();       
         let topPos = carouselRef.current.getBoundingClientRect().top - 500;
@@ -50,6 +49,14 @@ export default function Carousel() {
     //     setIsDragging(false);
     // };
 
+    const onClickCarouselButton = (direction) => {
+        if (carouselRef.current) {
+            // 요소의 width 가져오기
+            const { width } = carouselRef.current.getBoundingClientRect();
+            carouselRef.current.scrollLeft += direction * (width + 20);
+        }
+
+    };
 
     useEffect(() => {
         window.addEventListener('scroll', updateScrollBar);
@@ -65,21 +72,16 @@ export default function Carousel() {
     return (
         <div className={styles.carousel_container}>
             <div 
-                    className={styles.carousel_button}
-                    style={{left: 0}}
-                    onClick={
-                        () => {
-                            carouselRef.current.scrollLeft -= 1000;
-                        }}
-                >
-                    왼쪽버튼
-                </div>
-                <div className={styles.carousel_button} 
-                    style={{right: 0}}
-                    onClick={() => {carouselRef.current.scrollLeft += 1000;}}
-                >
-                    오른쪽버튼
-                </div>
+                className={styles.carousel_button} style={{left: 0, textAlign: 'left'}}
+                onClick={() => onClickCarouselButton(-1)}
+            >
+                ◁
+            </div>
+            <div className={styles.carousel_button} style={{right: 0, textAlign: 'right'}}
+                onClick={() => onClickCarouselButton(1)}
+            >
+                ▷
+            </div>
 
             <div
                 className={styles.carousel_image_container}
