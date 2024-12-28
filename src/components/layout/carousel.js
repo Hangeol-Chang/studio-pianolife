@@ -46,9 +46,9 @@ export default function Carousel() {
         setIsDragging(false);
     };
 
-    const onMouseLeave = () => {
-        setIsDragging(false);
-    };
+    // const onMouseLeave = () => {
+    //     setIsDragging(false);
+    // };
 
 
     useEffect(() => {
@@ -63,27 +63,42 @@ export default function Carousel() {
     }, []);
 
     return (
-        <div
-            className={styles.carousel_container}
-            ref={carouselRef}
-            onMouseDown={onMouseDown}
-            onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseLeave}
-        >
-        {images.map((src, index) => (
-            <div key={src} className={styles.image_wrapper}>
-            <Image src={src}  alt={`Image ${index + 1}`} layout="intrinsic"
-                width={1000} height={300} objectFit="cover" 
-                style={{
-                    position: 'absolute',
-                    top: imageTop,
-                    zIndex: 0,
-                    scale: imageScale,
-                }}
-            />
+        <div className={styles.carousel_container}>
+            <div 
+                    className={styles.carousel_button}
+                    style={{left: 0}}
+                    onClick={
+                        () => {
+                            carouselRef.current.scrollLeft -= 1000;
+                        }}
+                >
+                    왼쪽버튼
+                </div>
+                <div className={styles.carousel_button} 
+                    style={{right: 0}}
+                    onClick={() => {carouselRef.current.scrollLeft += 1000;}}
+                >
+                    오른쪽버튼
+                </div>
+
+            <div
+                className={styles.carousel_image_container}
+                ref={carouselRef}
+            >
+                {images.map((src, index) => (
+                    <div key={src} className={styles.image_wrapper}>
+                    <Image src={src}  alt={`Image ${index + 1}`} layout="intrinsic"
+                        width={1000} height={300} objectFit="cover" 
+                        style={{
+                            position: 'absolute',
+                            top: imageTop,
+                            zIndex: 0,
+                            scale: imageScale,
+                        }}
+                    />
+                    </div>
+                ))}
             </div>
-        ))}
         </div>
     );
 }

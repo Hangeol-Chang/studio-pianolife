@@ -1,6 +1,6 @@
 'use client';
 
-import { Note, VerticalLineSingle } from "./sheet";
+import { MusicSheet, Note, VerticalLine, VerticalLineSingle } from "./sheet";
 
 const ShortSheet = ({idf = 1,}) => {
     let content;

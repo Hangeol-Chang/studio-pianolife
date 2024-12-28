@@ -1,43 +1,10 @@
 'use client';
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import getScrollProgress from "./api/client/getScrollProgress";
 import '@/components/music/musicsheet.scss';   // 이거 지워져야함
 import './page.module.scss';
 import { Title1, Title2 } from "@/components/common/title";
-import { Note } from "@/components/music/sheet";
 import Carousel from "@/components/layout/carousel";
-
-// css 분리 등의 작업 해야함.
-
-const MusicSheet = () => {
-    return (
-        <div className={'music-sheet'}
-            style={{
-                position: "relative",
-                width: '100%',
-                height: '70px',
-            }}
-        >
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-        </div>
-    )
-}
-
-const VerticalLine = ({left, top}) => { // 지울 코드
-    return (
-        <div className={'vertical-line'}
-            style={{
-                left: left,
-                top: top,
-            }}
-        />
-    )
-}
 
 const Spacer = ({height}) => {
     return (

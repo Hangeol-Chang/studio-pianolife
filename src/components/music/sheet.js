@@ -72,7 +72,38 @@ const VerticalLineSingle = ({left, top}) => {
     )
 }
 
+const MusicSheet = () => {
+    return (
+        <div className={'music-sheet'}
+            style={{
+                position: "relative",
+                width: '100%',
+                height: '70px',
+            }}
+        >
+            <hr className={'music-sheet-line'}/>
+            <hr className={'music-sheet-line'}/>
+            <hr className={'music-sheet-line'}/>
+            <hr className={'music-sheet-line'}/>
+            <hr className={'music-sheet-line'}/>
+        </div>
+    )
+}
+
+const VerticalLine = ({left, top}) => { // 지울 코드
+    return (
+        <div className={'vertical-line'}
+            style={{
+                left: left,
+                top: top,
+            }}
+        />
+    )
+}
+
 export {
+    MusicSheet,
     Note,
     VerticalLineSingle,
+    VerticalLine,
 }
