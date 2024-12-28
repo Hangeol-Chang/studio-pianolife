@@ -87,9 +87,38 @@ const MediumSheet = ({idf = 1, }) => {
 
 const LongSheet = ({idf}) => {
   return (
-    <div>
-      <h1>Long Sheet 1</h1>
-      <p>Sheet 1 content</p>
+    <div 
+        style={{
+            position: "relative",
+            padding: '10px 0',
+        }}
+    >
+        <MusicSheet />
+        
+        <Note index={21} width={25} left={10} top={20} />
+        <Note index={7} width={28} left={60} top={35} />
+        <VerticalLine left={110} top={25} />
+
+        <Note index={1} width={17} left={130} top={26} />
+        <Note index={3} width={28} left={200} top={24} />
+        <Note index={14} width={70} left={240} top={15} />
+        <VerticalLine calLine left={330} top={25} />
+        
+        <Note index={10} width={40} left={350} top={-4} />
+        <Note index={23} width={13} left={350} top={56} />
+        <Note index={1} width={17} left={400} top={-16} />
+        <Note index={1} width={17} left={400} top={62} flip={true} />
+        <Note index={10} width={40} left={490} top={-16} />
+        <VerticalLine left={550} top={25} />
+        
+        <Note index={10} width={40} left={570} top={-4} />
+        <Note index={2} width={17} left={570} top={62} flip={true} />
+        <Note index={10} width={40} left={630} top={14} />
+        <Note index={1} width={17} left={628} top={68} flip={true} />
+        <Note index={10} width={40} left={690} top={3} />
+        <Note index={10} width={40} left={750} top={20} />
+        <Note index={7} width={28} left={745} top={80} flip={true} />
+
     </div>
   );
 };
