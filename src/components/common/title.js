@@ -1,13 +1,15 @@
 import { Note } from '../music/sheet.js';
 import { LongSheet, MediumSheet, ShortSheet } from '../music/sheetPreset.js';
+import sheetStyles from '@/components/music/sheet.module.scss';
+
 
 const Title1 = ({title, subTitle, idf=1}) => {
     return (
-        <div className={'title-text'}>
+        <div>
             <h1>{title}</h1>
             <div >
-                <div className='music-sheet-container-single'>
-                    <hr className={'music-sheet-line-single'}/>
+                <div className={sheetStyles.music_sheet_container_single}>
+                    <hr className={sheetStyles.music_sheet_line_single}/>
                     <Note index={21} width={20} left={'1vw'} top={-25} />
                     <MediumSheet idf={idf} />
                 </div>
@@ -19,21 +21,27 @@ const Title1 = ({title, subTitle, idf=1}) => {
 
 const Title2 = ({title, idf=1}) => {
     return (
-        <>
-            <h2>
-                {title}
-                <div className='music-sheet-container-single'>
-                    <hr className={'music-sheet-line-single-light'}/>
-                    <ShortSheet idf={idf} />
-                </div>
-                
-            </h2>
-
-        </>
+        <h2>
+            {title}
+            <div className={sheetStyles.music_sheet_container_single}>
+                <hr className={sheetStyles.music_sheet_line_single_light}/>
+                <ShortSheet idf={idf} />
+            </div>
+        </h2>
     )
 }
-const Title3 = () => {
-    
+const Title3 = ({title}) => {
+    return (
+        <h3>
+            {title}
+            <hr 
+                style={{
+                    width: '30%',
+                    margin: '1px 0px',
+                }}
+            />
+        </h3>
+    )
 }
 const Title4 = () => {
     

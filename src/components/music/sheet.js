@@ -3,6 +3,7 @@
 import getScrollProgress from "@/app/api/client/getScrollProgress";
 import Image from "next/image";
 import { useEffect, useReducer, useRef, useState } from "react";
+import styles from './sheet.module.scss';
 
 const Note = ({index, width, left, top, flip = false}) => {
     // var randInt = Math.floor(Math.random() * 100);
@@ -17,15 +18,17 @@ const Note = ({index, width, left, top, flip = false}) => {
     const updateScrollBar = () => {
         const scrollData = getScrollProgress();
         
-        let yPos = ref.current.getBoundingClientRect().top - 300;
-        if(yPos < 0) yPos = 0;
-        if(scrollData.scrollPosition < yPos) {
-            setTopPos(top);
-            setRot(flip ? 180 : 0);
-        }
-        else {
-            setTopPos(top + (scrollData.scrollPosition - yPos) * scrollConst);
-            setRot( (flip ? 180 : 0) + (scrollData.scrollPosition - yPos)/20 * rotConst);
+        if(ref.current) {
+            let yPos = ref.current.getBoundingClientRect().top - 300;
+            if(yPos < 0) yPos = 0;
+            if(scrollData.scrollPosition < yPos) {
+                setTopPos(top);
+                setRot(flip ? 180 : 0);
+            }
+            else {
+                setTopPos(top + (scrollData.scrollPosition - yPos) * scrollConst);
+                setRot( (flip ? 180 : 0) + (scrollData.scrollPosition - yPos)/20 * rotConst);
+            }
         }
     }
 
@@ -45,7 +48,7 @@ const Note = ({index, width, left, top, flip = false}) => {
     }, []);
 
     return (
-        <div ref={ref} className={'note'}>
+        <div ref={ref} className={styles.note}>
             <Image src={`/note/note_${filename}.png`} alt="note" 
                 width={width} height={0} layout="intrinsic"
 
@@ -63,7 +66,7 @@ const Note = ({index, width, left, top, flip = false}) => {
 
 const VerticalLineSingle = ({left, top}) => {
     return (
-        <div className={'vertical-line-single'}
+        <div className={styles.vertical_line_single}
             style={{
                 left: left,
                 top: top,
@@ -74,29 +77,26 @@ const VerticalLineSingle = ({left, top}) => {
 
 const MusicSheet = () => {
     return (
-        <div className={'music-sheet'}
+        <div className={styles.music_sheet}
             style={{
                 position: "relative",
                 width: '100%',
                 height: '70px',
             }}
         >
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
+            <hr className={styles.music_sheet_line}/>
+            <hr className={styles.music_sheet_line}/>
+            <hr className={styles.music_sheet_line}/>
+            <hr className={styles.music_sheet_line}/>
+            <hr className={styles.music_sheet_line}/>
         </div>
     )
 }
 
 const VerticalLine = ({left, top}) => { // 지울 코드
     return (
-        <div className={'vertical-line'}
-            style={{
-                left: left,
-                top: top,
-            }}
+        <div className={styles.vertical_line}
+            style={{ left: left, top: top,}}
         />
     )
 }

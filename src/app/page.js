@@ -1,16 +1,10 @@
 'use client';
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import '@/components/music/musicsheet.scss';   // 이거 지워져야함
 import './page.module.scss';
 import { Title1, Title2 } from "@/components/common/title";
 import Carousel from "@/components/layout/carousel";
-
-const Spacer = ({height}) => {
-    return (
-        <div style={{height: height}}></div>
-    )
-}
+import { Spacer } from "@/components/common/spacer";
 
 export default function Home() {
 
