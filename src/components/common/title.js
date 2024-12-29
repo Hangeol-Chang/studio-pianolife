@@ -1,35 +1,17 @@
-import { Note, VerticalLineSingle } from '../music/sheet.js';
+import { Note } from '../music/sheet.js';
+import { LongSheet, MediumSheet, ShortSheet } from '../music/sheetPreset.js';
+import sheetStyles from '@/components/music/sheet.module.scss';
 
 
-const Title1 = ({title, subTitle, }) => {
+const Title1 = ({title, subTitle, idf=1}) => {
     return (
-        <div className={'title-text'}>
+        <div>
             <h1>{title}</h1>
             <div >
-                <div className='music-sheet-container-single'>
-                    <hr className={'music-sheet-line-single'}/>
-
-                    {/* 이렇게 많이 넣지 말고, 한마디씩 가능한걸로 ㄱㄱ */}
-
+                <div className={sheetStyles.music_sheet_container_single}>
+                    <hr className={sheetStyles.music_sheet_line_single}/>
                     <Note index={21} width={20} left={'1vw'} top={-25} />
-                    
-                    <div
-                        style={{
-                            width: 'min(30vw, 200px)',
-                            right: '0',
-                            position: 'absolute',
-                        }}
-                    >
-                        <Note index={7} width={20} left={0} top={-20} />
-                        <VerticalLineSingle left={40} top={-7.5} />
-
-                        <Note index={1} width={12} left={55} top={-30} />
-                        <Note index={3} width={18} left={80} top={-15} flip={true} />
-                        <Note index={14} width={40} left={100} top={-10} />
-                        <Note index={3} width={18} left={155} top={-20} flip={true} />
-                        <VerticalLineSingle left={180} top={-7.5} />
-
-                    </div>
+                    <MediumSheet idf={idf} />
                 </div>
             </div>
             <h3>{subTitle}</h3>
@@ -37,33 +19,29 @@ const Title1 = ({title, subTitle, }) => {
     )
 }
 
-const Title2 = ({title, }) => {
+const Title2 = ({title, idf=1}) => {
     return (
-        <>
-            <h2>
-                {title}                
-                <div className='music-sheet-container-single'>
-                        <hr className={'music-sheet-line-single-light'}/>
-                        <div
-                            style={{
-                                width: 'min(30vw, 200px)',
-                                right: '0',
-                                position: 'absolute',
-                            }}
-                        >
-                            <Note index={1} width={12} left={100} top={-15} flip={true} />
-                            <Note index={12} width={28} left={120} top={-10} />
-                            <Note index={3} width={18} left={165} top={-20} flip={true} />
-                    </div>
-                </div>
-                
-            </h2>
-
-        </>
+        <h2>
+            {title}
+            <div className={sheetStyles.music_sheet_container_single}>
+                <hr className={sheetStyles.music_sheet_line_single_light}/>
+                <ShortSheet idf={idf} />
+            </div>
+        </h2>
     )
 }
-const Title3 = () => {
-    
+const Title3 = ({title}) => {
+    return (
+        <h3>
+            {title}
+            <hr 
+                style={{
+                    width: '30%',
+                    margin: '1px 0px',
+                }}
+            />
+        </h3>
+    )
 }
 const Title4 = () => {
     

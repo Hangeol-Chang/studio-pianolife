@@ -1,12 +1,64 @@
-.main-image {
+.cover_container {
+    position: relative;
+    width: 100%;
+    height: min(120vw, 900px);
+    overflow: hidden;
+    // background-color: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    // background: linear-gradient(to top right, #f1dddf, #f2dfe1);
+    background: linear-gradient(30deg, #e6bec2 10%, #f1dddf 30%, #f2dfe1 90%);
+
+    background-color: black;
+}
+.cover_container :is(h1, h2, h3, h4, h5, h6) {
     position: absolute;
-    top: 250px;
-    right: -20%;
-    scale: 1.7;
+    z-index: 10;
+}
+
+.cover_name_text {
+    font-family: 'Cafe24Lovingu';
+    font-weight: normal;
+    font-size: min(7vw, 60px);
+    letter-spacing: 10px;
+    color: white;
     
+    margin: auto;
+
+    left: 50%;
+    bottom: 10%;
+    transform: translate(-50%, 0);
+    animation: cover-name-init-slide 1s ease-in-out forwards;
+}
+@keyframes cover-name-init-slide {
+    from {  
+        bottom: 20%; 
+        opacity: 0;
+    }
+    to {    
+        bottom: 10%; 
+        opacity: 1;
+    }
+}
+
+.main_image {
+    position: absolute;
+    left: 50%;
+    bottom: 0%;
+    scale: 1;
+    transform: translate(-50%, 0);
     animation: image-init-slide 1s ease-in-out forwards;
+    
+    z-index: 0;
+    
+    width: 70%;
+    height: auto;
 }
 @keyframes image-init-slide {
-    from {  right: -60%; }
-    to {    right: -20%; }
+    from {  
+        bottom: -40%; 
+        opacity: 0;
+    }
+    to {    
+        bottom: 0%; 
+        opacity: 1;
+    }
 }

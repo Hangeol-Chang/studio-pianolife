@@ -1,70 +1,25 @@
 'use client';
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import getScrollProgress from "./api/client/getScrollProgress";
-import '@/components/music/musicsheet.scss';   // 이거 지워져야함
 import './page.module.scss';
 import { Title1, Title2 } from "@/components/common/title";
-import { Note } from "@/components/music/sheet";
 import Carousel from "@/components/layout/carousel";
-
-// css 분리 등의 작업 해야함.
-
-const MusicSheet = () => {
-    return (
-        <div className={'music-sheet'}
-            style={{
-                position: "relative",
-                width: '100%',
-                height: '70px',
-            }}
-        >
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-            <hr className={'music-sheet-line'}/>
-        </div>
-    )
-}
-
-const VerticalLine = ({left, top}) => { // 지울 코드
-    return (
-        <div className={'vertical-line'}
-            style={{
-                left: left,
-                top: top,
-            }}
-        />
-    )
-}
-
-const Spacer = ({height}) => {
-    return (
-        <div style={{height: height}}></div>
-    )
-}
+import { Spacer } from "@/components/common/spacer";
 
 export default function Home() {
 
-    const updateScrollBar = () => {
-        // scrollPosition, scrollPercent
-        const scrollData = getScrollProgress();
-        mainTextControl(scrollData);
-    }
-
-
-    const mainTextControl = (scrollData) => {
-        // document.querySelector('.main-text').style.top = `${scrollData.scrollPosition * 40 / 70 + 100}px`;
-    }
+    // const updateScrollBar = () => {
+    //     // scrollPosition, scrollPercent
+    //     const scrollData = getScrollProgress();
+    // }
     
     useEffect(() => {
-        window.addEventListener('scroll', updateScrollBar);
-        window.addEventListener('resize', updateScrollBar);
-        return () => {
-            window.removeEventListener('scroll', updateScrollBar);
-            window.removeEventListener('resize', updateScrollBar);
-        }
+        // window.addEventListener('scroll', updateScrollBar);
+        // window.addEventListener('resize', updateScrollBar);
+        // return () => {
+        //     window.removeEventListener('scroll', updateScrollBar);
+        //     window.removeEventListener('resize', updateScrollBar);
+        // }
 
     }, [])
 
@@ -75,7 +30,7 @@ export default function Home() {
             <Title1 title={'공 피 라'} subTitle={'공대생의 Piano Life'} />
 
             <div style={{height:'100px'}}></div>
-            <Title2 title={'Who Am I?'} />
+            <Title2 title={'Who Am I?'} idf={1} />
             <p>
                 안녕하세요, 저는 피아니스트 A입니다.<br />
                 다양한 연주회를 통해 관객들에게 음악의 아름다움을 전하고 있습니다.<br /><br />
@@ -87,7 +42,7 @@ export default function Home() {
             </p>
             <Spacer height={'100px'} />
 
-            <Title2 title={'What I Do'} />
+            <Title2 title={'What I Do'} idf={2} />
             <p>
                 저는 음악 스튜디오를 운영하며 다양한 음악적 활동을 이어가고 있습니다.<br />
                 스튜디오에서는 녹음, 편곡, 연주 영상 제작과 같은 서비스를 제공하며,<br />
@@ -98,7 +53,7 @@ export default function Home() {
             </p>
             <Spacer height={'100px'} />
 
-            <Title2 title={'Gallary'} />
+            <Title2 title={'Gallary'} idf={3} />
             <Carousel />
 
             <div className={'description-container'}
@@ -116,37 +71,6 @@ export default function Home() {
                 </div>
             </div>
 
-            
-            {/* full music sheet bk */}
-            <div className={'music-sheet-container'}>
-                <MusicSheet />
-                
-                <Note index={21} width={25} left={10} top={20} />
-                <Note index={7} width={28} left={60} top={35} />
-                <VerticalLine left={110} top={25} />
-
-                <Note index={1} width={17} left={130} top={26} />
-                <Note index={3} width={28} left={200} top={24} />
-                <Note index={14} width={70} left={240} top={15} />
-                <VerticalLine calLine left={330} top={25} />
-                
-                <Note index={10} width={40} left={350} top={-4} />
-                <Note index={23} width={13} left={350} top={56} />
-                <Note index={1} width={17} left={400} top={-16} />
-                <Note index={1} width={17} left={400} top={62} flip={true} />
-                <Note index={10} width={40} left={490} top={-16} />
-                <VerticalLine left={550} top={25} />
-                
-                <Note index={10} width={40} left={570} top={-4} />
-                <Note index={2} width={17} left={570} top={62} flip={true} />
-                <Note index={10} width={40} left={630} top={14} />
-                <Note index={1} width={17} left={628} top={68} flip={true} />
-                <Note index={10} width={40} left={690} top={3} />
-                <Note index={10} width={40} left={750} top={20} />
-                <Note index={7} width={28} left={745} top={80} flip={true} />
-
-
-            </div>
         </div>
     )
 }
