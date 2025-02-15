@@ -6,8 +6,9 @@ import getScrollProgress from "../api/client/getScrollProgress";
 import styles from './about.module.scss';
 import { Spacer } from "@/components/common/spacer";
 import { Title1, Title2, Title3 } from "@/components/common/title";
+import YoutubeCarousel from "@/components/media/youtubeCarousel";
 
-const YouTubeEmbed = ({ videoId, width, height }) => {
+const YouTubeEmbed = ({ videoId, width, height }) => {      // -> legacy, 다른데서 쓸거임.
     return (
         <div 
             style={{width, height}}
@@ -26,11 +27,66 @@ const YouTubeEmbed = ({ videoId, width, height }) => {
     );
 };
 
+const YoutubeV1 = ({youtubeWidth, youtubeHeight}) => {
+    return (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignContent: 'center',
+                justifyContent: 'center',
+                alignItems: 'center',
+                
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                // padding: '10px',
+                gap: '10px',
+                margin: '0 5vw',
+            }}
+        >
+            <YouTubeEmbed videoId="vDs4sTqhmQg" width={youtubeWidth} height={youtubeHeight} />
+
+            <div
+                style={{
+                    display: 'flex',
+                    width: '100%', height: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: 'px',
+                }}
+            >
+                <YouTubeEmbed videoId="jkb3VdzEn2M" width={youtubeWidth/3*2} height={youtubeHeight/3*2 + 5} />
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px',
+                }}>
+                    <YouTubeEmbed videoId="U9C5GZ-G69A" width={youtubeWidth/3} height={youtubeHeight/3} />
+                    <YouTubeEmbed videoId="mXJeCx12igw" width={youtubeWidth/3} height={youtubeHeight/3} />
+                </div>
+
+            </div>
+            <YouTubeEmbed videoId="kYHdmaMZmwo" width={youtubeWidth/3} height={youtubeHeight/3} />
+            <YouTubeEmbed videoId="mja0TKqjtWk" width={youtubeWidth/3} height={youtubeHeight/3} />
+
+        </div>
+    )
+}
+
+
 export default function About() {
     const coverImageRef = useRef(null);
 
     const [youtubeWidth, setYoutubeWidth] = useState(200);
     const [youtubeHeight, setYoutubeHeight] = useState(200);
+
+    const video_infos = [
+        { videoId: 'vDs4sTqhmQg',       title: 'Beethoven - Piano concerto No.5 in E-flat major, Op.73 "Emperor" mov.1&2' },
+        { videoId: 'jkb3VdzEn2M',       title: 'Chopin - Scherzo No.2 in B-flat minor, Op.31' },
+        { videoId: 'U9C5GZ-G69A',       title: 'Chopin - Ballade No.1 in G minor, Op.23' },
+        { videoId: 'mXJeCx12igw',       title: 'Schumann - Kinderszenen Op.15' },
+        { videoId: 'kYHdmaMZmwo',       title: 'Liszt - Après une lecture du dante: fantasia quasi sonata', },
+        { videoId: 'mja0TKqjtWk',       title: 'Debussy - Suite Bergamasque', },
+    ]
 
     const updateScrollBar = () => {
         const scrollData = getScrollProgress();
@@ -38,7 +94,6 @@ export default function About() {
 
     const resizeEvent = () => {
         const docWidth = document.documentElement.clientWidth;
-        console.log(docWidth);
 
         setYoutubeWidth(docWidth * 0.9);
         setYoutubeHeight(docWidth * 0.5);
@@ -120,46 +175,9 @@ export default function About() {
 
             <Spacer height={100} />
             <Title2 title="연주영상" />
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignContent: 'center',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                    // padding: '10px',
-                    gap: '10px',
-                    margin: '0 5vw',
-                }}
-            >
-                <YouTubeEmbed videoId="vDs4sTqhmQg" width={youtubeWidth} height={youtubeHeight} />
-
-                <div
-                    style={{
-                        display: 'flex',
-                        width: '100%', height: '100%',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: 'px',
-                    }}
-                >
-                    <YouTubeEmbed videoId="jkb3VdzEn2M" width={youtubeWidth/3*2} height={youtubeHeight/3*2 + 5} />
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '5px',
-                    }}>
-                        <YouTubeEmbed videoId="U9C5GZ-G69A" width={youtubeWidth/3} height={youtubeHeight/3} />
-                        <YouTubeEmbed videoId="mXJeCx12igw" width={youtubeWidth/3} height={youtubeHeight/3} />
-                    </div>
-
-                </div>
-                <YouTubeEmbed videoId="mXJeCx12igw" width={youtubeWidth/3} height={youtubeHeight/3} />
-                <YouTubeEmbed videoId="mXJeCx12igw" width={youtubeWidth/3} height={youtubeHeight/3} />
-
-            </div>
+            {/* <YoutubeV1 youtubeWidth={youtubeWidth} youtubeHeight={youtubeHeight} /> */}
+            <YoutubeCarousel video_infos={video_infos} />
+                
             <Spacer height={100} />
             <Title2 title="p.s " />
 
