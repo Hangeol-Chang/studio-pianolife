@@ -11,7 +11,7 @@ const Title1 = ({title, subTitle, idf=1}) => {
                 <div className={sheetStyles.music_sheet_container_single}>
                     <hr className={sheetStyles.music_sheet_line_single}/>
                     <Note index={21} width={20} left={'1vw'} top={-25} />
-                    <MediumSheet idf={idf} />
+                    {/* <MediumSheet idf={idf} /> */}
                 </div>
             </div>
             <h3>{subTitle}</h3>
@@ -19,15 +19,18 @@ const Title1 = ({title, subTitle, idf=1}) => {
     )
 }
 
-const Title2 = ({title, idf=1}) => {
+const Title2 = ({title, subTitle, idf=1}) => {
     return (
-        <h2>
-            {title}
-            <div className={sheetStyles.music_sheet_container_single}>
-                <hr className={sheetStyles.music_sheet_line_single_light}/>
-                <ShortSheet idf={idf} />
-            </div>
-        </h2>
+        <div>
+            <h2>
+                {title}
+                <div className={sheetStyles.music_sheet_container_single}>
+                    <hr className={sheetStyles.music_sheet_line_single_light}/>
+                    {/* <ShortSheet idf={idf} /> */}
+                </div>
+            </h2>
+            <h4>{subTitle}</h4>
+        </div>
     )
 }
 const Title3 = ({title}) => {

@@ -15,10 +15,13 @@
 }
 
 .cover_name_text {
+    width:100%;
+    align-items: center;
+    text-align: center;
     font-family: 'Cafe24Lovingu';
     font-weight: normal;
-    font-size: min(7vw, 60px);
-    letter-spacing: 10px;
+    font-size: min(5vw, 60px);
+    letter-spacing: min(2vw, 20px);
     color: white;
     
     margin: auto;
@@ -62,3 +65,6 @@
         opacity: 1;
     }
 }
+
+
+// 추후에 분리될 수도 있음.
