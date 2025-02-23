@@ -19,6 +19,11 @@ const HeaderMenu = ({toggleMenu}) => {
                     </Link>                    
                 </li>
                 <li className="menu-item">
+                    <Link href="/interview" onClick={toggleMenu}>
+                        Interview
+                    </Link>
+                </li>
+                <li className="menu-item">
                     <Link href="/fourmusics" onClick={toggleMenu}>
                         포뮤직스
                     </Link>
