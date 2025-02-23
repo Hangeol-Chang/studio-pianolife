@@ -58,7 +58,7 @@ export default function YoutubeCarousel({ video_infos }) {
                     <h3>{video_info.title}</h3>
                     <YouTubeEmbed videoId={video_info.videoId} width={youtubeWidth} height={youtubeHeight} />
                 </div>
-            ))}
+            ))} 
         </div>
     )
 }
