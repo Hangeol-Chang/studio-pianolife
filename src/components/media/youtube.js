@@ -16,22 +16,24 @@ const YouTubeEmbed = ({ videoId, width, height }) => {      // -> legacy, 다른
 
     return (
         <div 
-            style={{
-                width, height,
-                margin: '0 10%',
-            }}
+            style={{ width, height}}
         >
             <iframe
                 width="100%"
                 ref={iframeRef}
-                className="w-full h-full"
                 src={`https://www.youtube.com/embed/${videoId}`}
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
+
+                style={{
+                    borderRadius: '6px',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
+                }}
             ></iframe>
-        </div>
+         </div>
     );
 };
 
