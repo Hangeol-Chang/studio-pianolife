@@ -6,10 +6,11 @@ import Image from "next/image";
 import styles from "./fourmusics.module.scss";
 import { useEffect, useRef, useState } from "react";
 import getScrollProgress from "../api/client/getScrollProgress";
+import getPageSize from "../api/client/getPageSize";
 
 export default function FourMusics() {
     const [posterWidth, setPosterWidth] = useState(300);
-    const [posterSrc, setPosterSrc] = useState("/fourmusics/fourmusics_poster_1.jpg");
+    const [posterContainerWidth, setPosterContainerWidth] = useState(1000);
 
     const [posterIndex, setPosterIndex] = useState(0);
     const posterRefs = useRef([]);
@@ -17,24 +18,26 @@ export default function FourMusics() {
     const posterImageList = [
         "/fourmusics/fourmusics_poster_1.jpg",
         "/fourmusics/fourmusics_poster_2.jpg",
-        "/fourmusics/fourmusics_poster_3.jpg",
+        "/fourmusics/fourmusics_poster_3.jpg"
     ]
     
     const updateScrollBar = () => {
         const scrollData = getScrollProgress();
     }
-
     const resizeEvent = () => {
-        const docWidth = document.documentElement.clientWidth;
-        setPosterWidth(docWidth * 0.8);
+        const pageSize = getPageSize();
+        setPosterWidth(pageSize.width * 0.4);
     }
 
     useEffect(() => {
-        const leftPosterIndex = posterIndex - 1 < 0 ? posterImageList.length - 1 : posterIndex - 1;
-        const rightPosterIndex = posterIndex + 1 >= posterImageList.length ? 0 : posterIndex + 1;
-        
-        const containerX = (posterIndex-1) * -250;
-        console.log("containerX", containerX, posterWidth, posterIndex);
+        const pageSize = getPageSize();
+        setPosterContainerWidth(pageSize.width * 0.4 * posterImageList.length + 20 * (posterImageList.length - 1));
+    }, [posterWidth])
+
+    useEffect(() => {        
+        const docWidth = document.documentElement.clientWidth;
+        const containerX = 0.5*getPageSize().width -(posterIndex+0.5) *posterWidth - (posterImageList.length-1) * 10;
+        console.log(containerX)
         posterContainerRef.current.style.left = `${containerX}px`;
         posterRefs.current.forEach((element, index) => {
             if (index == posterIndex) {
@@ -44,16 +47,15 @@ export default function FourMusics() {
                 element.classList.remove(styles.poster_image_main);
             }
         });
-        setTimeout(() => changePosterIndex(), 2000);
+        setTimeout(() => changePosterIndex(), 5000);
     }, [posterIndex]);
 
     const changePosterIndex = () => {
-        console.log("change poster index", posterIndex, (posterIndex + 1) % posterImageList.length);
         setPosterIndex((posterIndex + 1) % posterImageList.length);
     }
 
     useEffect(() => {
-        setTimeout(() => changePosterIndex(), 0);   // 초기화 후 5초마다 실행.
+        // setTimeout(() => changePosterIndex(), 0);   // 초기화 후 5초마다 실행.
 
         resizeEvent();
 
@@ -78,6 +80,10 @@ export default function FourMusics() {
             <div 
                 className={styles.poster_container}
                 ref={posterContainerRef}
+                style={{
+                    width: `${posterContainerWidth}px`,
+                    height: `${posterWidth*2.2}px`,
+                }}
             >
                 {
                     posterImageList.map((src, index) => (
@@ -85,22 +91,11 @@ export default function FourMusics() {
                             key={src+index}
                             ref={(el) => posterRefs.current[index] = el} // 각 iframe에 ref 할당
                             src={src} alt="piano" 
-                            width={0} height={0} sizes="80vw" layout="intrinsic"
+                            width={posterWidth} height={0} layout="intrinsic"
                         />
                     ))
                 }
             </div>
-
-            {/* <Image className={styles.main_image}
-                src={posterSrc} alt="piano" 
-                layout="intrinsic"
-                width={0}height={0} sizes="80vw"
-                style={{ 
-                    width: "80%", height: "auto", 
-                    margin: "auto",
-                    display: "block",
-                }}
-            /> */}
         </div>
     )
 }
