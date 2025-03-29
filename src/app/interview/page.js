@@ -66,6 +66,7 @@ export default function Interview() {
 
     return (
         <div>
+            <Spacer height={20} />
             <Title1 title={"아마추어를 만나다"} subTitle={"interview"} />
             <div>
                 <Spacer height={50} />
@@ -75,7 +76,7 @@ export default function Interview() {
                     전공생들도 힘겨워하는 브람스 소나타 3번 그것도 전악장에 도전하는 그의 열정. <br />
                     연주회를 준비를 위한 그의 철저한 분석과 함께 음악에 대한 솔직 담백함이 느껴지는 그의 인터뷰와 스페셜 연주를 들어보세요!</p>
                 <div className={styles.youtube_container}>
-                    <YouTubeEmbed videoId="cVxLS05Ki2Q" width={youtubeWidth/3*2} height={youtubeHeight/3*2 + 5}/>
+                    <YouTubeEmbed videoId="cVxLS05Ki2Q" width={'100%'} height={'auto'}/>
                 </div>
             </div> 
             
@@ -88,7 +89,7 @@ export default function Interview() {
                     그녀의 이야기와 거쉰 프렐류드를 들어보세요!
                 </p>
                 <div className={styles.youtube_container}>
-                    <YouTubeEmbed videoId="ki7ogEmeVDQ" width={youtubeWidth/3*2} height={youtubeHeight/3*2 + 5}/>
+                    <YouTubeEmbed videoId="ki7ogEmeVDQ" width={'100%'} height={'auto'}/>
                 </div>
             </div>
             <div>
@@ -100,7 +101,7 @@ export default function Interview() {
                     과연 그는 천재인가..아니면 노력형인가..일본의 비음대 출신 피아니스트 스미노 하야토를 연상케 하는 그의 연주와 이야기를 들어보세요!
                 </p>
                 <div className={styles.youtube_container}>
-                    <YouTubeEmbed videoId="BAaNn80jGBw" width={youtubeWidth/3*2} height={youtubeHeight/3*2 + 5}/>
+                    <YouTubeEmbed videoId="BAaNn80jGBw" width={'100%'} height={'auto'}/>
                 </div>
             </div>
             <div>
@@ -112,7 +113,7 @@ export default function Interview() {
                     그녀가 연주하는 뱃노래와 에너지 가득한 인터뷰를 들어보세요!
                 </p>
                 <div className={styles.youtube_container}>
-                    <YouTubeEmbed videoId="bPOCjXCCSnM" width={youtubeWidth/3*2} height={youtubeHeight/3*2 + 5}/>
+                    <YouTubeEmbed videoId="bPOCjXCCSnM"  width={'100%'} height={'auto'}/>
                 </div>
             </div>
             <div>
@@ -124,7 +125,7 @@ export default function Interview() {
                     슬프면서도 진중하고 아름다운 마주르카와 함께 그의 다양한 이야기를 들어보세요!
                 </p>
                 <div className={styles.youtube_container}>
-                    <YouTubeEmbed videoId="m69T4rR1vqM" width={youtubeWidth/3*2} height={youtubeHeight/3*2 + 5}/>
+                    <YouTubeEmbed videoId="m69T4rR1vqM" width={'100%'} height={'auto'}/>
                 </div>
             </div>
 
