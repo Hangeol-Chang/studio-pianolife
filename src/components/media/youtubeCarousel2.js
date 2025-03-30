@@ -35,7 +35,6 @@ export default function YoutubeCarousel2({ videoIds, videoWidth, changeInterval 
             0.5*pageWidth - (videoIndex-0.5) * videoWidth
 
         videoContainerRef.current.style.left = `${containerX}px`;
-        console.log(videoRefs.current);
 
         videoRefs.current.forEach((element, index) => {
             console.log("element", element, index, videoIndex);
