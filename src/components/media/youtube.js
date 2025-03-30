@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const YouTubeEmbed = ({ videoId, width, height }) => {      // -> legacy, 다른데서 쓸거임.
+const YouTubeEmbed = ({ videoId, width }) => {      // -> legacy, 다른데서 쓸거임.
     const iframeRef = useRef(null);
 
     useEffect(() => {
@@ -16,7 +16,7 @@ const YouTubeEmbed = ({ videoId, width, height }) => {      // -> legacy, 다른
 
     return (
         <div 
-            style={{ width, height}}
+            style={{ width }}
         >
             <iframe
                 width="100%"

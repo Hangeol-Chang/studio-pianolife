@@ -9,14 +9,43 @@ import getScrollProgress from "../api/client/getScrollProgress";
 import getPageSize from "../api/client/getPageSize";
 import { YouTubeEmbed } from "@/components/media/youtube";
 import Carousel2 from "@/components/layout/carousel2";
+import YoutubeCarousel from "@/components/media/youtubePlayer";
+import YoutubeCarousel2 from "@/components/media/youtubeCarousel2";
 
 export default function FourMusics() {
     const [posterWidth, setPosterWidth] = useState(300);
+    const [videoWidth, setVideoWidth] = useState(300);
 
     const posterImageList = [
         "/fourmusics/fourmusics_poster_1.jpg",
         "/fourmusics/fourmusics_poster_2.jpg",
         "/fourmusics/fourmusics_poster_3.jpg"
+    ]
+
+    const youtubeVideoList1 = [
+        "U9C5GZ-G69A",
+        "TaagU4nYUpY",
+        "dXDUVdYp604",
+        "Qxh4zuPfFE0",
+        "kYHdmaMZmwo",
+        "-ZUrs7KJNIU",
+        "SDwJwxfLVz0",
+        "aVkiMGS2S60"
+
+    ]
+    
+    const youtubeVideoList2 = [
+        "kYHdmaMZmwo",
+        "-ZUrs7KJNIU",
+        "SDwJwxfLVz0",
+        "aVkiMGS2S60"
+    ]
+
+    const youtubeVideoList3 = [
+        "mja0TKqjtWk",
+        "W2SQuX3e4Zg",
+        "4Pgk6CfOMp0",
+        "flkKlBIsZEY"
     ]
     
     const updateScrollBar = () => {
@@ -25,6 +54,7 @@ export default function FourMusics() {
     const resizeEvent = () => {
         const pageSize = getPageSize();
         setPosterWidth(pageSize.width * 0.4);
+        setVideoWidth(pageSize.width * 0.6);
     }
 
     useEffect(() => {
@@ -90,7 +120,12 @@ export default function FourMusics() {
             <Spacer height={40} />
             <Title2 title="Gallary" subTitle="포뮤직스 연주영상" />
             <div style={{margin: '2% 10%'}}>
-                <YouTubeEmbed videoId="ki7ogEmeVDQ" width={'100%'} height={'auto'}/>
+                {/* <YouTubeEmbed videoId="ki7ogEmeVDQ" width={'100%'} height={'auto'}/> */}
+                <YoutubeCarousel2
+                    videoIds={youtubeVideoList1}
+                    videoWidth={videoWidth}
+                    changeInterval={5000}
+                />
             </div>
 
             <Spacer height={20} />
