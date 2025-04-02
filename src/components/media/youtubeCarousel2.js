@@ -37,9 +37,7 @@ export default function YoutubeCarousel2({ videoIds, videoWidth, changeInterval 
         videoContainerRef.current.style.left = `${containerX}px`;
 
         videoRefs.current.forEach((element, index) => {
-            console.log("element", element, index, videoIndex);
             if (index == videoIndex) {
-                console.log("add", index, element);
                 element.classList.add(styles.video_main);
             }
             else {
@@ -55,7 +53,6 @@ export default function YoutubeCarousel2({ videoIds, videoWidth, changeInterval 
 
     // 최초 1회 로딩될 때 수동으로 지정해줘야 함.
     useEffect(() => {
-        console.log(videoIds);
         if(isMounted) videoRefs.current[0].classList.add(styles.video_main);
     }, [isMounted]);
 
@@ -71,7 +68,7 @@ export default function YoutubeCarousel2({ videoIds, videoWidth, changeInterval 
             {
                 isMounted ? 
                     videoIds.map((id, index) => (
-                        <div key={id}
+                        <div 
                             ref={(el) => videoRefs.current[index] = el}
                             className={styles.video}
                         >

@@ -35,12 +35,9 @@ export default function Carousel2({ imageList, imageWidth }) {
             - (imageList.length-1) * 10;
 
         imageContainerRef.current.style.left = `${containerX}px`;
-        console.log(imageRefs.current);
 
         imageRefs.current.forEach((element, index) => {
-            console.log("element", element, index, imageIndex);
             if (index == imageIndex) {
-                console.log("add", index, element);
                 element.classList.add(styles.image_main);
             }
             else {
