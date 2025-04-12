@@ -71,6 +71,7 @@ export default function YoutubeCarousel2({ videoIds, videoWidth, changeInterval 
                         <div 
                             ref={(el) => videoRefs.current[index] = el}
                             className={styles.video}
+                            key={id + index}
                         >
                             <YouTubeEmbed videoId={id}  width={videoWidth}/>
                         </div>

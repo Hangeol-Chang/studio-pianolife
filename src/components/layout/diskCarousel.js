@@ -1,10 +1,79 @@
 'use client';
-
-import YoutubeCarousel2 from '../media/youtubeCarousel2';
-import styles from './diskCarousel.module.scss'
+/** @jsxImportSource @emotion/react */
 import { useEffect, useRef, useState } from 'react';
+import { css, keyframes } from '@emotion/react';
 
 export default function DiskCarousel({ mediaInfos, imageSize, nowIndex }) {
+
+    const disk_container = css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30%;
+        position: relative;
+        // background-color: #f0f0f0;
+    `;
+
+    const rotate = keyframes`
+        0% { transform: scale(1.4) rotate(0deg); }
+        100% { transform: scale(1.4) rotate(360deg); }
+    `;
+    
+    const disk = css`
+        border-radius: 50%;
+        object-fit: cover;
+        position : absolute;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        transition: all 0.7s ease-in-out;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    `;
+
+    const disk_hole = css`
+        box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.3);
+    `;
+
+    const disk_top = css`
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        position: absolute;
+        top: 0; left: -15%;
+        z-index: 1;
+        filter: brightness(0.8);
+        opacity: 0.6;
+    `;
+    
+    const disk_bot =  css`
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 0; left: -15%;
+        z-index: 1;
+        filter: brightness(0.8);
+        opacity: 0.6;
+    `;
+
+    const disk_main = css`
+        transform: scale(1.4);
+        width: 140%;
+        height: 140%;
+        animation: ${rotate} 10s linear infinite;
+
+        z-index: 10;
+
+        &:hover {
+            transform: scale(1.4);
+        }
+    `;
+
+    const disk_hide = css`
+        display: none;
+    `;
+
     const [isMounted, setIsMounted] = useState(false);
     useEffect(() => {
         setIsMounted(true);
@@ -18,44 +87,47 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex }) {
         if(isMounted) setImageList(mediaInfos.map((mediaInfo) => mediaInfo.src));
     }, [isMounted, mediaInfos]); 
 
-    useEffect(() => {
-        const nextIndex = (nowIndex + 1) % imageList.length;
-        const prevIndex = (nowIndex - 1 + imageList.length) % imageList.length;
 
-        if(isMounted) {
-            diskRefs.current.forEach((element, index) => {
-                if (index == nowIndex) {
-                    element.classList.add(styles.disk_main);
-                    element.classList.remove(styles.disk_top);
-                    element.classList.remove(styles.disk_bot);
-                }
-                else if (index == prevIndex) {  // top
-                    element.classList.add(styles.disk_top);
-                    element.classList.remove(styles.disk_bot);
-                    element.classList.remove(styles.disk_main);
-                }
-                else if (index == nextIndex) {  // bot
-                    element.classList.add(styles.disk_bot);
-                    element.classList.remove(styles.disk_top);
-                    element.classList.remove(styles.disk_main);
-                }
-            });
+    const Disk = (({ image, index, diskRef }) => {
+        let styles = [disk];
+      
+        if (index === nowIndex) {
+            styles.push(disk_main);
+        } else if (index === (nowIndex - 1 + imageList.length) % imageList.length) {
+            styles.push(disk_top);
+        } else if (index === (nowIndex + 1) % imageList.length) {
+            styles.push(disk_bot);
         }
-    } , [nowIndex]);
+      
+        return (
+            <div
+                key={image + index} ref={diskRef} css={styles}
+                style={{ width: imageSize, height: imageSize }}
+            >
+                <img
+                    css={disk} src={image} alt="disc"
+                    style={{ width: imageSize, height: imageSize }}
+                />
+                <div
+                    css={disk_hole}
+                    style={{
+                        width: imageSize * 0.2,
+                        height: imageSize * 0.2,
+                        borderRadius: '50%',
+                        backgroundColor: 'white',
+                        zIndex: 2,
+                    }}
+                />
+            </div>
+        );
+    });
 
-    useEffect(() => {
-        console.log('imageList', imageList);
-        console.log('diskRefs', diskRefs.current);
-        if(isMounted) {
-            diskRefs.current[0].classList.add(styles.disk_main);
-            diskRefs.current[1].classList.add(styles.disk_bot);
-            diskRefs.current[2].classList.add(styles.disk_top);
-        }
-    }, [imageList]);
+
 
     return (
         <div  style={{ display: 'flex' }}>
-            <div className={styles.disk_container}
+            <div 
+                css={disk_container}
             
                 style={{
                     width: imageSize * 2,
@@ -78,43 +150,11 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex }) {
                 } */}
                 {
                     isMounted ? 
-                        imageList.map((image, index) => (
-                            <div 
-                                key={image + index}
-                                ref={(el) => diskRefs.current[index] = el}
-                                className={[styles.disk].join(' ')} alt="disc" 
-                                style={{ width: imageSize, height: imageSize }}
-                            >
-                                <img 
-                                    className={styles.disk}
-                                    src={image} alt="disc" 
-                                    style={{ width: imageSize, height: imageSize }}
-                                />
-                                <div
-                                    className={styles.disk_hole}
-                                    style={{
-                                        width: imageSize*0.2,
-                                        height: imageSize*0.2,
-                                        borderRadius: '50%',
-                                        backgroundColor: 'white',
-                                        zIndex: 2,
-                                    }}
-                                >
-                                </div>
-                            </div>
-                        ))
+                        imageList.map((image, index) => 
+                            Disk({ image, index, diskRef: (el) => diskRefs.current[index] = el })
+                        )
                     : <></>
                 }
-                {
-                    isMounted ?
-                        <YoutubeCarousel2 
-                            videoIds={mediaInfos[0].videos}
-                            videoWidth={imageSize * 2}
-                            changeInterval={3000}
-                        />
-                    : <></>
-                }
-
             </div>
         </div>
     )
