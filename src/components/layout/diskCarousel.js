@@ -14,21 +14,36 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex }) {
         // background-color: #f0f0f0;
     `;
 
+    const scale_up = keyframes`
+        0% { transform: scale(1.0); }
+        100% { transform: scale(1.4); }
+    `;
     const rotate = keyframes`
-        0% { transform: scale(1.4) rotate(0deg); }
-        100% { transform: scale(1.4) rotate(360deg); }
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    `;
+    const scale_down = keyframes`
+        0% { transform: scale(1.4); }
+        100% { transform: scale(1.0); }
     `;
     
-    const disk = css`
-        border-radius: 50%;
-        object-fit: cover;
-        position : absolute;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        transition: all 0.7s ease-in-out;
-
+    const disk_wrapper = css`
         display: flex;
         justify-content: center;
         align-items: center;
+
+        object-fit: cover;
+        position : absolute;
+        transition: all 0.7s ease-in-out;
+    `;
+
+    const disk = css`
+        border-radius: 50%;
+        // transition: all 0.7s ease-in-out;
+
+        object-fit: cover;
+        position : absolute;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     `;
 
     const disk_hole = css`
@@ -61,13 +76,51 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex }) {
         transform: scale(1.4);
         width: 140%;
         height: 140%;
-        animation: ${rotate} 10s linear infinite;
+        bottom: 0; left: -15%;
+        translate: 15% 0%;
 
         z-index: 10;
 
         &:hover {
             transform: scale(1.4);
         }
+    `;
+
+    const getDiskWrapperStyle = (type) => css`
+        ${disk_wrapper}
+
+        ${type === 'main' && css`
+            top: 30%;
+            left: 30%;
+            animation: ${scale_up} 0.7s linear forwards;
+            z-index: 10;
+        `}
+
+        ${type === 'top' && css`
+            scale: 1.0;
+            top: 0%;
+            left: -15%;
+            animation: ${scale_down} 0.7s linear forwards;
+            filter: brightness(0.8);
+            opacity: 0.6;
+            z-index: 1;
+        `}
+
+        ${type === 'bot' && css`
+            scale: 1.0;
+            top: 60%;
+            left: -15%;
+            filter: brightness(0.8);
+            opacity: 0.6;
+            z-index: 1;
+        `}
+    `;
+
+    const getDiskStyle = (type) => css`
+        ${disk}
+        ${type === 'main' && css`
+            animation: ${rotate} 10s linear infinite;
+        `}
     `;
 
     const disk_hide = css`
@@ -82,30 +135,27 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex }) {
 
     const [imageList, setImageList] = useState([]);
     const diskRefs = useRef([]);
-
     useEffect(() => {
         if(isMounted) setImageList(mediaInfos.map((mediaInfo) => mediaInfo.src));
     }, [isMounted, mediaInfos]); 
 
 
     const Disk = (({ image, index, diskRef }) => {
-        let styles = [disk];
-      
-        if (index === nowIndex) {
-            styles.push(disk_main);
-        } else if (index === (nowIndex - 1 + imageList.length) % imageList.length) {
-            styles.push(disk_top);
-        } else if (index === (nowIndex + 1) % imageList.length) {
-            styles.push(disk_bot);
-        }
-      
+        const diskType = 
+            index === nowIndex ? 'main' :
+            index === (nowIndex - 1 + imageList.length) % imageList.length ? 'top' :
+            (nowIndex + 1) % imageList.length === index ? 'bot' :
+            'none'
+        ;
+
         return (
             <div
-                key={image + index} ref={diskRef} css={styles}
+                key={image + index} ref={diskRef} 
+                css={getDiskWrapperStyle(diskType)}
                 style={{ width: imageSize, height: imageSize }}
             >
                 <img
-                    css={disk} src={image} alt="disc"
+                    css={getDiskStyle(diskType)} src={image} alt="disc"
                     style={{ width: imageSize, height: imageSize }}
                 />
                 <div
@@ -135,19 +185,6 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex }) {
                     margin: '20px 0',
                 }}
             >
-                {/* {
-                    imageList.map((image, index) => 
-                        <img 
-                            className={styles.disk}
-                            key={image + index}
-                            src={image} 
-                            alt="disc" 
-                            style={{
-                                width: imageSize, height: imageSize,
-                            }}
-                        />
-                    )
-                } */}
                 {
                     isMounted ? 
                         imageList.map((image, index) => 

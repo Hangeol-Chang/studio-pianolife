@@ -2,17 +2,10 @@
 
 import { Spacer } from "@/components/common/spacer";
 import { Title1, Title2, Title4 } from "@/components/common/title";
-import Image from "next/image";
-import styles from "./fourmusics.module.scss";
 import { useEffect, useRef, useState } from "react";
 import getScrollProgress from "../api/client/getScrollProgress";
 import getPageSize from "../api/client/getPageSize";
-import { YouTubeEmbed } from "@/components/media/youtube";
 import Carousel2 from "@/components/layout/carousel2";
-import YoutubeCarousel from "@/components/media/youtubePlayer";
-import YoutubeCarousel2 from "@/components/media/youtubeCarousel2";
-import CircleImage from "@/components/common/circleImage";
-import DiskCarousel from "@/components/layout/diskCarousel";
 import FourMusicsPlayer from "@/components/fourmusics/fourmusicsPlayer";
 
 export default function FourMusics() {
@@ -70,10 +63,6 @@ export default function FourMusics() {
     }
 
     useEffect(() => {
-        const pageSize = getPageSize();
-    }, [posterWidth])
-
-    useEffect(() => {
         resizeEvent();
 
         window.addEventListener('scroll', updateScrollBar);
@@ -128,7 +117,7 @@ export default function FourMusics() {
                 /> */}
             </div>
                         
-            <FourMusicsPlayer mediaInfos={mediaInfos} />
+            <FourMusicsPlayer mediaInfos={mediaInfos} changeInterval={4000} />
 
             <hr></hr>
             <p>
