@@ -1,8 +1,7 @@
 'use client';
 /** @jsxImportSource @emotion/react */
 
-import { useEffect, useRef, useState } from 'react';
-import styles from './fourmusicsPlayer.module.scss'
+import { useEffect, useState } from 'react';
 import DiskCarousel from '../layout/diskCarousel';
 import getPageSize from '@/app/api/client/getPageSize';
 import YoutubeCarousel2 from '../media/youtubeCarousel2';
@@ -29,7 +28,7 @@ export default function FourMusicsPlayer({ mediaInfos, changeInterval }) {
     const [mounted, setMounted] = useState(false);
     useEffect(() => {
         setMounted(true);
-        return () => { setIsMounted(false);  }
+        return () => { setMounted(false);  }
     }, []);
 
     return (
