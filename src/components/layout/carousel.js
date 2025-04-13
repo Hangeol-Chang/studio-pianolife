@@ -4,10 +4,10 @@ import styles from './carousel.module.scss';
 import getScrollProgress from '@/app/api/client/getScrollProgress';
 
 const images = [
-  '/gallary/gallary_1.jpg',
-  '/gallary/gallary_2.jpg',
-  '/gallary/gallary_3.jpg',
-  '/gallary/gallary_4.jpg',
+    '/gallary/gallary_1.jpg',
+    '/gallary/gallary_2.jpg',
+    '/gallary/gallary_3.jpg',
+    '/gallary/gallary_4.jpg',
 ];
 
 export default function Carousel() {

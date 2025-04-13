@@ -1,3 +1,5 @@
+'use client';
+
 const getPageSize = () => {
     // wuidth 768px보다 크면 768을 return
     // height는 그냥 window.innerHeight를 return

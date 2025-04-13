@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { css } from "@emotion/react";
 
-const YouTubeEmbed = ({ videoId, width }) => {      // -> legacy, 다른데서 쓸거임.
+const YouTubeEmbed = ({ videoId, width, style }) => {      // -> legacy, 다른데서 쓸거임.
     const iframeRef = useRef(null);
 
     useEffect(() => {
@@ -16,6 +17,7 @@ const YouTubeEmbed = ({ videoId, width }) => {      // -> legacy, 다른데서 �
 
     return (
         <div 
+            css={style}
             style={{ width }}
         >
             <iframe
@@ -23,14 +25,13 @@ const YouTubeEmbed = ({ videoId, width }) => {      // -> legacy, 다른데서 �
                 ref={iframeRef}
                 src={`https://www.youtube.com/embed/${videoId}`}
                 title="YouTube video player"
-                frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
 
                 style={{
                     borderRadius: '6px',
                     overflow: 'hidden',
-                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
+                    boxShadow: '0 2px 3px rgba(0, 0, 0, 0.3)',
                 }}
             ></iframe>
          </div>

@@ -1,11 +1,53 @@
 'use client';
-
+/** @jsxImportSource @emotion/react */
 import { useEffect, useRef, useState } from 'react';
 import styles from './youtubeCarousel2.module.scss'
 import getPageSize from '@/app/api/client/getPageSize';
 import { YouTubeEmbed } from './youtube';
+import { css } from '@emotion/react';
 
 export default function YoutubeCarousel2({ videoIds, videoWidth, changeInterval }) {
+
+    const carousel_container_style = css`
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        padding: 0;
+        transition: all 0.7s ease-in-out;
+        scroll-padding: 0;
+    `;
+    
+    const video_style = css`
+        position: relative;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        animation: all 0.7s ease-in-out;
+        transition: all 0.7s ease-in-out;    
+        filter: brightness(0.8);
+        opacity: 0.4;
+        z-index: 2;
+
+        :hover {
+            transform: scale(1.1);
+        }
+    `;
+
+    const video_main_style = css`
+        right: 0%;
+        border-radius: 4px;
+        z-index: 10;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: scale(1.4);
+        filter: brightness(1);
+        opacity: 1;
+
+        .:hover {
+            transform: scale(1.5);
+        }
+    `;
+
     // check mountecd
     const [isMounted, setIsMounted] = useState(false);
     useEffect(() => { 
@@ -37,9 +79,7 @@ export default function YoutubeCarousel2({ videoIds, videoWidth, changeInterval 
         videoContainerRef.current.style.left = `${containerX}px`;
 
         videoRefs.current.forEach((element, index) => {
-            console.log("element", element, index, videoIndex);
             if (index == videoIndex) {
-                console.log("add", index, element);
                 element.classList.add(styles.video_main);
             }
             else {
@@ -55,7 +95,6 @@ export default function YoutubeCarousel2({ videoIds, videoWidth, changeInterval 
 
     // 최초 1회 로딩될 때 수동으로 지정해줘야 함.
     useEffect(() => {
-        console.log(videoIds);
         if(isMounted) videoRefs.current[0].classList.add(styles.video_main);
     }, [isMounted]);
 
@@ -71,9 +110,10 @@ export default function YoutubeCarousel2({ videoIds, videoWidth, changeInterval 
             {
                 isMounted ? 
                     videoIds.map((id, index) => (
-                        <div key={id}
+                        <div 
                             ref={(el) => videoRefs.current[index] = el}
                             className={styles.video}
+                            key={id + index}
                         >
                             <YouTubeEmbed videoId={id}  width={videoWidth}/>
                         </div>
