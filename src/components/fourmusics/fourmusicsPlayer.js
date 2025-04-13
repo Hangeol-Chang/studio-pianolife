@@ -2,28 +2,34 @@
 /** @jsxImportSource @emotion/react */
 
 import { useEffect, useState } from 'react';
-import DiskCarousel from '../layout/diskCarousel';
+import DiskCarousel from './diskCarousel';
 import getPageSize from '@/app/api/client/getPageSize';
 import YoutubeCarousel2 from '../media/youtubeCarousel2';
 
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
+import { YouTubeEmbed } from '../media/youtube';
+import YoutubeList from './youtubeLists';
 
 export default function FourMusicsPlayer({ mediaInfos, changeInterval }) {
     const fourmusics_player = css`
         display: flex;
         justify-content: space-between;
+        box-shadow: 2px 2px 2px 4px rgba(100, 100, 100, 0.1);
+        margin: 20px 0px;
+    `;
+    const PlayerContainer = styled.div`
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 10px;
+        width: 70%;
     `;
     
     const [nowIndex, setNowIndex] = useState(0);
-
-    useEffect(() => {
-        // wait 1s
-        setTimeout(() => {
-            setNowIndex((nowIndex + 1) % mediaInfos.length);
-        }, changeInterval);
-        console.log(nowIndex);
-
-    }, [nowIndex]);
+    const changeIndex = () => {
+        setNowIndex((nowIndex + 1) % mediaInfos.length);
+    }
 
     const [mounted, setMounted] = useState(false);
     useEffect(() => {
@@ -33,18 +39,29 @@ export default function FourMusicsPlayer({ mediaInfos, changeInterval }) {
 
     return (
         mounted ?
-            <div css={fourmusics_player}>
-                <DiskCarousel 
-                    mediaInfos={mediaInfos} 
-                    imageSize={getPageSize().width * 0.15} 
-                    nowIndex={nowIndex}
-                />
-                <YoutubeCarousel2 
-                    videoIds={mediaInfos[0].videos}
-                    videoWidth={getPageSize().width * 0.3}
-                    changeInterval={3000}
-                />
-            </div>
+            <>
+                <div css={fourmusics_player}>
+                    <DiskCarousel 
+                        mediaInfos={mediaInfos} 
+                        imageSize={getPageSize().width * 0.15} 
+                        nowIndex={nowIndex}
+                        changeIndexEvent={changeIndex}
+                    />
+                    <PlayerContainer>
+                        <hr style={{margin: '0px'}} />
+                        <h3 style={{margin: '0px' }}>
+                            {mediaInfos[nowIndex].title}
+                        </h3> 
+                        <div>
+                            {mediaInfos[nowIndex].date}
+                        </div>
+                        <hr style={{margin: '0px'}} />
+                        <YoutubeList videoIds={mediaInfos[nowIndex].videos} 
+                            imageWidth={getPageSize().width * 0.4}
+                        />
+                    </PlayerContainer>
+                </div>
+            </>
         : <></>
     )
 }

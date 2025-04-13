@@ -1,11 +1,53 @@
 'use client';
-
+/** @jsxImportSource @emotion/react */
 import { useEffect, useRef, useState } from 'react';
 import styles from './youtubeCarousel2.module.scss'
 import getPageSize from '@/app/api/client/getPageSize';
 import { YouTubeEmbed } from './youtube';
+import { css } from '@emotion/react';
 
 export default function YoutubeCarousel2({ videoIds, videoWidth, changeInterval }) {
+
+    const carousel_container_style = css`
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        padding: 0;
+        transition: all 0.7s ease-in-out;
+        scroll-padding: 0;
+    `;
+    
+    const video_style = css`
+        position: relative;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        animation: all 0.7s ease-in-out;
+        transition: all 0.7s ease-in-out;    
+        filter: brightness(0.8);
+        opacity: 0.4;
+        z-index: 2;
+
+        :hover {
+            transform: scale(1.1);
+        }
+    `;
+
+    const video_main_style = css`
+        right: 0%;
+        border-radius: 4px;
+        z-index: 10;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: scale(1.4);
+        filter: brightness(1);
+        opacity: 1;
+
+        .:hover {
+            transform: scale(1.5);
+        }
+    `;
+
     // check mountecd
     const [isMounted, setIsMounted] = useState(false);
     useEffect(() => { 

@@ -108,16 +108,8 @@ export default function FourMusics() {
 
             <Spacer height={40} />
             <Title2 title="Gallary" subTitle="포뮤직스 연주영상" />
-            <div style={{margin: '2% 10%'}}>
-                {/* <YouTubeEmbed videoId="ki7ogEmeVDQ" width={'100%'} height={'auto'}/> */}
-                {/* <YoutubeCarousel2
-                    videoIds={youtubeVideoList1}
-                    videoWidth={videoWidth}
-                    changeInterval={5000}
-                /> */}
-            </div>
-                        
             <FourMusicsPlayer mediaInfos={mediaInfos} changeInterval={4000} />
+            <Spacer height={40} />
 
             <hr></hr>
             <p>
@@ -129,6 +121,7 @@ export default function FourMusics() {
                 <br /><br />
             </p>
 
+            <Spacer height={40} />
             <hr></hr>
             <p>
                 앞으로도 포뮤직스는 다양한 레퍼토리와 창의적인 기획을 통해 더 많은 사람들에게 감동을 선사하고자 합니다. 

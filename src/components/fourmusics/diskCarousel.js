@@ -2,17 +2,9 @@
 /** @jsxImportSource @emotion/react */
 import { useEffect, useRef, useState } from 'react';
 import { css, keyframes } from '@emotion/react';
+import styled from '@emotion/styled';
 
-export default function DiskCarousel({ mediaInfos, imageSize, nowIndex }) {
-
-    const disk_container = css`
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 30%;
-        position: relative;
-        // background-color: #f0f0f0;
-    `;
+export default function DiskCarousel({ mediaInfos, imageSize, nowIndex, changeIndexEvent }) {
 
     const scale_up = keyframes`
         0% { transform: scale(1.0); }
@@ -139,7 +131,6 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex }) {
         if(isMounted) setImageList(mediaInfos.map((mediaInfo) => mediaInfo.src));
     }, [isMounted, mediaInfos]); 
 
-
     const Disk = (({ image, index, diskRef }) => {
         const diskType = 
             index === nowIndex ? 'main' :
@@ -172,27 +163,33 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex }) {
         );
     });
 
-
+    
+    
+    const disk_container = css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30%;
+        position: relative;
+    `;
 
     return (
-        <div  style={{ display: 'flex' }}>
-            <div 
-                css={disk_container}
-            
-                style={{
-                    width: imageSize * 2,
-                    height: imageSize * 2.5,
-                    margin: '20px 0',
-                }}
-            >
-                {
-                    isMounted ? 
-                        imageList.map((image, index) => 
-                            Disk({ image, index, diskRef: (el) => diskRefs.current[index] = el })
-                        )
-                    : <></>
-                }
-            </div>
+        <div 
+            css={disk_container}
+            style={{
+                width: imageSize * 2,
+                height: imageSize * 2.5,
+                margin: '20px 0',
+            }}
+            onClick={changeIndexEvent}
+        >
+            {
+                isMounted ? 
+                    imageList.map((image, index) => 
+                        Disk({ image, index, diskRef: (el) => diskRefs.current[index] = el })
+                    )
+                : <></>
+            }
         </div>
     )
 }
