@@ -44,7 +44,17 @@ const menu_style = css`
     flex-direction: row;
     list-style: none;
     height: 60px;
+    z-index: 10;
 `;
+
+const menu_style_vertical = css`
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-left: 10px;
+    z-index: 10;
+}`;
 
 const menuItem_style = css`
     padding: 0 1vw;
@@ -79,21 +89,31 @@ const line_style = css`
 `;
 
 const sideMenu_style = css`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     position: fixed;
     top: 0;
-    right: -300px;
-    width: 300px;
+    right: 0px;
+    width: 200px;
     height: 100%;
     background-color: #f2f2f2; /* Replace with $white2 */
     opacity: 0.9;
     box-shadow: -4px 0 6px rgba(50, 50, 50, 0.2);
     transition: transform 0.3s ease-in-out;
-    transform: translateX(0);
-    z-index: 1;
+    transform: translateX(200px);
 
-    &.open {
-        transform: translateX(-200px);
+    z-index: 3;
+
+    @medis (max-width: 768px) { 
+        display: none;
     }
+`;
+
+const sideMenu_style_open = css`
+    transform: translateX(0px);
+    right: 0;
+    display: flex;
 `;
 
 const closeBtn_style = css`
@@ -106,27 +126,27 @@ const closeBtn_style = css`
     margin-bottom: 8px;
 `;
 
-const overlay_style = css`
+const sideMenu_background_style = css`
     display: block;
     background-color: transparent;
     transition: background-color 0.5s ease-in-out;
-
-    &.open {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(230, 230, 230, 0.5);
-        z-index: 0;
-    }
 `;
 
-const HeaderMenu = ({ toggleMenu }) => {
+const sideMenu_background_style_open = css`
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(230, 230, 230, 0.5);
+    z-index: 0;
+}`;
+
+const HeaderMenu = ({ toggleMenu, content_style }) => {
     return (
         <div>
-            <ul css={menu_style}>
+            <ul css={content_style}>
                 <li css={menuItem_style}>
                     <Link href="/" onClick={toggleMenu}>
                         Home
@@ -166,6 +186,7 @@ export default function Header() {
         width: 100%;
         height: 3px;
         background-color: rgba(255, 255, 255, 0.5);
+        z-index: 1;
     `;
 
     const scrollProgressBar_style = css`
@@ -173,6 +194,7 @@ export default function Header() {
         height: 100%;
         background-color: #007bff; /* Replace with $primary */
         transition: width 0.25s ease;
+        z-index: 2;
     `
 
     const [mounted, setMounted] = useState(false);
@@ -212,7 +234,10 @@ export default function Header() {
                 </Link>
 
                 <nav css={navMenu_style}>
-                    <HeaderMenu toggleMenu={() => {}} />
+                    <HeaderMenu 
+                        toggleMenu={() => {}} 
+                        content_style={menu_style} 
+                    />
                 </nav>
 
                 <button css={hamburgerMenu_style} onClick={toggleMenu}>
@@ -222,12 +247,17 @@ export default function Header() {
                 </button>
             </header>
 
-            <div css={[overlay_style, isMenuOpen && overlay_style.open]} onClick={toggleMenu}></div>
-            <div css={[sideMenu_style, isMenuOpen && sideMenu_style.open]}>
+            <div css={[sideMenu_background_style, isMenuOpen && sideMenu_background_style_open]}
+                onClick={toggleMenu}
+            ></div>
+            <div css={[sideMenu_style, isMenuOpen && sideMenu_style_open]}>
                 <button css={closeBtn_style} onClick={toggleMenu}>
                     ×
                 </button>
-                <HeaderMenu toggleMenu={toggleMenu} />
+                <HeaderMenu 
+                    toggleMenu={toggleMenu} 
+                    content_style={menu_style_vertical}
+                />
             </div>
 
             <div css={scrollProgressContainer_style}>
