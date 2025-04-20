@@ -14,27 +14,44 @@ export default function YoutubeList({videoIds, imageWidth}) {
         width: 100%;
         height: 100%;
         margin: 10px 0px;
+
+        perspective: 1000px;
     `;
 
     const video_wrapper_style = css`
         position: relative;
         display: flex;
         height: 80%;
-        width: 20%;
+        width: 10%;
         z-index: 1;
         transition: all 0.7s ease-in-out;
-        overflow: hidden;
+        // overflow: hidden;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         margin: 6px;
+
+        justify-content: center;
     `;
 
     const video_wrapper_style_main = css`
         overflow: visible;
-        z-index: 2;
+        z-index: ${videoIds.length};
         width: 100%;
         height: 100%;
-        // transform: scale(1.2);
+    `;
+
+    // index를 변수로 받아서 z-index를 조정하는 스타일을 반환하는 함수
+    const video_wrapper_style_left = (index) => css`
+        transform: rotateY(70deg) scale(0.8); 
+        transform-origin: 100% 100% 100%;
+        z-index: ${index};
+        filter: brightness(50%);
+    `;
+    const video_wrapper_style_right = (index) => css`
+        transform: rotateY(-70deg) scale(0.8); 
+        transform-origin: 100% 100% 100%;
+        z-index: ${index};
+        filter: brightness(50%);
     `;
 
     const video_style = css`
@@ -48,7 +65,6 @@ export default function YoutubeList({videoIds, imageWidth}) {
         setTimeout(() => {
             setNowIndex((nowIndex + 1) % videoIds.length);
         }, 5000);
-        // console.log(nowIndex);
 
     }, [nowIndex]);
 
@@ -56,6 +72,12 @@ export default function YoutubeList({videoIds, imageWidth}) {
         const style = [video_wrapper_style]
         if (index === nowIndex) {
             style.push(video_wrapper_style_main);
+        }
+        else if (index < nowIndex) {
+            style.push(video_wrapper_style_left(index));
+        }
+        else if (index > nowIndex) {
+            style.push(video_wrapper_style_right(videoIds.length - index));
         }
         return css(style);
     }
@@ -72,8 +94,9 @@ export default function YoutubeList({videoIds, imageWidth}) {
                             title="YouTube video player"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
-
-                        ></iframe>
+                        >
+                            이 안에 뭐 넣으면 나오나?
+                        </iframe>
                     </div>
                 )
             })}
