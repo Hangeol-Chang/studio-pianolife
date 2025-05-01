@@ -2,10 +2,11 @@
 'use client';
 
 import { Title1, Title2 } from '@/components/common/title';
-import styles from './interview.module.scss';
 import { YouTubeEmbed } from '@/components/media/youtube';
 import { useState, useEffect } from 'react';
 import { Spacer } from '@/components/common/spacer';
+import { css } from '@emotion/react';
+import PianoIndex from '@/components/interview/pianoIndex';
 
 /*
 raw data
@@ -49,6 +50,13 @@ export default function Interview() {
     const [youtubeWidth, setYoutubeWidth] = useState(200);
     const [youtubeHeight, setYoutubeHeight] = useState(200);
 
+    const youtube_container_style = css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    `;
+
     const resizeEvent = () => {
         const docWidth = document.documentElement.clientWidth;
 
@@ -68,6 +76,9 @@ export default function Interview() {
         <div>
             <Spacer height={20} />
             <Title1 title={"아마추어를 만나다"} subTitle={"interview"} />
+
+            <PianoIndex />    
+
             <div>
                 <Spacer height={50} />
                 <Title2 title={"수학자 황수현"} />
@@ -75,7 +86,7 @@ export default function Interview() {
                     아마추어를 만나다 첫번째 주인공! <br />
                     전공생들도 힘겨워하는 브람스 소나타 3번 그것도 전악장에 도전하는 그의 열정. <br />
                     연주회를 준비를 위한 그의 철저한 분석과 함께 음악에 대한 솔직 담백함이 느껴지는 그의 인터뷰와 스페셜 연주를 들어보세요!</p>
-                <div className={styles.youtube_container}>
+                <div css={youtube_container_style}>
                     <YouTubeEmbed videoId="cVxLS05Ki2Q" width={'100%'} height={'auto'}/>
                 </div>
             </div> 
@@ -88,7 +99,7 @@ export default function Interview() {
                     리듬, 파워, 테크닉 뭐 하나 빠질 것 없는 탄탄한 기본기의 그녀는 왜 불어를 전공하게 되었을까요? <br />
                     그녀의 이야기와 거쉰 프렐류드를 들어보세요!
                 </p>
-                <div className={styles.youtube_container}>
+                <div css={youtube_container_style}>
                     <YouTubeEmbed videoId="ki7ogEmeVDQ" width={'100%'} height={'auto'}/>
                 </div>
             </div>
@@ -100,7 +111,7 @@ export default function Interview() {
                     프랑스 파리에서 열린 2024 Piano Link 콩쿨 수상자 엄현서님. <br />
                     과연 그는 천재인가..아니면 노력형인가..일본의 비음대 출신 피아니스트 스미노 하야토를 연상케 하는 그의 연주와 이야기를 들어보세요!
                 </p>
-                <div className={styles.youtube_container}>
+                <div css={youtube_container_style}>
                     <YouTubeEmbed videoId="BAaNn80jGBw" width={'100%'} height={'auto'}/>
                 </div>
             </div>
@@ -112,7 +123,7 @@ export default function Interview() {
                     공무원 스토리와 함께 누군가에게 감동을 주고 싶은 그녀의 음악에 대한 목표를 들어볼 수 있는 솔직 담백 인터뷰! <br />
                     그녀가 연주하는 뱃노래와 에너지 가득한 인터뷰를 들어보세요!
                 </p>
-                <div className={styles.youtube_container}>
+                <div css={youtube_container_style}>
                     <YouTubeEmbed videoId="bPOCjXCCSnM"  width={'100%'} height={'auto'}/>
                 </div>
             </div>
@@ -124,7 +135,7 @@ export default function Interview() {
                     2015년 조성진 피아니스트가 우승한 쇼팽 콩쿠르의 아마추어 버전 쇼팽 국제 아마추어 콩쿠르에 참가하여 당당하게 입상한 그가 말해주는 본인의 취미 스토리! <br />
                     슬프면서도 진중하고 아름다운 마주르카와 함께 그의 다양한 이야기를 들어보세요!
                 </p>
-                <div className={styles.youtube_container}>
+                <div css={youtube_container_style}>
                     <YouTubeEmbed videoId="m69T4rR1vqM" width={'100%'} height={'auto'}/>
                 </div>
             </div>
