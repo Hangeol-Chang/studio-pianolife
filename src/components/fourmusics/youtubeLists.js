@@ -3,6 +3,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
+import { YouTubeEmbed } from '../media/youtube';
 
 
 export default function YoutubeList({videoIds, imageWidth}) {
@@ -21,7 +22,7 @@ export default function YoutubeList({videoIds, imageWidth}) {
     const video_wrapper_style = css`
         position: relative;
         display: flex;
-        height: 80%;
+        // height: 80%;
         width: 10%;
         z-index: 1;
         transition: all 0.7s ease-in-out;
@@ -37,7 +38,7 @@ export default function YoutubeList({videoIds, imageWidth}) {
         overflow: visible;
         z-index: ${videoIds.length};
         width: 100%;
-        height: 100%;
+        // height: 100%;
     `;
 
     // index를 변수로 받아서 z-index를 조정하는 스타일을 반환하는 함수
@@ -56,6 +57,7 @@ export default function YoutubeList({videoIds, imageWidth}) {
 
     const video_style = css`
         overflow: visible;
+        border-radius: 8px;
     `;
 
     const [nowIndex, setNowIndex] = useState(0);
@@ -87,16 +89,7 @@ export default function YoutubeList({videoIds, imageWidth}) {
             {videoIds.map((videoId, index) => {
                 return (
                     <div css={getVideoWrapperStyle(index)} key={index}>
-                        <iframe
-                            css={video_style}
-                            width={imageWidth}
-                            src={`https://www.youtube.com/embed/${videoId}`}
-                            title="YouTube video player"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                        >
-                            이 안에 뭐 넣으면 나오나?
-                        </iframe>
+                        <YouTubeEmbed style={video_style} videoId={videoId} width={imageWidth} />
                     </div>
                 )
             })}

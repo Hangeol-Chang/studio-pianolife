@@ -4,11 +4,9 @@
 import { useEffect, useState } from 'react';
 import DiskCarousel from './diskCarousel';
 import getPageSize from '@/app/api/client/getPageSize';
-import YoutubeCarousel2 from '../media/youtubeCarousel2';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { YouTubeEmbed } from '../media/youtube';
 import YoutubeList from './youtubeLists';
 
 export default function FourMusicsPlayer({ mediaInfos, changeInterval }) {
