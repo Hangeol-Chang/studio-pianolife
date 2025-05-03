@@ -2,98 +2,169 @@
 import getPageSize from '@/app/api/client/getPageSize';
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { useEffect, useReducer, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 
-
-const WhiteKey = ({left}) => {
+const WhiteKey = ({left, size, index, nowIndex}) => {
     const whiteKeyStyle = () => css`
         position: absolute;
         top: 0;
-        width: 18px;    
+        width: ${size}px;
         left: ${left}px;
-        height: 80px;
-        background-color: white;
-        display: inline-block;
+        height: ${size*4}px;
+        background: linear-gradient(
+            to bottom,
+            #FFFFFF 0%,
+            #FFFFFF 50%,
+            #CCCCCC 100%);
+        background-position: top;
+        background-size: 100% 200%;
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+
         border: 1px solid #EEEEEE;
         z-index: 1;
-        border-radius: 10%;
+        border-radius: ${size/8}px;
 
-        transition: all 0.5s ease-in-out;
+        transition: all 0.3s ease-in-out;
 
         &:hover {
-            transform: scale(1.4);
+            background-position: bottom;
+        }
+        &:active {
+            background: linear-gradient(
+            to bottom,
+            #FFFFFF 0%,
+            #CCCCCC 50%,
+            #AAAAAA 100%);
         }
     `;
 
+    const getWhiteKeyStyle = (now) => css`
+        ${whiteKeyStyle()}
+
+        ${now && css`
+            top: ${size/2}px;
+            background-position: bottom;
+            background: linear-gradient(
+                to bottom,
+                #EEEEFF 0%,
+                #EEEEFF 50%,
+                #CCCCEE 100%);
+        `}
+    `;
+
     return (
-        <div css={whiteKeyStyle}
+        <div css={getWhiteKeyStyle(nowIndex == index)}
             onPointerUp={e => {
+                console.log('onClickKey', index, nowIndex);
                 // click event
             }}
         >
         </div>
-    )
-    ;
+    );
 }
 
-const BlackKey = ({left}) => {
+const BlackKey = ({left, size}) => {
     const blackKeyStyle = () => css`
         position: absolute;
-        width: 18px;
-        height: 50px;
+        width: ${size}px;
+        height: ${size*3.5}px;
         top: 0;
         left: ${left}px;
         background-color: black;
-        border : 1px solid #EEEEEE;
+        background: linear-gradient(
+            to bottom,
+            #000000 0%,
+            #000000 50%,
+            #555555 100%);
+        background-position: top;
+        background-size: 100% 200%;
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+
+        // border : 1px solid #EEEEEE;
         z-index: 2;
-        border-radius: 10%;
+        border-radius: ${size/8}px;
+
+        transition: all 0.3s ease-in-out;
+        &:hover {
+            background-position: bottom;
+        }
     `;
 
     return <div css={blackKeyStyle}></div>;
 }
 
-export default function PianoIndex() {
+export default function PianoIndex({ nowIndex }) {
     const containerRef = useRef(null);
-    const [keys, setKeys] = useState([]); // 상태로 키 관리
+    const [keyWidth, setKeyWidth] = useState(30);
+    const [mounted, setMounted] = useState(false);
 
     const piano_index_container = css`
         display: flex;
         padding: 10px;
-        height: 100px;
+        height: ${(keyWidth-2)*4.5 + 3}px;
         justify-content: center;
         align-items: top;
-        margin-top: 20px;
-        background-color: #f0f0f0;
+        // background-color: #f0f0f0;  // 색 지울 것.
         position: relative;
 
         overflow: hidden;
     `;
 
+    const handleResize = () => {
+        const width = getPageSize().width;
+        const newKeyWidth = Math.floor(width / 20); 
+        setKeyWidth(newKeyWidth);
+    };
+
     useEffect(() => {
+        setMounted(true);
+
+        handleResize(); // 초기 렌더링 시 키 너비 설정
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize); 
+            setMounted(false);
+        };
+    }, []);
+
+    useEffect(() => {
+        console.log('nowIndex', nowIndex);
+    }, [nowIndex]);
+
+    const renderKeys = () => {
+        if (!mounted) return null;
+
         const width = getPageSize().width;
         const newKeys = [];
-        for (let i = 0; i < width / 20 + 1; i++) {
-            newKeys.push(<WhiteKey key={'whitekey-' +i} left={i * 20} />);
-            /*
-                0 -> 10
-                1 -> 30
-                2 -> x
-                3 -> 70
-                4 -> 90
-                5 -> 110
-                6 -> x
-                7 -> 처음으로(160 + 10)
-            */
-            if(!((i%7) === 2 || (i%7) === 6)) {
-                newKeys.push(<BlackKey key={'blackkey-' +i} left={i * 20 + 10} />); // 블랙키는 10px 간격으로 배치
-            } 
+    
+        for (let i = 0; i < width / keyWidth + 1; i++) {
+          newKeys.push(
+            <WhiteKey
+              key={"whitekey-" + i}
+              index={i}
+              nowIndex={nowIndex}
+              left={i * keyWidth}
+              size={keyWidth - 2}
+            />
+          );
+          if (!((i % 7) === 2 || (i % 7) === 6)) {
+            newKeys.push(
+              <BlackKey
+                key={"blackkey-" + i}
+                left={(i + 1) * keyWidth - (keyWidth * 4) / 6 / 2}
+                size={(keyWidth * 4) / 6}
+              />
+            );
+          }
         }
-        setKeys(newKeys); // 상태 업데이트
-    }, []);
+    
+        return newKeys;
+    };
 
     return (
         <div css={piano_index_container} ref={containerRef}>
-            {keys} {/* 상태 기반으로 키 렌더링 */}
+            {renderKeys()}
         </div>
     );
 }
