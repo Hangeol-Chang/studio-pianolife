@@ -42,42 +42,6 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex, changeIn
         box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.3);
     `;
 
-    const disk_top = css`
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        position: absolute;
-        top: 0; left: -15%;
-        z-index: 1;
-        filter: brightness(0.8);
-        opacity: 0.6;
-    `;
-    
-    const disk_bot =  css`
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        position: absolute;
-        bottom: 0; left: -15%;
-        z-index: 1;
-        filter: brightness(0.8);
-        opacity: 0.6;
-    `;
-
-    const disk_main = css`
-        transform: scale(1.4);
-        width: 140%;
-        height: 140%;
-        bottom: 0; left: -15%;
-        translate: 15% 0%;
-
-        z-index: 10;
-
-        &:hover {
-            transform: scale(1.4);
-        }
-    `;
-
     const getDiskWrapperStyle = (type) => css`
         ${disk_wrapper}
 
@@ -113,10 +77,6 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex, changeIn
         ${type === 'main' && css`
             animation: ${rotate} 10s linear infinite;
         `}
-    `;
-
-    const disk_hide = css`
-        display: none;
     `;
 
     const [isMounted, setIsMounted] = useState(false);
