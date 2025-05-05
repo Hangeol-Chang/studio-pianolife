@@ -4,7 +4,7 @@ import getPageSize from '@/app/api/client/getPageSize';
 import { css } from '@emotion/react'
 import { use, useEffect, useRef, useState } from 'react';
 
-const WhiteKey = ({left, size, index, nowIndex}) => {
+const WhiteKey = ({left, size, index, nowIndex, setNowIndex}) => {
     const whiteKeyStyle = () => css`
         position: absolute;
         top: 0;
@@ -15,13 +15,13 @@ const WhiteKey = ({left, size, index, nowIndex}) => {
             to bottom,
             #FFFFFF 0%,
             #FFFFFF 50%,
-            #CCCCCC 100%);
+            #CEEFF2 100%);
         background-position: top;
         background-size: 100% 200%;
         box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
 
-        border: 1px solid #EEEEEE;
-        z-index: 1;
+        // border: 1px solid #EEEEEE;
+        z-index: 3;
         border-radius: ${size/8}px;
 
         transition: all 0.3s ease-in-out;
@@ -33,33 +33,50 @@ const WhiteKey = ({left, size, index, nowIndex}) => {
             background: linear-gradient(
             to bottom,
             #FFFFFF 0%,
-            #CCCCCC 50%,
-            #AAAAAA 100%);
+            #FFFFFF 50%,
+            #91C4D9 100%);
         }
+    `;
+
+    const key_underblock_style = css`
+        position: absolute;
+        background: linear-gradient(
+            to bottom,
+            #FFFFFF 0%,
+            #5897A6 75%,
+            #FFFFFF 100%);
+
+        width: ${size}px;
+        height: ${size*4 + 20}px;
+        left: ${left}px;
+        top: 0px;
     `;
 
     const getWhiteKeyStyle = (now) => css`
         ${whiteKeyStyle()}
 
         ${now && css`
-            top: ${size/2}px;
+            // top: ${size/2}px;
             background-position: bottom;
-            background: linear-gradient(
-                to bottom,
-                #EEEEFF 0%,
-                #EEEEFF 50%,
-                #CCCCEE 100%);
+            // background: linear-gradient(
+            //     to bottom,
+            //     #EEEEFF 0%,
+            //     #EEEEFF 50%,
+            //     #CCCCEE 100%);
         `}
     `;
 
     return (
-        <div css={getWhiteKeyStyle(nowIndex == index)}
-            onPointerUp={e => {
-                console.log('onClickKey', index, nowIndex);
-                // click event
-            }}
-        >
-        </div>
+        <>
+            <div css={getWhiteKeyStyle(nowIndex == index)}
+                onPointerUp={e => { setNowIndex(index); }}
+            >
+            </div>
+            {nowIndex == index &&
+                <div css={key_underblock_style}>
+                </div>
+            }
+        </>
     );
 }
 
@@ -81,7 +98,7 @@ const BlackKey = ({left, size}) => {
         box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 
         // border : 1px solid #EEEEEE;
-        z-index: 2;
+        z-index: 4;
         border-radius: ${size/8}px;
 
         transition: all 0.3s ease-in-out;
@@ -93,7 +110,7 @@ const BlackKey = ({left, size}) => {
     return <div css={blackKeyStyle}></div>;
 }
 
-export default function PianoIndex({ nowIndex }) {
+export default function PianoIndex({ nowIndex, setNowIndex }) {
     const containerRef = useRef(null);
     const [keyWidth, setKeyWidth] = useState(30);
     const [mounted, setMounted] = useState(false);
@@ -128,10 +145,6 @@ export default function PianoIndex({ nowIndex }) {
         };
     }, []);
 
-    useEffect(() => {
-        console.log('nowIndex', nowIndex);
-    }, [nowIndex]);
-
     const renderKeys = () => {
         if (!mounted) return null;
 
@@ -143,7 +156,7 @@ export default function PianoIndex({ nowIndex }) {
             <WhiteKey
               key={"whitekey-" + i}
               index={i}
-              nowIndex={nowIndex}
+              nowIndex={nowIndex} setNowIndex={setNowIndex}
               left={i * keyWidth}
               size={keyWidth - 2}
             />

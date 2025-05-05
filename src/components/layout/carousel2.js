@@ -1,11 +1,11 @@
 'use client';
+/** @jsxImportSource @emotion/react */
 
 import { useEffect, useRef, useState } from 'react';
-import styles from './carousel2.module.scss'
-import getPageSize from '@/app/api/client/getPageSize';
 import Image from 'next/image';
+import { css, keyframes } from '@emotion/react';
 
-export default function Carousel2({ imageList, imageWidth }) {
+export default function Carousel2({imageList, imageWidth }) {
     // check mountecd
     const [isMounted, setIsMounted] = useState(false);
     useEffect(() => { 
@@ -13,37 +13,73 @@ export default function Carousel2({ imageList, imageWidth }) {
         return () => { setIsMounted(false);  }
     }, []);
 
-
-    const [imageContainerWidth, setImageContainerWidth] = useState(1000);
-
     const [imageIndex, setImageIndex] = useState(0);
-    const imageRefs = useRef([]);
-    const imageContainerRef = useRef(null);
 
-    useEffect(() => {
-        const pageSize = getPageSize();
-        setImageContainerWidth(
-            pageSize.width * 0.4 * imageList.length 
-            + 20 * (imageList.length - 1)
-        );
-    }, [imageWidth])
+    const image_container_style = css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: ${imageWidth * 2.1}px;
+        // margin: 10px 0;
+    `;
 
+    const scale_up = keyframes`
+        0% { transform: scale(1.0); }
+        100% { transform: scale(1.4); }
+    `;
+    const scale_down = keyframes`
+        0% { transform: scale(1.4); }
+        100% { transform: scale(1.0); }
+    `;
     
+    const image_style = css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        object-fit: cover;
+        position : absolute;
+        transition: all 0.7s ease-in-out;
+        border-radius: 4px;
+
+        display: none;
+    `;
+
+    const GetImageStyle = (index) => css`
+        ${image_style}
+
+        ${index === imageIndex && css`
+            display: block;
+            left: 30%;
+            animation: ${scale_up} 0.7s linear forwards;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+            z-index: 5;
+        `}
+
+        ${index === (imageIndex - 1 + imageList.length) % imageList.length && css`
+            display: block;
+            scale: 1.0;
+            left: -15%;
+            animation: ${scale_down} 0.7s linear forwards;
+            filter: brightness(0.8);
+            opacity: 0.6;
+            z-index: 1;
+        `}
+
+        ${index === (imageIndex + 1) % imageList.length && css`
+            display: block;
+            scale: 1.0;
+            left: 75%;
+            filter: brightness(0.8);
+            opacity: 0.6;
+            z-index: 1;
+        `}
+    `;
+
     useEffect(() => {
-        const containerX = 
-            0.5*getPageSize().width - (imageIndex+0.5) * imageWidth 
-            - (imageList.length-1) * 10;
-
-        imageContainerRef.current.style.left = `${containerX}px`;
-
-        imageRefs.current.forEach((element, index) => {
-            if (index == imageIndex) {
-                element.classList.add(styles.image_main);
-            }
-            else {
-                element.classList.remove(styles.image_main);
-            }
-        });
         setTimeout(() => changeimageIndex(), 5000);
     }, [imageIndex]);
 
@@ -52,31 +88,18 @@ export default function Carousel2({ imageList, imageWidth }) {
     }
 
     // 최초 1회 로딩될 때 수동으로 지정해줘야 함.
-    useEffect(() => {
-        if(isMounted) imageRefs.current[0].classList.add(styles.image_main);
-    }, [isMounted]);
-
     return(
-        <div 
-            className={styles.carousel_container}
-            ref={imageContainerRef}
-            style={{
-                width: `${imageContainerWidth}px`,
-                height: `${imageWidth*2.2}px`,
-            }}
-        >
-            {
-                isMounted ? 
-                    imageList.map((src, index) => (
-                        <Image className={styles.image}
-                            key={src+index}
-                            ref={(el) => imageRefs.current[index] = el} // 각 iframe에 ref 할당
-                            src={src} alt="piano" 
-                            width={imageWidth} height={0} layout="intrinsic"
-                        />
-                    ))
-                : null
-            }
+        <div css={image_container_style}>
+            {isMounted ? 
+                imageList.map((src, index) => (
+                    <Image 
+                        css={GetImageStyle(index)}
+                        key={src+index}
+                        src={src} alt="piano" 
+                        width={imageWidth} height={0} layout="intrinsic"
+                    />
+                ))
+            : null }
         </div>
     )
 }

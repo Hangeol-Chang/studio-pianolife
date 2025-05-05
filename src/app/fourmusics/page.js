@@ -1,4 +1,5 @@
 'use client';
+/** @jsxImportSource @emotion/react */
 
 import { Spacer } from "@/components/common/spacer";
 import { Title1, Title2, Title4 } from "@/components/common/title";
@@ -7,6 +8,8 @@ import getScrollProgress from "../api/client/getScrollProgress";
 import getPageSize from "../api/client/getPageSize";
 import Carousel2 from "@/components/layout/carousel2";
 import FourMusicsPlayer from "@/components/fourmusics/fourmusicsPlayer";
+import { css } from "@emotion/react";
+import { mediaInfos } from "./media.json";
 
 export default function FourMusics() {
     const [posterWidth, setPosterWidth] = useState(300);
@@ -15,43 +18,23 @@ export default function FourMusics() {
     const posterImageList = [
         "/fourmusics/fourmusics_poster_1.jpg",
         "/fourmusics/fourmusics_poster_2.jpg",
-        "/fourmusics/fourmusics_poster_3.jpg"
+        "/fourmusics/fourmusics_poster_3.jpg",
+        "/fourmusics/fourmusics_poster_4.png",
     ]
-    const mediaInfos = [
-        {
-            'src': '/fourmusics/fourmusics_poster_1.jpg',
-            'title': 'Four Colors for Chopin',
-            'date': '2023.12',
-            'videos' : [
-                "U9C5GZ-G69A",
-                "TaagU4nYUpY",
-                "dXDUVdYp604",
-                "Qxh4zuPfFE0",
-            ]
-        }, 
-        {
-            'src': '/fourmusics/fourmusics_poster_2.jpg',
-            'title': 'To Europe',
-            'date': '2024.06',
-            'videos' : [
-                "kYHdmaMZmwo",
-                "-ZUrs7KJNIU",
-                "SDwJwxfLVz0",
-                "aVkiMGS2S60"
-            ]
-        }, 
-        {
-            'src': '/fourmusics/fourmusics_poster_3.jpg',
-            'title': 'The Winter',
-            'date': '2024.12',
-            'videos' : [
-                "mja0TKqjtWk",
-                "W2SQuX3e4Zg",
-                "4Pgk6CfOMp0",
-                "flkKlBIsZEY"
-            ]
-        }
-    ]
+
+    const poster_click_info_style = css`
+        font-size: 0.8em;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 2px 10px;
+        text-align: center;
+        justify-content: center;
+        position: absolute;
+        bottom: 20px;
+        z-index: 6;
+    `
 
     const updateScrollBar = () => {
         const scrollData = getScrollProgress();
@@ -88,10 +71,16 @@ export default function FourMusics() {
                 4명의 직장인 아마추어 피아노 앙상블
             </p>
 
-            <Carousel2
-                imageList={posterImageList}
-                imageWidth={posterWidth}
-            />
+            <div style={{position: 'relative',}}>
+                <Carousel2
+                    imageList={posterImageList}
+                    imageWidth={posterWidth}
+                >
+                </Carousel2>
+                <div css={poster_click_info_style}>
+                    포스터 클릭 시 관련 미디어로 연결됩니다.
+                </div>
+            </div>
 
             <Spacer height={20} />
             <Title2 title="Introduction"/>
@@ -106,10 +95,21 @@ export default function FourMusics() {
                 <br /><br />
             </p>
 
-            <Spacer height={40} />
             <Title2 title="Gallary" subTitle="포뮤직스 연주영상" />
-            <FourMusicsPlayer mediaInfos={mediaInfos} changeInterval={4000} />
-            <Spacer height={40} />
+            {/* Youtube List 추가될 예정. */}
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                }}
+            >
+                <a href="/fourmusics/media">
+                    더 많은 연주영상 보러가기 ▷
+                </a>
+            </div>
+            <Spacer height={20} />
 
             <hr></hr>
             <p>
