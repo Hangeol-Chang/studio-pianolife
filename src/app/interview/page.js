@@ -21,7 +21,7 @@ export default function Interview() {
 
     const [dragging, setDragging] = useState(false);
     const startPos = useRef({x : 0, y : 0});
-    let endPos = useRef({x : 0, y : 0});
+    const endPos = useRef({x : 0, y : 0});
 
     const youtube_container_style = css`
         display: flex;
@@ -42,6 +42,14 @@ export default function Interview() {
     const description_container_style = css`
         min-height: 100px;
     `;
+
+    const setNowIndex_ = (index) => {
+        console.log('setNowIndex', index);
+        
+        if(index < 0) { index = Object.keys(interviewData).length - 1; }
+        else if(index >= Object.keys(interviewData).length) { index = 0; }
+        setNowIndex(index);
+    }
 
     const changeIndex = (dir) => {
         if(dir === 1) {
@@ -66,6 +74,7 @@ export default function Interview() {
             setDragging(true);
             const point = getPoint(e);
             startPos.current = { x: point.clientX, y: point.clientY };
+            endPos.current = { x: point.clientX, y: point.clientY };
         };
         const onMove = (e) => {
             if (!dragging) return;
@@ -79,7 +88,7 @@ export default function Interview() {
             const dx = endPos.current.x - startPos.current.x;
             const dy = endPos.current.y - startPos.current.y;
 
-            // console.log('드래그 종료', dx, dy);
+            console.log('드래그 종료', dx, dy);
 
             if(dy < -100) { // 위로 드래그
                 changeIndex(1);
@@ -119,6 +128,8 @@ export default function Interview() {
       
             // 200ms 내에 추가 휠 이벤트가 없으면 "스크롤 종료"로 간주
             wheelTimeoutRef.current = setTimeout(() => {
+                console.log('스크롤 종료:', scrollDelta.current);
+
                 if (scrollDelta.current > 0) {
                     // console.log('스크롤 아래로:', scrollDelta.current);
                     if(scrollDelta.current >= 300) { changeIndex(1); } // 300 이상일 때만 인덱스 변경
@@ -153,7 +164,7 @@ export default function Interview() {
             <Title1 title={"아마추어를 만나다"} subTitle={"interview"} />
 
             <Spacer height={20} />
-            <PianoIndex nowIndex={nowIndex} />
+            <PianoIndex nowIndex={nowIndex} setNowIndex={setNowIndex_} />
 
             <div css={interview_container_style}>
                 {interviewData[nowIndex] && 
