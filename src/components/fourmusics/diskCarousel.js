@@ -1,14 +1,27 @@
 'use client';
 /** @jsxImportSource @emotion/react */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
+import getPageSize from '@/app/api/client/getPageSize';
 
-export default function DiskCarousel({ mediaInfos, imageSize, nowIndex, changeIndexEvent }) {
+export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent }) {
+    const [imageSize, setImageSize] = useState(100);
+    
+    const handleResize = () => {
+        setImageSize(getPageSize().width * 0.5);
+    }
+    useEffect(() => {
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        }
+    }, []);
 
     const scale_up = keyframes`
         0% { transform: scale(1.0); }
-        100% { transform: scale(1.4); }
+        100% { transform: scale(1.5); }
     `;
     const rotate = keyframes`
         0% { transform: rotate(0deg); }
@@ -20,13 +33,16 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex, changeIn
     `;
     
     const disk_wrapper = css`
-        display: flex;
         justify-content: center;
         align-items: center;
+        width: ${imageSize}px;
+        height: ${imageSize}px;
 
         object-fit: cover;
         position : absolute;
         transition: all 0.7s ease-in-out;
+
+        display: none;
     `;
 
     const disk = css`
@@ -39,42 +55,51 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex, changeIn
     `;
 
     const disk_hole = css`
-        box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.3);
+        box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.3);
+        width: 20%;
+        height: 20%;
+        border-radius: 50%;
+        background-color: white;
+        z-index: 2;
+        display: block;
     `;
 
-    const getDiskWrapperStyle = (type) => css`
+    const getDiskWrapperStyle = (index) => css`
         ${disk_wrapper}
 
-        ${type === 'main' && css`
-            top: 30%;
-            left: 30%;
+        ${index === nowIndex && css`
+            display: flex;
+            top: 10%;
+            left: 25%;
             animation: ${scale_up} 0.7s linear forwards;
             z-index: 10;
         `}
 
-        ${type === 'top' && css`
+        ${index === (nowIndex - 1 + mediaInfos.length) % mediaInfos.length && css`
+            display: flex;
             scale: 1.0;
-            top: 0%;
-            left: -15%;
+            top: -40%;
+            left: -20%;
             animation: ${scale_down} 0.7s linear forwards;
             filter: brightness(0.8);
             opacity: 0.6;
             z-index: 1;
         `}
 
-        ${type === 'bot' && css`
+        ${index === (nowIndex + 1) % mediaInfos.length && css`
+            display: flex;
             scale: 1.0;
-            top: 60%;
-            left: -15%;
+            top: -40%;
+            left: 70%;
             filter: brightness(0.8);
             opacity: 0.6;
             z-index: 1;
         `}
     `;
 
-    const getDiskStyle = (type) => css`
+    const getDiskStyle = (index) => css`
         ${disk}
-        ${type === 'main' && css`
+        ${index === nowIndex && css`
             animation: ${rotate} 10s linear infinite;
         `}
     `;
@@ -86,67 +111,48 @@ export default function DiskCarousel({ mediaInfos, imageSize, nowIndex, changeIn
     }, []);
 
     const [imageList, setImageList] = useState([]);
-    const diskRefs = useRef([]);
     useEffect(() => {
         if(isMounted) setImageList(mediaInfos.map((mediaInfo) => mediaInfo.src));
     }, [isMounted, mediaInfos]); 
 
-    const Disk = (({ image, index, diskRef }) => {
-        const diskType = 
-            index === nowIndex ? 'main' :
-            index === (nowIndex - 1 + imageList.length) % imageList.length ? 'top' :
-            (nowIndex + 1) % imageList.length === index ? 'bot' :
-            'none'
-        ;
-
+    const Disk = (({ image, index }) => {
         return (
             <div
-                key={image + index} ref={diskRef} 
-                css={getDiskWrapperStyle(diskType)}
-                style={{ width: imageSize, height: imageSize }}
+                key={image + index}  
+                css={getDiskWrapperStyle(index)}
             >
                 <img
-                    css={getDiskStyle(diskType)} src={image} alt="disc"
-                    style={{ width: imageSize, height: imageSize }}
+                    css={getDiskStyle(index)} src={image} alt="disc"
+                    style={{ width: '100%', height: '100%' }}
                 />
-                <div
-                    css={disk_hole}
-                    style={{
-                        width: imageSize * 0.2,
-                        height: imageSize * 0.2,
-                        borderRadius: '50%',
-                        backgroundColor: 'white',
-                        zIndex: 2,
-                    }}
-                />
+                <div css={disk_hole} />
             </div>
         );
     });
 
-    
-    
     const disk_container = css`
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 30%;
         position: relative;
+        
+        overflow: hidden;
+
+        width: 100%;
+        height: ${imageSize*1.5}px;
+
+        background-color: #EEEEEE;
     `;
 
     return (
         <div 
             css={disk_container}
-            style={{
-                width: imageSize * 2,
-                height: imageSize * 2.5,
-                margin: '20px 0',
-            }}
             onClick={changeIndexEvent}
         >
             {
                 isMounted ? 
                     imageList.map((image, index) => 
-                        Disk({ image, index, diskRef: (el) => diskRefs.current[index] = el })
+                        Disk({ image, index }) 
                     )
                 : <></>
             }

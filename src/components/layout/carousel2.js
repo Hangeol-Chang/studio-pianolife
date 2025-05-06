@@ -34,6 +34,15 @@ export default function Carousel2({imageList, imageWidth }) {
         0% { transform: scale(1.4); }
         100% { transform: scale(1.0); }
     `;
+
+    const fade_out = keyframes`
+        0% { opacity: 1.0; }
+        100% { opacity: 0; }
+    `;
+    const fade_in = keyframes`
+        0% { opacity: 0; }
+        100% { opacity: 1.0; }
+    `;
     
     const image_style = css`
         display: flex;
@@ -59,13 +68,21 @@ export default function Carousel2({imageList, imageWidth }) {
             z-index: 5;
         `}
 
+        ${index === (imageIndex - 2 + imageList.length) % imageList.length && css`
+            display: block;
+            left: -15%;
+            animation: ${fade_out} 0.7s linear forwards;
+            filter: brightness(0.5);
+            opacity: 0.6;
+        `}
+
         ${index === (imageIndex - 1 + imageList.length) % imageList.length && css`
             display: block;
             scale: 1.0;
             left: -15%;
             animation: ${scale_down} 0.7s linear forwards;
-            filter: brightness(0.8);
-            opacity: 0.6;
+            filter: brightness(0.5);
+            opacity: 1.0;
             z-index: 1;
         `}
 
@@ -73,9 +90,17 @@ export default function Carousel2({imageList, imageWidth }) {
             display: block;
             scale: 1.0;
             left: 75%;
-            filter: brightness(0.8);
-            opacity: 0.6;
+            filter: brightness(0.5);
+            opacity: 1.0;
             z-index: 1;
+        `}
+
+        ${index === (imageIndex + 2) % imageList.length && css`
+            display: block;
+            left: 75%;
+            animation: ${fade_in} 0.7s linear forwards;
+            filter: brightness(0.5);
+            opacity: 0.6;
         `}
     `;
 
