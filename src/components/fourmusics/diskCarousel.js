@@ -78,21 +78,21 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
         ${index === (nowIndex - 1 + mediaInfos.length) % mediaInfos.length && css`
             display: flex;
             scale: 1.0;
-            top: -40%;
+            top: -20%;
             left: -20%;
             animation: ${scale_down} 0.7s linear forwards;
             filter: brightness(0.8);
-            opacity: 0.6;
+            opacity: 0.3;
             z-index: 1;
         `}
 
         ${index === (nowIndex + 1) % mediaInfos.length && css`
             display: flex;
             scale: 1.0;
-            top: -40%;
+            top: -20%;
             left: 70%;
             filter: brightness(0.8);
-            opacity: 0.6;
+            opacity: 0.3;
             z-index: 1;
         `}
     `;
@@ -100,7 +100,7 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
     const getDiskStyle = (index) => css`
         ${disk}
         ${index === nowIndex && css`
-            animation: ${rotate} 10s linear infinite;
+            animation: ${rotate} 40s linear infinite;
         `}
     `;
 
@@ -140,8 +140,6 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
 
         width: 100%;
         height: ${imageSize*1.5}px;
-
-        background-color: #EEEEEE;
     `;
 
     return (

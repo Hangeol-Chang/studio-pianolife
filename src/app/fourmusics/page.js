@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from "react";
 import getScrollProgress from "../api/client/getScrollProgress";
 import getPageSize from "../api/client/getPageSize";
 import Carousel2 from "@/components/layout/carousel2";
-import FourMusicsPlayer from "@/components/fourmusics/fourmusicsPlayer";
 import { css } from "@emotion/react";
 import { mediaInfos } from "./media.json";
 
@@ -15,12 +14,7 @@ export default function FourMusics() {
     const [posterWidth, setPosterWidth] = useState(300);
     const [videoWidth, setVideoWidth] = useState(300);
 
-    const posterImageList = [
-        "/fourmusics/fourmusics_poster_1.jpg",
-        "/fourmusics/fourmusics_poster_2.jpg",
-        "/fourmusics/fourmusics_poster_3.jpg",
-        "/fourmusics/fourmusics_poster_4.png",
-    ]
+    const posterImageList = mediaInfos.map(info => info.src);
 
     const poster_click_info_style = css`
         font-size: 0.8em;

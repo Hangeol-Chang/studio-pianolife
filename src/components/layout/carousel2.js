@@ -115,7 +115,7 @@ export default function Carousel2({imageList, imageWidth }) {
     // 최초 1회 로딩될 때 수동으로 지정해줘야 함.
     return(
         <div css={image_container_style}>
-            {isMounted ? 
+            {isMounted ?
                 imageList.map((src, index) => (
                     <Image 
                         css={GetImageStyle(index)}
