@@ -1,0 +1,107 @@
+{
+    "kind": "youtube#videoListResponse",
+    "etag": "EoQKFGV9RjMoaqynx15a9OtFNfc",
+    "items": [
+        {
+            "kind": "youtube#video",
+            "etag": "ovZlysK2OlFKjDoNf-mRZYQj23M",
+            "id": "U9C5GZ-G69A",
+            "snippet": {
+                "publishedAt": "2023-12-25T09:00:15Z",
+                "channelId": "UCavXMlAJdbOWRBFGTyToRVg",
+                "title": "Four Colors for Chopin (1부 - 고정우)",
+                "description": "🎹타임라인\n00:00 - 입장\n00:44 - Nocturne Op.27 No.1\n06:57 - Etude Op.25 No.12\n09:55 - Ballade No.1 in G minor, Op.23\n\n#쇼팽 #포뮤직스",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/U9C5GZ-G69A/default.jpg",
+                        "width": 120,
+                        "height": 90
+                    },
+                    "medium": {
+                        "url": "https://i.ytimg.com/vi/U9C5GZ-G69A/mqdefault.jpg",
+                        "width": 320,
+                        "height": 180
+                    },
+                    "high": {
+                        "url": "https://i.ytimg.com/vi/U9C5GZ-G69A/hqdefault.jpg",
+                        "width": 480,
+                        "height": 360
+                    },
+                    "standard": {
+                        "url": "https://i.ytimg.com/vi/U9C5GZ-G69A/sddefault.jpg",
+                        "width": 640,
+                        "height": 480
+                    },
+                    "maxres": {
+                        "url": "https://i.ytimg.com/vi/U9C5GZ-G69A/maxresdefault.jpg",
+                        "width": 1280,
+                        "height": 720
+                    }
+                },
+                "channelTitle": "공피라-공대생의 piano life",
+                "tags": [
+                    "포뮤직스",
+                    "4musics",
+                    "아마추어 연주회",
+                    "아마추어 공연",
+                    "아마추어 피아노",
+                    "아마추어 피아노 연주회",
+                    "홍보",
+                    "promotion",
+                    "concert promotion",
+                    "멤버 소개",
+                    "멤버 공개",
+                    "introducing member",
+                    "amateur",
+                    "amateur piano",
+                    "아마추어 피아노 공연",
+                    "아마추어 클래식 공연",
+                    "서초문화예술회관 아트홀",
+                    "대규모 공연",
+                    "대형 공연",
+                    "기획공연",
+                    "클래식 기획공연",
+                    "chopin",
+                    "쇼팽",
+                    "발라드",
+                    "ballade",
+                    "polonaise",
+                    "폴로네이즈",
+                    "왈츠",
+                    "waltz",
+                    "녹턴",
+                    "nocturne",
+                    "피아노연주",
+                    "직장인 취미",
+                    "직장인 피아노",
+                    "대학원 피아노"
+                ],
+                "categoryId": "10",
+                "liveBroadcastContent": "none",
+                "localized": {
+                    "title": "Four Colors for Chopin (1부 - 고정우)",
+                    "description": "🎹타임라인\n00:00 - 입장\n00:44 - Nocturne Op.27 No.1\n06:57 - Etude Op.25 No.12\n09:55 - Ballade No.1 in G minor, Op.23\n\n#쇼팽 #포뮤직스"
+                }
+            },
+            "contentDetails": {
+                "duration": "PT20M",
+                "dimension": "2d",
+                "definition": "hd",
+                "caption": "false",
+                "licensedContent": false,
+                "contentRating": {},
+                "projection": "rectangular"
+            },
+            "statistics": {
+                "viewCount": "225",
+                "likeCount": "13",
+                "favoriteCount": "0",
+                "commentCount": "1"
+            }
+        }
+    ],
+    "pageInfo": {
+        "totalResults": 1,
+        "resultsPerPage": 1
+    }
+}

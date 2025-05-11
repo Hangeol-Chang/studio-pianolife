@@ -54,12 +54,12 @@ export default function FourMusicsMedia() {
                     />
                     <PlayerContainer>
                         <hr style={{margin: '0px'}} />
-                        <h3 style={{margin: '0px' }}>
+                        <h1 style={{margin: '0px' }}>
                             {mediaInfos[nowIndex].title}
-                        </h3> 
-                        <div>
+                        </h1> 
+                        <h4 style={{margin: '0px' }}>
                             {mediaInfos[nowIndex].date}
-                        </div>
+                        </h4>
                         <hr style={{margin: '0px'}} />
                         {/* <YoutubeList videoIds={mediaInfos[nowIndex].videos} 
                             imageWidth={getPageSize().width * 0.4}
