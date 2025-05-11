@@ -65,8 +65,12 @@ const Title3 = ({title}) => {
         </h3>
     )
 }
-const Title4 = () => {
-    
+const Title4 = ({title}) => {
+    return (
+        <h4>
+            {title}
+        </h4>
+    )
 }
 const Title5 = () => {
     
