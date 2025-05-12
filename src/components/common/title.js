@@ -9,7 +9,6 @@ const Title1 = ({title, subTitle, idf=1}) => {
     const [iconLeft, setIconLeft] = useState(0);
     const [mounted, setMounted] = useState(false);
     const handleResize = () => {
-        const pageSize = getPageSize();
         setIconLeft(14 - 7*768 / getPageSize().width);
     }
     useEffect(() => {
