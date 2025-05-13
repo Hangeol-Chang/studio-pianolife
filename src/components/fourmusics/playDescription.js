@@ -9,6 +9,7 @@ import testData from './testData.json';
 import { Title3, Title4 } from '../common/title';
 import { YouTubeEmbed } from '../media/youtube';
 import { FaBackward, FaForward, FaPlay } from 'react-icons/fa';
+import YoutubePlayer from '../media/youtube2';
 
 const IconWrapper = ({ children, onClick, size }) => {
     const icon_style = css`
@@ -44,7 +45,7 @@ const IconWrapper = ({ children, onClick, size }) => {
     );
 }
 
-const VideoWithSlider = () => {
+const TimelineSlider = ({length}) => {
   const videoRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -121,6 +122,8 @@ function formatTime(time) {
 
 export default function PlayDescription({ videoId }) {
     const [videoData, setVideoData] = useState(null);
+    
+    const [duration, setDuration] = useState(['00:00:00', 0]);
 
     async function getVideoData(vid) {
         const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY; // 환경 변수로 관리
@@ -134,6 +137,10 @@ export default function PlayDescription({ videoId }) {
         // const data = await res.json();
     
         const data = testData; // 테스트 데이터 사용
+
+        // 전처리
+        parseDuration(data.items[0].contentDetails.duration);
+
         // console.log(data);
         return data.items[0];
     }
@@ -148,7 +155,13 @@ export default function PlayDescription({ videoId }) {
         const m = String(minutes).padStart(2, '0');
         const s = String(seconds).padStart(2, '0');
     
-        return `${h}:${m}:${s}`;
+        setDuration([`${h}:${m}:${s}`, parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseInt(seconds)]);
+    }
+
+    const getPlayInfo = (player) => {
+        const currentTime = player.getCurrentTime();
+        const duration = player.getDuration();
+        console.log(`Current Time: ${currentTime}, Duration: ${duration.toFixed(2)}초`);
     }
 
     // const title = video.snippet.title;
@@ -200,15 +213,21 @@ export default function PlayDescription({ videoId }) {
                         <FaForward size={24} css={icon_style}/>
                     </IconWrapper>
                 </div>
-                <input type="range" min="0" max="100" defaultValue="50" css={css`width: 90%; margin: 0 auto; display: block;`}/>
             </div>
-            <VideoWithSlider />
+            <TimelineSlider length={duration[1]}/>
 
             <div css={css`display: flex; justify-content: center; align-items: center;`}>
                 <YouTubeEmbed  videoId={videoData.id} width={'300px'} />
             </div>
 
-            <p>길이: {parseDuration(videoData.contentDetails.duration)}</p>
+            <div css={css`display: flex; justify-content: center; align-items: center;`}>
+                <YoutubePlayer 
+                    videoId={videoData.id} autoplay={1} size={getPageSize().width - 100} 
+                    callback={getPlayInfo}
+                />
+            </div>
+
+            <p>길이: {duration[0]}</p>
             <p>좋아요: {videoData.statistics.likeCount}</p>
 
             <Title4 title="Description" />
