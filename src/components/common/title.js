@@ -1,3 +1,6 @@
+'use client'
+/** @jsxImportSource @emotion/react */
+
 import getPageSize from '@/app/api/client/getPageSize.js';
 import { Note } from '../music/sheet.js';
 // import { LongSheet, MediumSheet, ShortSheet } from '../music/sheetPreset.js';
@@ -78,7 +81,18 @@ const Title6 = () => {
     
 }
 
-
+const HrV = ({width = 1, height = 10, color='black', style}) => {
+    return (
+        <hr 
+            style={{
+                width: `${width}px`,
+                height: `${height}px`,
+                backgroundColor: color,
+            }}
+            css={style}
+        />
+    )
+}
 
 export {
     Title1,
@@ -87,5 +101,5 @@ export {
     Title4,
     Title5,
     Title6,
-
+    HrV,
 }

@@ -6,13 +6,13 @@ import { css } from '@emotion/react';
 import getPageSize from '@/app/api/client/getPageSize';
 
 import testData from './testData.json';
-import { Title3, Title4 } from '../common/title';
+import { Title3, Title4, HrV } from '../common/title';
 import { YouTubeEmbed } from '../media/youtube';
-import { FaBackward, FaForward, FaPlay } from 'react-icons/fa';
+import { FaBackward, FaForward, FaPlay, FaShare, FaThumbsUp } from 'react-icons/fa';
 import YoutubePlayer from '../media/youtube2';
 
-const IconWrapper = ({ children, onClick, size }) => {
-    const icon_style = css`
+const IconWrapper = ({ children, onClick, size, Icon, iconStyle }) => {
+    const icon_wrapper_style = css`
         color: grey;
         width: ${size};
         height: ${size};
@@ -26,12 +26,12 @@ const IconWrapper = ({ children, onClick, size }) => {
 
         transition: all 0.3s ease-in-out;
         animation: all 0.3s ease-in-out;
-        border-radius: 50%;
+        border-radius: ${size}px;
 
         &:hover {
             * { color: white; }
             background-color: rgba(0, 0, 0, 0.8);
-            transform: scale(1.2);
+            transform: scale(1.1);
         }
         &:active {
             transform: scale(0.9);
@@ -39,38 +39,28 @@ const IconWrapper = ({ children, onClick, size }) => {
     `;
 
     return (
-        <div onClick={onClick} css={icon_style}>
+        <div onClick={onClick} css={icon_wrapper_style}>
+            {Icon && <Icon css={iconStyle} size={size} />}
             {children}
         </div>
     );
 }
 
-const TimelineSlider = ({length}) => {
-  const videoRef = useRef(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isSeeking, setIsSeeking] = useState(false);
+const TimelineSlider = ({length, currentTime}) => {
+    const videoRef = useRef(null);
+    const [isSeeking, setIsSeeking] = useState(false);
+
+    const timeline_slider_style = css`
+        width: 100%;
+    `;
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
-    const handleLoadedMetadata = () => setDuration(video.duration);
-    const handleTimeUpdate = () => {
-        if (!isSeeking) setCurrentTime(video.currentTime);
-    };
-
-    video.addEventListener("loadedmetadata", handleLoadedMetadata);
-    video.addEventListener("timeupdate", handleTimeUpdate);
-    return () => {
-        video.removeEventListener("loadedmetadata", handleLoadedMetadata);
-        video.removeEventListener("timeupdate", handleTimeUpdate);
-    };
   }, [isSeeking]);
 
   const handleSliderChange = (e) => {
         const time = parseFloat(e.target.value);
-        setCurrentTime(time);
   };
 
   const handleSeekCommit = (e) => {
@@ -82,30 +72,32 @@ const TimelineSlider = ({length}) => {
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <video
-        ref={videoRef}
-        src="/sample.mp4"
-        controls={false}
-        className="w-full rounded-lg"
-      />
-      <input
-        type="range"
-        min={0}
-        max={duration}
-        step="0.1"
-        value={currentTime}
-        onChange={handleSliderChange}
-        onMouseDown={() => setIsSeeking(true)}
-        onMouseUp={handleSeekCommit}
-        onTouchStart={() => setIsSeeking(true)}
-        onTouchEnd={handleSeekCommit}
-        className="w-full mt-2"
-      />
-      <div className="text-sm text-gray-600 text-right">
-        {formatTime(currentTime)} / {formatTime(duration)}
-      </div>
-    </div>
+    <>
+        {currentTime &&
+            <div className="p-4 max-w-md mx-auto">
+                <video
+                    ref={videoRef}
+                    src="/sample.mp4"
+                    controls={false}
+                    className="w-full rounded-lg"
+                />
+                <input
+                    css={timeline_slider_style}
+                    type="range"
+                    min={0} max={length} step="0.1"
+                    value={currentTime}
+                    onChange={handleSliderChange}
+                    onMouseDown={() => setIsSeeking(true)}
+                    onMouseUp={handleSeekCommit}
+                    onTouchStart={() => setIsSeeking(true)}
+                    onTouchEnd={handleSeekCommit}
+                />
+                <div className="text-sm text-gray-600 text-right">
+                    {formatTime(currentTime)} / {formatTime(length)}
+                </div>
+            </div>
+        }
+    </>
   );
 }
 
@@ -123,6 +115,7 @@ function formatTime(time) {
 export default function PlayDescription({ videoId }) {
     const [videoData, setVideoData] = useState(null);
     
+    const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(['00:00:00', 0]);
 
     async function getVideoData(vid) {
@@ -159,9 +152,9 @@ export default function PlayDescription({ videoId }) {
     }
 
     const getPlayInfo = (player) => {
-        const currentTime = player.getCurrentTime();
-        const duration = player.getDuration();
-        console.log(`Current Time: ${currentTime}, Duration: ${duration.toFixed(2)}초`);
+        // const duration = player.getDuration();
+        setCurrentTime(player.getCurrentTime());
+        // console.log(`Current Time: ${player.getCurrentTime()}, Duration: ${duration.toFixed(2)}초`);
     }
 
     // const title = video.snippet.title;
@@ -194,8 +187,12 @@ export default function PlayDescription({ videoId }) {
         display: flex;
         justify-content: space-around;
         align-items: center;
+        margin: 10px;
     `;
 
+    const hr_vertical_style = css`
+        margin: 0px 5px;
+    `;
 
     return (
         <div>
@@ -203,18 +200,21 @@ export default function PlayDescription({ videoId }) {
 
             <div css={play_controller_style}>
                 <div css={play_icon_container_style}>
-                    <IconWrapper>
-                        <FaBackward size={24} css={icon_style}/>
+                    <IconWrapper size={24} Icon={FaThumbsUp} iconStyle={icon_style}>
+                        <HrV height={24} style={hr_vertical_style}/>
+                        <div>{videoData.statistics.likeCount}</div>
                     </IconWrapper>
-                    <IconWrapper>
-                        <FaPlay size={24} css={icon_style}/>
+                    <IconWrapper size={24} Icon={FaBackward} iconStyle={icon_style}>
                     </IconWrapper>
-                    <IconWrapper>
-                        <FaForward size={24} css={icon_style}/>
+                    <IconWrapper size={24} Icon={FaPlay} iconStyle={icon_style}>
                     </IconWrapper>
+                    <IconWrapper size={24} Icon={FaForward} iconStyle={icon_style}>
+                    </IconWrapper>
+                    <IconWrapper size={24} Icon={FaShare} iconStyle={icon_style}>
+                    </IconWrapper> 
                 </div>
             </div>
-            <TimelineSlider length={duration[1]}/>
+            <TimelineSlider length={duration[1]} currentTime={currentTime}/>
 
             <div css={css`display: flex; justify-content: center; align-items: center;`}>
                 <YouTubeEmbed  videoId={videoData.id} width={'300px'} />
