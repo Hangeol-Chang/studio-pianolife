@@ -51,7 +51,45 @@ const TimelineSlider = ({length, currentTime}) => {
     const [isSeeking, setIsSeeking] = useState(false);
 
     const timeline_slider_style = css`
+        -webkit-appearance: none;
+        
         width: 100%;
+        width: 100%;
+        height: 6px;
+        background: transparent;
+
+        &::-webkit-slider-runnable-track {
+            height: 6px;
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        &::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            margin-top: -7px;
+        }
+
+        &::-moz-range-track {
+            height: 6px;
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        &::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #007bff;
+        }
+
+        &::-moz-range-progress {
+            background-color: #007bff;
+            height: 6px;
+        }
     `;
 
   useEffect(() => {
