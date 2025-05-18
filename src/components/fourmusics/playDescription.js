@@ -7,9 +7,9 @@ import getPageSize from '@/app/api/client/getPageSize';
 
 import testData from './testData.json';
 import { Title3, Title4, HrV } from '../common/title';
-import { YouTubeEmbed } from '../media/youtube';
 import { FaBackward, FaForward, FaPlay, FaShare, FaThumbsUp } from 'react-icons/fa';
 import YoutubePlayer from '../media/youtube2';
+import { Spacer } from '../common/spacer';
 
 const IconWrapper = ({ children, onClick, size, Icon, iconStyle }) => {
     const icon_wrapper_style = css`
@@ -50,111 +50,194 @@ const TimelineSlider = ({length, currentTime}) => {
     const videoRef = useRef(null);
     const [isSeeking, setIsSeeking] = useState(false);
 
+    const timeline_container_style = css`
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+    `;
+
     const timeline_slider_style = css`
         -webkit-appearance: none;
-        
         width: 100%;
         width: 100%;
         height: 6px;
         background: transparent;
+        margin: 10px 0;
 
         &::-webkit-slider-runnable-track {
             height: 6px;
-            background: #ccc;
+            background: #FEFEFE;
             border-radius: 3px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            margin: 0px 10px;
         }
-
         &::-webkit-slider-thumb {
             -webkit-appearance: none;
             height: 20px;
             width: 20px;
             border-radius: 50%;
-            background: #007bff;
             margin-top: -7px;
+            background: #FFFFFF;
+            border: 2px solid black;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-
-        &::-moz-range-track {
-            height: 6px;
-            background: #ccc;
-            border-radius: 3px;
+        &::-webkit-slider-thumb:active {
+            background: #AAAAAA;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         &::-moz-range-thumb {
             height: 20px;
             width: 20px;
             border-radius: 50%;
-            background: #007bff;
+            background: #777777;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
+        &::-moz-range-track {
+            height: 6px;
+            background: #000000;
+            border-radius: 3px;
+        }
         &::-moz-range-progress {
-            background-color: #007bff;
+            background-color: #AAAAAA;
             height: 6px;
         }
     `;
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-  }, [isSeeking]);
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+    }, [isSeeking]);
 
-  const handleSliderChange = (e) => {
-        const time = parseFloat(e.target.value);
-  };
+    const handleSliderChange = (e) => {
+        // const time = parseFloat(e.target.value);
+    };
 
-  const handleSeekCommit = (e) => {
+    const handleSeekCommit = (e) => {
         const time = parseFloat(e.target.value);
         if (videoRef.current) {
             videoRef.current.currentTime = time;
         }
         setIsSeeking(false);
-  };
+    };
 
-  return (
-    <>
-        {currentTime &&
-            <div className="p-4 max-w-md mx-auto">
-                <video
-                    ref={videoRef}
-                    src="/sample.mp4"
-                    controls={false}
-                    className="w-full rounded-lg"
-                />
-                <input
-                    css={timeline_slider_style}
-                    type="range"
-                    min={0} max={length} step="0.1"
-                    value={currentTime}
-                    onChange={handleSliderChange}
-                    onMouseDown={() => setIsSeeking(true)}
-                    onMouseUp={handleSeekCommit}
-                    onTouchStart={() => setIsSeeking(true)}
-                    onTouchEnd={handleSeekCommit}
-                />
-                <div className="text-sm text-gray-600 text-right">
-                    {formatTime(currentTime)} / {formatTime(length)}
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60)
+            .toString()
+            .padStart(2, "0");
+        const seconds = Math.floor(time % 60)
+            .toString()
+            .padStart(2, "0");
+        return `${minutes}:${seconds}`;
+    }
+
+    return (
+        <>
+            {currentTime &&
+                <div css={timeline_container_style}>
+                    <div>{formatTime(currentTime)}</div>
+                    <input
+                        css={timeline_slider_style}
+                        type="range"
+                        min={0} max={length} step="0.1"
+                        value={currentTime}
+
+                        onChange={handleSliderChange}
+                        onMouseDown={() => setIsSeeking(true)}
+                        onMouseUp={handleSeekCommit}
+                        onTouchStart={() => setIsSeeking(true)}
+                        onTouchEnd={handleSeekCommit}
+                    />
+                    <div>{formatTime(length)}</div>
                 </div>
-            </div>
+            }
+        </>
+    );
+}
+
+const TagList = ({ tags }) => {
+    const [expanded, setExpanded] = useState(false);
+
+    const tag_container_style = css`
+        display: flex;
+        flex-wrap: wrap;
+        margin: 10px;
+
+        max-height: ${expanded ? 'none' : '60px'};
+        overflow: hidden;
+    `;
+    const tag_style = css`
+        margin: 0px 5px;
+        color: grey;
+
+        font-size: 14px;
+        border-radius: 20px;
+        background-color: #F0F0F0;
+        padding: 5px 10px;
+        margin: 2px 5px;
+    `;
+
+    const expand_button_style = css`
+        cursor: pointer;
+        text-align: center;
+        margin: 10px;
+        font-size: 12px;
+        border-radius: 20px;
+        padding: 5px 10px;
+        &:hover {
+            background-color: #FAFAFA;
         }
-    </>
-  );
+        &:active {
+            background-color: #EFEFEF;
+        }
+    `;
+
+    return (
+        <div>
+            <div css={tag_container_style}>
+                {tags.map((tag, i) => (
+                    <span key={tag + `-` + i} css={tag_style}>
+                        {tag}
+                    </span>
+                ))}
+            </div>
+            <div css={expand_button_style} onClick={() => setExpanded(!expanded)}>
+                {expanded ? '△ 접기' : '▽ 더보기'}
+            </div>
+        </div>
+    )
 }
 
-function formatTime(time) {
-    const minutes = Math.floor(time / 60)
-        .toString()
-        .padStart(2, "0");
-    const seconds = Math.floor(time % 60)
-        .toString()
-        .padStart(2, "0");
-    return `${minutes}:${seconds}`;
-}
+export default function PlayDescription({ videoIds }) {  
+    const [videoItems, setVideoItems] = useState([]);
 
-
-export default function PlayDescription({ videoId }) {
     const [videoData, setVideoData] = useState(null);
-    
+
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(['00:00:00', 0]);
+    const [tags, setTags] = useState([]);
+
+    const [nowIndex, setNowIndex] = useState(0);
+
+    async function getVideoDatas(vidList) {
+        const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY; // 환경 변수로 관리
+        // const res = await fetch(
+        //     `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${vidList.join(',')}&key=${API_KEY}`,
+        //     { cache: 'no-store' } // App Router SSR을 사용하는 경우
+        // );
+        // if (!res.ok) {
+        //     throw new Error('Failed to fetch video data');
+        // }
+        // const data = await res.json();
+        
+        const data = testData; // 테스트 데이터 사용
+    
+        // 전처리
+        parseDuration(data.items[0].contentDetails.duration);
+        return data.items;
+    }
 
     async function getVideoData(vid) {
         const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY; // 환경 변수로 관리
@@ -171,6 +254,7 @@ export default function PlayDescription({ videoId }) {
 
         // 전처리
         parseDuration(data.items[0].contentDetails.duration);
+        parseTag(data.items[0].snippet.description);
 
         // console.log(data);
         return data.items[0];
@@ -189,6 +273,11 @@ export default function PlayDescription({ videoId }) {
         setDuration([`${h}:${m}:${s}`, parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseInt(seconds)]);
     }
 
+    const parseTag = (description) => {
+        const tags = [...description.matchAll(/#(\S+)/g)].map(match => match[0]);
+        setTags(tags);
+    }
+
     const getPlayInfo = (player) => {
         // const duration = player.getDuration();
         setCurrentTime(player.getCurrentTime());
@@ -201,14 +290,23 @@ export default function PlayDescription({ videoId }) {
     // const duration = parseDuration(video.contentDetails.duration);
 
     useEffect(() => {
-        if(videoId) {
+        if(videoIds) {
             async function fetchVideoData() {
-                const data = await getVideoData(videoId);
-                setVideoData(data);
+                const data = await getVideoDatas(videoIds);
+                setVideoItems(data);
             }
             fetchVideoData();
         }
-    }, [videoId]);
+    }, [videoIds]);
+
+    useEffect(() => {
+        console.log('videoItems', videoItems);
+        if (videoItems.length === 0) return;
+
+        parseDuration(videoItems[nowIndex]?.contentDetails.duration);
+        parseTag(videoItems[nowIndex]?.snippet.description);
+        setVideoData(videoItems[nowIndex]);
+    }, [videoItems, nowIndex]);
     
     if (!videoData) return <div>Loading...</div>;
     
@@ -232,11 +330,24 @@ export default function PlayDescription({ videoId }) {
         margin: 0px 5px;
     `;
 
+    const youtube_container_style = css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    `;
+
     return (
         <div>
             <Title3 title={videoData.snippet.title}></Title3>
 
             <div css={play_controller_style}>
+                <div css={youtube_container_style}>
+                    <YoutubePlayer 
+                        videoId={videoData.id} autoplay={1} size={getPageSize().width - 100} 
+                        callback={getPlayInfo}
+                    />
+                </div>
+
                 <div css={play_icon_container_style}>
                     <IconWrapper size={24} Icon={FaThumbsUp} iconStyle={icon_style}>
                         <HrV height={24} style={hr_vertical_style}/>
@@ -251,32 +362,31 @@ export default function PlayDescription({ videoId }) {
                     <IconWrapper size={24} Icon={FaShare} iconStyle={icon_style}>
                     </IconWrapper> 
                 </div>
+
+                <TimelineSlider length={duration[1]} currentTime={currentTime}/>
+
+                {/* <p>길이: {duration[0]}</p>
+                <p>좋아요: {videoData.statistics.likeCount}</p> */}
+
+                <Spacer height={10} />
+                <Title3 title="Description" />
+                <Spacer height={10} />
+                <p>
+                    {videoData.snippet.description.split('\n').map((line, i) => (
+                        line.includes('#') ? (
+                            <span key={i} css={css`display: none;`}></span>
+                        ) : (
+                            <span key={i}>
+                                {line}
+                                <br />
+                            </span>
+                        )
+                    ))}
+                </p>
+
+                <hr />
+                <TagList tags={tags} />
             </div>
-            <TimelineSlider length={duration[1]} currentTime={currentTime}/>
-
-            <div css={css`display: flex; justify-content: center; align-items: center;`}>
-                <YouTubeEmbed  videoId={videoData.id} width={'300px'} />
-            </div>
-
-            <div css={css`display: flex; justify-content: center; align-items: center;`}>
-                <YoutubePlayer 
-                    videoId={videoData.id} autoplay={1} size={getPageSize().width - 100} 
-                    callback={getPlayInfo}
-                />
-            </div>
-
-            <p>길이: {duration[0]}</p>
-            <p>좋아요: {videoData.statistics.likeCount}</p>
-
-            <Title4 title="Description" />
-            <p>
-                {videoData.snippet.description.split('\n').map((line, i) => (
-                    <span key={i}>
-                        {line}
-                        <br />
-                    </span>
-                ))}
-            </p>
         </div>
     );
 }

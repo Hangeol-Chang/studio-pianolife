@@ -17,7 +17,6 @@ export default function FourMusicsMedia() {
         
         justify-content: space-between;
         box-shadow: 2px 2px 2px 4px rgba(100, 100, 100, 0.1);
-        margin: 20px 0px;
     `;
     const PlayerContainer = styled.div`
         display: flex;
@@ -66,7 +65,7 @@ export default function FourMusicsMedia() {
                         /> */}
                     </PlayerContainer>
 
-                    <PlayDescription videoId={mediaInfos[nowIndex].videos[0]} />
+                    <PlayDescription videoIds={mediaInfos[nowIndex].videos} />
                 </div>
             </div>
         : <></>
