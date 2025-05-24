@@ -8,7 +8,7 @@ import getPageSize from '@/app/api/client/getPageSize';
 import testData from './testData.json';
 import { Title3, Title4, HrV } from '../common/title';
 import { FaBackward, FaForward, FaPause, FaPlay, FaShare, FaStepBackward, FaStepForward, FaThumbsUp } from 'react-icons/fa';
-import YoutubePlayer from '../media/youtube2';
+import YoutubePlayer from '../media/youtubeSingle';
 import { Spacer } from '../common/spacer';
 
 const IconWrapper = ({ children, onClick, size, Icon, inversed = false }) => {
@@ -336,10 +336,6 @@ export default function PlayDescription({ videoIds }) {
         parseTag(videoItems[nowIndex]?.snippet.description);
         setVideoData(videoItems[nowIndex]);
     }, [videoItems, nowIndex]);
-
-    useEffect(() => {
-        console.log('videoData', videoData);
-    }, [videoData]);
     
     if (!videoData) return <div>Loading...</div>;
 

@@ -3,7 +3,7 @@
 /** @jsxImportSource @emotion/react */
 
 import { Title1, Title2 } from '@/components/common/title';
-import { YouTubeEmbed } from '@/components/media/youtube';
+import { YouTubeEmbed } from '@/components/media/youtubeMulti';
 import { useState, useEffect, useRef } from 'react';
 import { Spacer } from '@/components/common/spacer';
 import { css } from '@emotion/react';
@@ -44,8 +44,6 @@ export default function Interview() {
     `;
 
     const setNowIndex_ = (index) => {
-        console.log('setNowIndex', index);
-        
         if(index < 0) { index = Object.keys(interviewData).length - 1; }
         else if(index >= Object.keys(interviewData).length) { index = 0; }
         setNowIndex(index);
@@ -88,8 +86,7 @@ export default function Interview() {
             const dx = endPos.current.x - startPos.current.x;
             const dy = endPos.current.y - startPos.current.y;
 
-            console.log('드래그 종료', dx, dy);
-
+            // console.log('드래그 종료', dx, dy);
             if(dy < -100) { // 위로 드래그
                 changeIndex(1);
             }
@@ -128,7 +125,7 @@ export default function Interview() {
       
             // 200ms 내에 추가 휠 이벤트가 없으면 "스크롤 종료"로 간주
             wheelTimeoutRef.current = setTimeout(() => {
-                console.log('스크롤 종료:', scrollDelta.current);
+                // console.log('스크롤 종료:', scrollDelta.current);
 
                 if (scrollDelta.current > 0) {
                     // console.log('스크롤 아래로:', scrollDelta.current);

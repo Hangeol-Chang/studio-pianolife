@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
-import { YouTubeEmbed } from '../media/youtube';
+import { YouTubeEmbed } from '../media/youtubeMulti';
 
 
 export default function YoutubeList({videoIds, imageWidth}) {
