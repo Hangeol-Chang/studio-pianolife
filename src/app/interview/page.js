@@ -11,6 +11,7 @@ import PianoIndex from '@/components/interview/pianoIndex';
 
 // raw data import
 import { interview as interviewData } from './interview.json';
+import YoutubePlayer from '@/components/media/youtubeSingle';
 
 export default function Interview() {
     const [nowIndex, setNowIndex] = useState(1);
@@ -179,7 +180,7 @@ export default function Interview() {
                         </p>
                         {interviewData[nowIndex].youtube &&
                             <div css={youtube_container_style}>
-                                <YouTubeEmbed videoId={interviewData[nowIndex].youtube} width={'100%'} height={'auto'}/>
+                                <YoutubePlayer videoId={interviewData[nowIndex].youtube} size={'100%'} autoplay={0}/>
                             </div>
                         }
                     </>
