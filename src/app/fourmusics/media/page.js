@@ -17,41 +17,55 @@ export default function FourMusicsMedia() {
         
         justify-content: space-between;
         box-shadow: 2px 2px 2px 4px rgba(100, 100, 100, 0.1);
-        margin: 20px 0px;
     `;
     const PlayerContainer = styled.div`
         display: flex;
         flex-direction: column;
         overflow: hidden;
         padding: 10px;
-        // width: 70%;
     `;
 
     const [nowIndex, setNowIndex] = useState(0);
-    useEffect(() => {
-        // setTimeout(() => changeNowIndex(), 5000);
-    }, [nowIndex]);
-    const changeNowIndex = () => {
-        setNowIndex((prev) => (prev + 1) % mediaInfos.length);
+    const changeNowIndex = ({dir = 1}) => {
+        setNowIndex((prev) => (prev + dir + mediaInfos.length) % mediaInfos.length);
     }
+
     const [mounted, setMounted] = useState(false);
     useEffect(() => {
         setMounted(true);
         return () => { setMounted(false);  }
     }, []);
 
+    const index_change_button_style = css`
+        position: absolute;
+        width: 40%;
+        height: ${mounted ? getPageSize().width * 0.7 + 'px' : 0};
+        z-index: 11;
+        top: 0%;
+        cursor: pointer;
+    `;
+    const index_change_button_style_left = css`
+        ${index_change_button_style};
+        left: 0%;
+    `;
+    const index_change_button_style_right = css`
+        ${index_change_button_style};
+        right: 0%;
+    `;
 
     return (
         mounted ?
             <div>
-                {/* TODO : Fourmusic Player를 여기로 옮겨올 것. */}
                 <div css={fourmusics_player}>
-                    <DiskCarousel 
-                        mediaInfos={mediaInfos} 
-                        imageSize={getPageSize().width * 0.15} 
-                        nowIndex={nowIndex}
-                        changeIndexEvent={changeNowIndex}
-                    />
+                    <div style={{position: 'relative', width: '100%', height: '100%'}}>
+                        <DiskCarousel 
+                            mediaInfos={mediaInfos} 
+                            nowIndex={nowIndex}
+                            changeIndexEvent={changeNowIndex}
+                        /> 
+                        <div css={index_change_button_style_left}  onClick={() => changeNowIndex({dir: -1})}></div>
+                        <div css={index_change_button_style_right} onClick={() => changeNowIndex({dir: 1})}></div>
+                    </div>
                     <PlayerContainer>
                         <hr style={{margin: '0px'}} />
                         <h1 style={{margin: '0px' }}>
@@ -66,7 +80,7 @@ export default function FourMusicsMedia() {
                         /> */}
                     </PlayerContainer>
 
-                    <PlayDescription videoId={mediaInfos[nowIndex].videos[0]} />
+                    <PlayDescription videoIds={mediaInfos[nowIndex].videos} />
                 </div>
             </div>
         : <></>

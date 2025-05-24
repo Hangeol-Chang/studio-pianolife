@@ -7,7 +7,8 @@ import styles from './about.module.scss';
 import { Spacer } from "@/components/common/spacer";
 import { Title1, Title2, Title3 } from "@/components/common/title";
 import YoutubeCarousel from "@/components/media/youtubeCarousel";
-import { YouTubeEmbed } from "@/components/media/youtube";
+import { YouTubeEmbed } from "@/components/media/youtubeMulti";
+import { videoInfos } from "./videoInfos.json";
 
 const YoutubeV1 = ({youtubeWidth, youtubeHeight}) => {
     return (
@@ -61,14 +62,7 @@ export default function About() {
     const [youtubeWidth, setYoutubeWidth] = useState(200);
     const [youtubeHeight, setYoutubeHeight] = useState(200);
 
-    const video_infos = [
-        { videoId: 'vDs4sTqhmQg',       title: 'Beethoven - Piano concerto No.5 in E-flat major, Op.73 "Emperor" mov.1&2' },
-        { videoId: 'jkb3VdzEn2M',       title: 'Chopin - Scherzo No.2 in B-flat minor, Op.31' },
-        { videoId: 'U9C5GZ-G69A',       title: 'Chopin - Ballade No.1 in G minor, Op.23' },
-        { videoId: 'mXJeCx12igw',       title: 'Schumann - Kinderszenen Op.15' },
-        { videoId: 'kYHdmaMZmwo',       title: 'Liszt - Après une lecture du dante: fantasia quasi sonata', },
-        { videoId: 'mja0TKqjtWk',       title: 'Debussy - Suite Bergamasque', },
-    ]
+    const video_infos = videoInfos;
 
     const updateScrollBar = () => {
         const scrollData = getScrollProgress();
@@ -157,22 +151,11 @@ export default function About() {
 
             <Spacer height={100} />
             <Title2 title="연주영상" />
-            {/* <YoutubeV1 youtubeWidth={youtubeWidth} youtubeHeight={youtubeHeight} /> */}
-            <YoutubeCarousel video_infos={video_infos} />
+            
+            <Spacer height={30} />
+            <YoutubeCarousel videoInfos={video_infos} />
                 
-            <Spacer height={100} />
-            <Title2 title="p.s " />
-
-            <div
-                style={{
-                    height: '100vh',
-                    backgroundColor: 'grey',
-                    margin: '50px',
-                    padding:'20px',
-                }}
-            >
-                이것은 스크롤 더미입니다.   
-            </div>
+            <Spacer height={50} />
         </div>
     );
 }

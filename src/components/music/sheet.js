@@ -3,7 +3,33 @@
 import getScrollProgress from "@/app/api/client/getScrollProgress";
 import Image from "next/image";
 import { useEffect, useReducer, useRef, useState } from "react";
-import styles from './sheet.module.scss';
+import { css } from '@emotion/react';
+
+const note_style = css``;
+const vertical_line_single_style = css`
+    position: absolute;
+    width: 1px;
+    background-color: #222;
+    height: 15px;
+`;
+const music_sheet_style = css`
+    position: relative;
+    width: 100%;
+    height: 70px;
+`;
+const music_sheet_line_style = css`
+    width: 100%;
+    height: 1px;
+    background-color: #222;
+    margin: 10px 0px;
+    border: 0px;
+`;
+const vertical_line_style = css`
+    position: absolute;
+    width: 1px;
+    background-color: #111;
+    height: 50px;
+`;
 
 const Note = ({index, width, left, top, flip = false}) => {
     // var randInt = Math.floor(Math.random() * 100);
@@ -48,10 +74,9 @@ const Note = ({index, width, left, top, flip = false}) => {
     }, []);
 
     return (
-        <div ref={ref} className={styles.note}>
+        <div ref={ref} css={note_style}>
             <Image src={`/note/note_${filename}.png`} alt="note" 
                 width={width} height={0} layout="intrinsic"
-
                 style={{
                     position: 'absolute',
                     left: left,
@@ -66,7 +91,7 @@ const Note = ({index, width, left, top, flip = false}) => {
 
 const VerticalLineSingle = ({left, top}) => {
     return (
-        <div className={styles.vertical_line_single}
+        <div css={vertical_line_single_style}
             style={{
                 left: left,
                 top: top,
@@ -77,25 +102,25 @@ const VerticalLineSingle = ({left, top}) => {
 
 const MusicSheet = () => {
     return (
-        <div className={styles.music_sheet}
+        <div css={music_sheet_style}
             style={{
                 position: "relative",
                 width: '100%',
                 height: '70px',
             }}
         >
-            <hr className={styles.music_sheet_line}/>
-            <hr className={styles.music_sheet_line}/>
-            <hr className={styles.music_sheet_line}/>
-            <hr className={styles.music_sheet_line}/>
-            <hr className={styles.music_sheet_line}/>
+            <hr css={music_sheet_line_style}/>
+            <hr css={music_sheet_line_style}/>
+            <hr css={music_sheet_line_style}/>
+            <hr css={music_sheet_line_style}/>
+            <hr css={music_sheet_line_style}/>
         </div>
     )
 }
 
 const VerticalLine = ({left, top}) => { // 지울 코드
     return (
-        <div className={styles.vertical_line}
+        <div css={vertical_line_style}
             style={{ left: left, top: top,}}
         />
     )
