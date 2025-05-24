@@ -65,16 +65,18 @@ export default function FourMusics() {
                 4명의 직장인 아마추어 피아노 앙상블
             </p>
 
-            <div style={{position: 'relative',}}>
-                <Carousel2
-                    imageList={posterImageList}
-                    imageWidth={posterWidth}
-                >
-                </Carousel2>
-                <div css={poster_click_info_style}>
-                    포스터 클릭 시 관련 미디어로 연결됩니다.
+            <a href="/fourmusics/media">
+                <div style={{position: 'relative',}}>
+                    <Carousel2
+                        imageList={posterImageList}
+                        imageWidth={posterWidth}
+                    >
+                    </Carousel2>
+                    <div css={poster_click_info_style}>
+                        포스터 클릭 시 관련 미디어로 연결됩니다.
+                    </div>
                 </div>
-            </div>
+            </a>
 
             <Spacer height={20} />
             <Title2 title="Introduction"/>

@@ -7,30 +7,30 @@ import getPageSize from '@/app/api/client/getPageSize';
 
 import testData from './testData.json';
 import { Title3, Title4, HrV } from '../common/title';
-import { FaBackward, FaForward, FaPlay, FaShare, FaThumbsUp } from 'react-icons/fa';
+import { FaBackward, FaForward, FaPause, FaPlay, FaShare, FaStepBackward, FaStepForward, FaThumbsUp } from 'react-icons/fa';
 import YoutubePlayer from '../media/youtube2';
 import { Spacer } from '../common/spacer';
 
-const IconWrapper = ({ children, onClick, size, Icon, iconStyle }) => {
+const IconWrapper = ({ children, onClick, size, Icon, inversed = false }) => {
     const icon_wrapper_style = css`
-        color: grey;
         width: ${size};
         height: ${size};
-        padding: 10px;
-
+        cursor: pointer;
+        
         display: flex;
         justify-content: center;
         align-items: center;
-
-        cursor: pointer;
-
+        
         transition: all 0.3s ease-in-out;
         animation: all 0.3s ease-in-out;
-        border-radius: ${size}px;
+        padding: 10px;
+        border-radius: ${size + 10}px;
+
+        background-color: ${inversed ? 'rgba(0, 0, 0, 0.9)' : 'transparent'};
 
         &:hover {
-            * { color: white; }
-            background-color: rgba(0, 0, 0, 0.8);
+            * { color: ${inversed ? 'black' : 'white'} }
+            background-color: ${inversed ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.8)'};
             transform: scale(1.1);
         }
         &:active {
@@ -38,9 +38,13 @@ const IconWrapper = ({ children, onClick, size, Icon, iconStyle }) => {
         }
     `;
 
+    const icon_style = css`
+        color: ${inversed ? 'white' : 'black'};
+    `;
+
     return (
-        <div onClick={onClick} css={icon_wrapper_style}>
-            {Icon && <Icon css={iconStyle} size={size} />}
+        <div onClick={onClick} css={inversed ? icon_wrapper_style : icon_wrapper_style}>
+            {Icon && <Icon css={icon_style} size={size} />}
             {children}
         </div>
     );
@@ -54,36 +58,44 @@ const TimelineSlider = ({length, currentTime}) => {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-direction: column;
+    `;
 
+    const timeline_text_container_style = css`
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 0px 16px;
     `;
 
     const timeline_slider_style = css`
         -webkit-appearance: none;
         width: 100%;
         width: 100%;
-        height: 6px;
+        height: 1px;
         background: transparent;
-        margin: 10px 0;
+        padding: 16px 8px;
 
         &::-webkit-slider-runnable-track {
-            height: 6px;
-            background: #FEFEFE;
+            height: 2px;
+            background: #AAAAAA;
             border-radius: 3px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            // box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
             margin: 0px 10px;
         }
         &::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 20px;
-            width: 20px;
+            height: 16px;
+            width: 16px;
             border-radius: 50%;
             margin-top: -7px;
             background: #FFFFFF;
-            border: 2px solid black;
+            border: 2px solid #AAAAAA;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         &::-webkit-slider-thumb:active {
-            background: #AAAAAA;
+            // background: #AAAAAA;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
@@ -91,17 +103,17 @@ const TimelineSlider = ({length, currentTime}) => {
             height: 20px;
             width: 20px;
             border-radius: 50%;
-            background: #777777;
+            // background: #777777;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         &::-moz-range-track {
             height: 6px;
-            background: #000000;
+            // background: #000000;
             border-radius: 3px;
         }
         &::-moz-range-progress {
-            background-color: #AAAAAA;
+            // background-color: #AAAAAA;
             height: 6px;
         }
     `;
@@ -137,7 +149,6 @@ const TimelineSlider = ({length, currentTime}) => {
         <>
             {currentTime &&
                 <div css={timeline_container_style}>
-                    <div>{formatTime(currentTime)}</div>
                     <input
                         css={timeline_slider_style}
                         type="range"
@@ -150,7 +161,10 @@ const TimelineSlider = ({length, currentTime}) => {
                         onTouchStart={() => setIsSeeking(true)}
                         onTouchEnd={handleSeekCommit}
                     />
-                    <div>{formatTime(length)}</div>
+                    <div css={timeline_text_container_style}>
+                        <div>{formatTime(currentTime)}</div>
+                        <div>{formatTime(length)}</div>
+                    </div>
                 </div>
             }
         </>
@@ -220,25 +234,37 @@ export default function PlayDescription({ videoIds }) {
     const [tags, setTags] = useState([]);
 
     const [nowIndex, setNowIndex] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(true);
 
+    // 여러 데이터
     async function getVideoDatas(vidList) {
         const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY; // 환경 변수로 관리
-        // const res = await fetch(
-        //     `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${vidList.join(',')}&key=${API_KEY}`,
-        //     { cache: 'no-store' } // App Router SSR을 사용하는 경우
-        // );
-        // if (!res.ok) {
-        //     throw new Error('Failed to fetch video data');
-        // }
-        // const data = await res.json();
-        
-        const data = testData; // 테스트 데이터 사용
+
+        if (process.env.NODE_ENV === 'production') {
+            // 배포(Production) 환경에서만 실행할 코드
+            const res = await fetch(
+                `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${vidList.join(',')}&key=${API_KEY}`,
+                { cache: 'no-store' } // App Router SSR을 사용하는 경우
+            );
+            if (!res.ok) {
+                throw new Error('Failed to fetch video data');
+            }
+            const data = await res.json();
+            parseDuration(data.items[nowIndex].contentDetails.duration);
+            return data.items;
+
+        } else {
+            // 개발(Development) 환경에서만 실행할 코드
+            const data = testData; // 테스트 데이터 사용
+            parseDuration(data.items[nowIndex].contentDetails.duration);
+            return data.items;
+        }
     
         // 전처리
-        parseDuration(data.items[0].contentDetails.duration);
-        return data.items;
+
     }
 
+    // 하나만
     async function getVideoData(vid) {
         const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY; // 환경 변수로 관리
         // const res = await fetch(
@@ -300,19 +326,22 @@ export default function PlayDescription({ videoIds }) {
     }, [videoIds]);
 
     useEffect(() => {
-        console.log('videoItems', videoItems);
+
+    }, [isPlaying]);
+
+    useEffect(() => {
         if (videoItems.length === 0) return;
 
         parseDuration(videoItems[nowIndex]?.contentDetails.duration);
         parseTag(videoItems[nowIndex]?.snippet.description);
         setVideoData(videoItems[nowIndex]);
     }, [videoItems, nowIndex]);
+
+    useEffect(() => {
+        console.log('videoData', videoData);
+    }, [videoData]);
     
     if (!videoData) return <div>Loading...</div>;
-    
-    const icon_style = css`
-        color: black;
-    `;
 
     const play_controller_style = css`
         display: flex;
@@ -321,9 +350,14 @@ export default function PlayDescription({ videoIds }) {
     `;
     const play_icon_container_style = css`
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
-        margin: 10px;
+        margin: 5px 10px;
+    `;
+    const share_icon_container_style = css`
+        ${play_icon_container_style};
+        justify-content: flex-end;
+        gap: 10px;
     `;
 
     const hr_vertical_style = css`
@@ -338,38 +372,51 @@ export default function PlayDescription({ videoIds }) {
 
     return (
         <div>
-            <Title3 title={videoData.snippet.title}></Title3>
+            <Title3 title={videoData.snippet.title} line={false}></Title3>
+            <Spacer height={10} />
 
             <div css={play_controller_style}>
                 <div css={youtube_container_style}>
                     <YoutubePlayer 
                         videoId={videoData.id} autoplay={1} size={getPageSize().width - 100} 
-                        callback={getPlayInfo}
+                        callback={getPlayInfo} isPlaying={isPlaying}
                     />
                 </div>
 
-                <div css={play_icon_container_style}>
-                    <IconWrapper size={24} Icon={FaThumbsUp} iconStyle={icon_style}>
-                        <HrV height={24} style={hr_vertical_style}/>
+                <div css={share_icon_container_style}>
+                    <IconWrapper size={16} Icon={FaThumbsUp} >
+                        <HrV height={16} style={hr_vertical_style}/>
                         <div>{videoData.statistics.likeCount}</div>
                     </IconWrapper>
-                    <IconWrapper size={24} Icon={FaBackward} iconStyle={icon_style}>
-                    </IconWrapper>
-                    <IconWrapper size={24} Icon={FaPlay} iconStyle={icon_style}>
-                    </IconWrapper>
-                    <IconWrapper size={24} Icon={FaForward} iconStyle={icon_style}>
-                    </IconWrapper>
-                    <IconWrapper size={24} Icon={FaShare} iconStyle={icon_style}>
+                    <IconWrapper size={16} Icon={FaShare}>
                     </IconWrapper> 
                 </div>
 
                 <TimelineSlider length={duration[1]} currentTime={currentTime}/>
 
+                <div css={play_icon_container_style}>
+                    <IconWrapper size={20} Icon={FaStepBackward} onClick={() => setNowIndex((nowIndex - 1 + videoItems.length) % videoItems.length)}>
+                    </IconWrapper>
+                    <IconWrapper size={20} Icon={FaBackward}>
+                    </IconWrapper>
+                    {isPlaying ?
+                        <IconWrapper size={26} Icon={FaPause} onClick={() => setIsPlaying(false)} inversed={true}>
+                        </IconWrapper>
+                        :
+                        <IconWrapper size={26} Icon={FaPlay} onClick={() => setIsPlaying(true)} inversed={true}>
+                        </IconWrapper>
+                    }
+                    <IconWrapper size={20} Icon={FaForward}>
+                    </IconWrapper>
+                    <IconWrapper size={20} Icon={FaStepForward} onClick={() => setNowIndex((nowIndex + 1) % videoItems.length)}>
+                    </IconWrapper>
+                </div>
+
                 {/* <p>길이: {duration[0]}</p>
                 <p>좋아요: {videoData.statistics.likeCount}</p> */}
 
                 <Spacer height={10} />
-                <Title3 title="Description" />
+                <Title3 title="Description"/>
                 <Spacer height={10} />
                 <p>
                     {videoData.snippet.description.split('\n').map((line, i) => (

@@ -54,16 +54,16 @@ const Title2 = ({title, subTitle, idf=1}) => {
         </div>
     )
 }
-const Title3 = ({title}) => {
+const Title3 = ({title, line = true}) => {
     return (
         <h3>
             {title}
-            <hr 
+            {line && <hr 
                 style={{
                     width: '30%',
                     margin: '1px 0px',
                 }}
-            />
+            />}
         </h3>
     )
 }
