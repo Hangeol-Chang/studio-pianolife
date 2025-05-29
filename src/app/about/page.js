@@ -9,6 +9,8 @@ import { Title1, Title2, Title3 } from "@/components/common/title";
 import YoutubeCarousel from "@/components/media/youtubeCarousel";
 import { YouTubeEmbed } from "@/components/media/youtubeMulti";
 import { videoInfos } from "./videoInfos.json";
+import getSizedImage from "../api/client/getSizedImage";
+import ResponsiveImage from "@/components/layout/responsiveImaage";
 
 const YoutubeV1 = ({youtubeWidth, youtubeHeight}) => {
     return (
@@ -101,11 +103,10 @@ export default function About() {
     return (
         <div>
             <div className={styles.cover_container}>
-                <Image ref={coverImageRef} className={styles.main_image}
-                    src="/profile/jungwoo_profile.jpg" alt="piano" 
-                    width={1000} height={0} layout="intrinsic"
+                <ResponsiveImage path="/profile" name="jungwoo_profile.png"
+                    ref={coverImageRef} className={styles.main_image}
+                    alt="piano" width={1000} height={0} layout="intrinsic"
                 />
-
                 <div>
                     <h1 className={styles.cover_name_text}  // shadow
                         style={{
