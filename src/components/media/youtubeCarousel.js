@@ -21,7 +21,10 @@ export default function YoutubeCarousel({ videoInfos }) {
     const [nowIndex, setNowIndex] = useState(0);
     const [mounted, setMounted] = useState(false);
 
-    const resizeEvent = () => { setYoutubeWidth(getPageSize().width * 0.8); }
+    const resizeEvent = () => { 
+        console.log('resizeEvent');
+        setYoutubeWidth(getPageSize().width * 0.8); 
+    }
 
     const youtube_wrapper_style= css`
         display: none;

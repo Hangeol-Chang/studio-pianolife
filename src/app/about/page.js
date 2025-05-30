@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import getScrollProgress from "../api/client/getScrollProgress";
-import styles from './about.module.scss';
+import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { Spacer } from "@/components/common/spacer";
 import { Title1, Title2, Title3 } from "@/components/common/title";
 import YoutubeCarousel from "@/components/media/youtubeCarousel";
@@ -11,6 +12,71 @@ import { YouTubeEmbed } from "@/components/media/youtubeMulti";
 import { videoInfos } from "./videoInfos.json";
 import getSizedImage from "../api/client/getSizedImage";
 import ResponsiveImage from "@/components/layout/responsiveImaage";
+
+const CoverContainer = styled.div`
+    position: relative;
+    width: 100%;
+    height: min(120vw, 900px);
+    overflow: hidden;
+    background: linear-gradient(30deg, #e6bec2 10%, #f1dddf 30%, #f2dfe1 90%);
+    background-color: black;
+`;
+
+const CoverNameText = styled.h1`
+    width: 100%;
+    align-items: center;
+    text-align: center;
+    font-family: 'Cafe24Lovingu';
+    font-weight: normal;
+    font-size: min(5vw, 60px);
+    letter-spacing: min(2vw, 20px);
+    color: white;
+    margin: auto;
+    left: 50%;
+    bottom: 10%;
+    position: absolute;
+    z-index: 10;
+    transform: translate(-50%, 0);
+    animation: cover-name-init-slide 1s ease-in-out forwards;
+    @keyframes cover-name-init-slide {
+        from {
+            bottom: 20%;
+            opacity: 0;
+        }
+        to {
+            bottom: 10%;
+            opacity: 1;
+        }
+    }
+`;
+
+const CoverNameTextShadow = styled(CoverNameText)`
+    color: rgba(50, 20, 21, 0.5);
+    padding-left: 8px;
+    padding-bottom: -10px;
+`;
+
+const MainImage = styled(ResponsiveImage)`
+    position: absolute;
+    left: 50%;
+    bottom: 0%;
+    scale: 1;
+    transform: translate(-50%, 0);
+    animation: image-init-slide 1s ease-in-out forwards;
+    z-index: 0;
+    width: 70%;
+    height: auto;
+    @keyframes image-init-slide {
+        from {
+            bottom: -40%;
+            opacity: 0;
+        }
+        to {
+            bottom: 0%;
+            opacity: 1;
+        }
+    }
+`;
 
 const YoutubeV1 = ({youtubeWidth, youtubeHeight}) => {
     return (
@@ -102,26 +168,20 @@ export default function About() {
 
     return (
         <div>
-            <div className={styles.cover_container}>
-                <ResponsiveImage path="/profile" name="jungwoo_profile.png"
-                    ref={coverImageRef} className={styles.main_image}
+            <CoverContainer>
+                <MainImage path="/profile" name="jungwoo_profile.png"
+                    ref={coverImageRef}
                     alt="piano" width={1000} height={0} layout="intrinsic"
                 />
                 <div>
-                    <h1 className={styles.cover_name_text}  // shadow
-                        style={{
-                            paddingLeft: '8px',
-                            paddingBottom: '-10px',
-                            color: 'rgba(50, 20, 21, 0.5)',
-                        }}
-                    >
+                    <CoverNameTextShadow>
                         Go Jeong Woo
-                    </h1>
-                    <h1 className={styles.cover_name_text}>
+                    </CoverNameTextShadow>
+                    <CoverNameText>
                         Go Jeong Woo
-                    </h1>
+                    </CoverNameText>
                 </div>
-            </div>
+            </CoverContainer>
 
             <Spacer height={50} />
             <Title1 title={"공 피 라"} subTitle={"고정우"} />
