@@ -5,7 +5,8 @@ import getSizedImage from "@/app/api/client/getSizedImage";
 function ResponsiveImage({ path, name, ...props }) {
   // SSR에서는 항상 512로 고정
   const baseName = name.substring(0, name.lastIndexOf('.'));
-  const ext = name.split('.').pop();
+  // const ext = name.split('.').pop();
+  const ext = "png"; // resizer가 png로 고정되어있음.
 
   const [src, setSrc] = useState(`${path}/resized/${baseName}_320.${ext}`);
   const [mounted, setMounted] = useState(false);

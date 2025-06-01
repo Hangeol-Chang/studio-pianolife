@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import getPageSize from '@/app/api/client/getPageSize';
+import ResponsiveImage from '../layout/responsiveImaage';
 
 export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent }) {
     const [imageSize, setImageSize] = useState(100);
@@ -21,14 +22,14 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
 
     const scale_up = keyframes`
         0% { transform: scale(1.0); }
-        100% { transform: scale(1.5); }
+        100% { transform: scale(1.3); }
     `;
     const rotate = keyframes`
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     `;
     const scale_down = keyframes`
-        0% { transform: scale(1.4); }
+        0% { transform: scale(1.3); }
         100% { transform: scale(1.0); }
     `;
     
@@ -69,7 +70,7 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
 
         ${index === nowIndex && css`
             display: flex;
-            top: 10%;
+            top: -30%;
             left: 25%;
             animation: ${scale_up} 0.7s linear forwards;
             z-index: 10;
@@ -78,7 +79,7 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
         ${index === (nowIndex - 1 + mediaInfos.length) % mediaInfos.length && css`
             display: flex;
             scale: 1.0;
-            top: -20%;
+            top: -80%;
             left: -20%;
             animation: ${scale_down} 0.7s linear forwards;
             filter: brightness(0.8);
@@ -89,7 +90,7 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
         ${index === (nowIndex + 1) % mediaInfos.length && css`
             display: flex;
             scale: 1.0;
-            top: -20%;
+            top: -80%;
             left: 70%;
             filter: brightness(0.8);
             opacity: 0.3;
@@ -121,9 +122,9 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
                 key={image + index}  
                 css={getDiskWrapperStyle(index)}
             >
-                <img
-                    css={getDiskStyle(index)} src={image} alt="disc"
-                    style={{ width: '100%', height: '100%' }}
+                <ResponsiveImage path={"/fourmusics"} name={image}
+                    css={getDiskStyle(index)}
+                    alt="disk" width={imageSize} height={imageSize}
                 />
                 <div css={disk_hole} />
             </div>
@@ -136,10 +137,11 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
         align-items: center;
         position: relative;
         
-        overflow: hidden;
+        // overflow: hidden;
 
         width: 100%;
-        height: ${imageSize*1.5}px;
+        height: ${imageSize * 0.9}px;
+        z-index: 1;
     `;
 
     return (

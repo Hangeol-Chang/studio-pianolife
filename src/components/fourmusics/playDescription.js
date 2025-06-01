@@ -374,7 +374,7 @@ export default function PlayDescription({ videoIds }) {
             <div css={play_controller_style}>
                 <div css={youtube_container_style}>
                     <YoutubePlayer 
-                        videoId={videoData.id} autoplay={1} size={getPageSize().width - 100} 
+                        videoId={videoData.id} autoplay={0} size={getPageSize().width - 100} 
                         callback={getPlayInfo} isPlaying={isPlaying}
                     />
                 </div>

@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import DiskCarousel from '@/components/fourmusics/diskCarousel';
 import getPageSize from '@/app/api/client/getPageSize'; 
 import PlayDescription from '@/components/fourmusics/playDescription';
+import { Spacer } from '@/components/common/spacer';
 
 export default function FourMusicsMedia() {
     const fourmusics_player = css`
@@ -67,13 +68,15 @@ export default function FourMusicsMedia() {
                         <div css={index_change_button_style_right} onClick={() => changeNowIndex({dir: 1})}></div>
                     </div>
                     <PlayerContainer>
-                        <hr style={{margin: '0px'}} />
+                        {/* <hr style={{margin: '0px'}} /> */}
+                        <Spacer height={10} />
                         <h1 style={{margin: '0px' }}>
                             {mediaInfos[nowIndex].title}
                         </h1> 
                         <h4 style={{margin: '0px' }}>
                             {mediaInfos[nowIndex].date}
                         </h4>
+                        <Spacer height={10} />
                         <hr style={{margin: '0px'}} />
                         {/* <YoutubeList videoIds={mediaInfos[nowIndex].videos} 
                             imageWidth={getPageSize().width * 0.4}

@@ -76,5 +76,21 @@ export default function YoutubePlayer({videoId, autoplay = 0, size = 640, callba
         }
     }, [isPlaying])
 
+    const resizeEvent = () => {
+        if (playerRef.current) {
+            const wid = playerRef.current.getIframe().parentElement.clientWidth;
+            playerRef.current.setSize(wid, wid * 0.5625);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('resize', resizeEvent);
+        resizeEvent(); // 초기 크기 설정
+
+        return () => {
+            window.removeEventListener('resize', resizeEvent);
+        };
+    }, []);
+
     return <div ref={containerRef} />;
 }
