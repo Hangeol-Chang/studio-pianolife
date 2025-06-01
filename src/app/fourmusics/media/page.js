@@ -68,7 +68,7 @@ export default function FourMusicsMedia() {
                         <div css={index_change_button_style_right} onClick={() => changeNowIndex({dir: 1})}></div>
                     </div>
                     <PlayerContainer>
-                        <hr style={{margin: '0px'}} />
+                        {/* <hr style={{margin: '0px'}} /> */}
                         <Spacer height={10} />
                         <h1 style={{margin: '0px' }}>
                             {mediaInfos[nowIndex].title}
