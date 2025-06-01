@@ -39,6 +39,7 @@ const NavButtonBar = styled.div`
     display: flex;
     justify-content: space-around;
     align-items: center;
+    margin: 20px 0;
 `;
 const NavButton = styled.button`
     align-items: center;

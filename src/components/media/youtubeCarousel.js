@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import YoutubePlayer from "./youtubeMulti";
 import getPageSize from "@/app/api/client/getPageSize";
 import { css, keyframes } from '@emotion/react';
+import { IndexChangeBt_Left, IndexChangeBt_Right } from "../common/indexChangeButton";
 
 export default function YoutubeCarousel({ videoInfos }) {
     const [youtubeWidth, setYoutubeWidth] = useState(600);
@@ -93,23 +94,6 @@ export default function YoutubeCarousel({ videoInfos }) {
         height: ${youtubeWidth * 0.5625 + 40}px;
     `;
 
-    const index_change_button_style = css`
-        position: absolute;
-        width: 40%;
-        height: ${mounted ? getPageSize().width * 0.7 + 'px' : 0};
-        z-index: 11;
-        top: 0%;
-        cursor: pointer;
-    `;
-    const index_change_button_style_left = css`
-        ${index_change_button_style};
-        left: 0%;
-    `;
-    const index_change_button_style_right = css`
-        ${index_change_button_style};
-        right: 0%;
-    `;
-
     return (
         <div style={{ position: 'relative', width: '100%' }}>
             <div css={carousel_container_style}>
@@ -133,8 +117,8 @@ export default function YoutubeCarousel({ videoInfos }) {
                     </div>
                 ))} 
             </div>
-            <div css={index_change_button_style_left}  onClick={() => changeNowIndex({dir: -1})}></div>
-            <div css={index_change_button_style_right} onClick={() => changeNowIndex({dir: 1})}></div>
+            <IndexChangeBt_Left onClick={() => changeNowIndex({dir: -1})} />
+            <IndexChangeBt_Right onClick={() => changeNowIndex({dir: 1})} />
         </div>
     )
 }

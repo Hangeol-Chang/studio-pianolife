@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { css, keyframes } from '@emotion/react';
+import { IndexChangeBt_Left, IndexChangeBt_Right } from '../common/indexChangeButton';
 
 export default function Carousel2({imageList, imageWidth }) {
     // check mountecd
@@ -31,7 +32,7 @@ export default function Carousel2({imageList, imageWidth }) {
         100% { transform: scale(1.4); }
     `;
     const scale_down = keyframes`
-        0% { transform: scale(1.4); }
+        0% { }
         100% { transform: scale(1.0); }
     `;
 
@@ -74,6 +75,7 @@ export default function Carousel2({imageList, imageWidth }) {
             animation: ${fade_out} 0.7s linear forwards;
             filter: brightness(0.5);
             opacity: 0.6;
+            z-index: 1;
         `}
 
         ${index === (imageIndex - 1 + imageList.length) % imageList.length && css`
@@ -83,7 +85,7 @@ export default function Carousel2({imageList, imageWidth }) {
             animation: ${scale_down} 0.7s linear forwards;
             filter: brightness(0.5);
             opacity: 1.0;
-            z-index: 1;
+            z-index: 3;
         `}
 
         ${index === (imageIndex + 1) % imageList.length && css`
@@ -92,7 +94,7 @@ export default function Carousel2({imageList, imageWidth }) {
             left: 75%;
             filter: brightness(0.5);
             opacity: 1.0;
-            z-index: 1;
+            z-index: 3;
         `}
 
         ${index === (imageIndex + 2) % imageList.length && css`
@@ -101,15 +103,16 @@ export default function Carousel2({imageList, imageWidth }) {
             animation: ${fade_in} 0.7s linear forwards;
             filter: brightness(0.5);
             opacity: 0.6;
+            z-index: 1;
         `}
     `;
 
-    useEffect(() => {
-        setTimeout(() => changeimageIndex(), 5000);
-    }, [imageIndex]);
+    // useEffect(() => {
+    //     setTimeout(() => changeimageIndex(), 5000);
+    // }, [imageIndex]);
 
-    const changeimageIndex = () => {
-        setImageIndex((imageIndex + 1) % imageList.length);
+    const changeimageIndex = (dir) => {
+        setImageIndex((imageIndex + dir + imageList.length) % imageList.length);
     }
 
     // 최초 1회 로딩될 때 수동으로 지정해줘야 함.
@@ -125,6 +128,9 @@ export default function Carousel2({imageList, imageWidth }) {
                     />
                 ))
             : null }
+
+            <IndexChangeBt_Left onClick={() => changeimageIndex(-1)} />
+            <IndexChangeBt_Right onClick={() => changeimageIndex(1)} />
         </div>
     )
 }

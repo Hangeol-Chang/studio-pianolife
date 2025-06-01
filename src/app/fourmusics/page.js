@@ -9,10 +9,10 @@ import getPageSize from "../api/client/getPageSize";
 import Carousel2 from "@/components/layout/carousel2";
 import { css } from "@emotion/react";
 import { mediaInfos } from "./media.json";
+import { IndexChangeBt_Left } from "@/components/common/indexChangeButton";
 
 export default function FourMusics() {
     const [posterWidth, setPosterWidth] = useState(300);
-    const [videoWidth, setVideoWidth] = useState(300);
 
     const posterImageList = mediaInfos.map(info => info.src);
 
@@ -36,7 +36,6 @@ export default function FourMusics() {
     const resizeEvent = () => {
         const pageSize = getPageSize();
         setPosterWidth(pageSize.width * 0.4);
-        setVideoWidth(pageSize.width * 0.6);
     }
 
     useEffect(() => {
@@ -65,18 +64,30 @@ export default function FourMusics() {
                 4명의 직장인 아마추어 피아노 앙상블
             </p>
 
-            <a href="/fourmusics/media">
+            {/* <a href="/fourmusics/media"> */}
                 <div style={{position: 'relative',}}>
                     <Carousel2
                         imageList={posterImageList}
                         imageWidth={posterWidth}
                     >
                     </Carousel2>
-                    <div css={poster_click_info_style}>
+                    {/* <div css={poster_click_info_style}>
                         포스터 클릭 시 관련 미디어로 연결됩니다.
-                    </div>
+                    </div> */}
                 </div>
-            </a>
+            {/* </a> */}
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                }}
+            >
+                <a href="/fourmusics/media">
+                    연주영상 보러가기 ▷
+                </a>
+            </div>
 
             <Spacer height={20} />
             <Title2 title="Introduction"/>
