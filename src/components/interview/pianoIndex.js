@@ -121,7 +121,6 @@ export default function PianoIndex({ nowIndex, setNowIndex }) {
         height: ${(keyWidth-2)*4.5 + 3}px;
         justify-content: center;
         align-items: top;
-        // background-color: #f0f0f0;  // 색 지울 것.
         position: relative;
 
         overflow: hidden;

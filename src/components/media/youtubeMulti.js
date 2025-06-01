@@ -27,6 +27,7 @@ export default function YoutubePlayer({videoId, autoplay = 0, size = 640}) {
     }
 
     useEffect(() => {
+        console.log('YoutubePlayer size:', size);
         playerRef.current && playerRef.current.setSize(size, size * 0.5625);
     }, [size]);
 
