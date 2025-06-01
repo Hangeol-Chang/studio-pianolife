@@ -27,41 +27,52 @@ const DescriptionContainer = styled.p`
     min-height: 100px;
 `;
 const PullProgressBar = styled.div`
-    width: 100%;
     display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    margin-bottom: 12px;
     min-height: 48px;
     pointer-events: none;
+    justify-content: center;
     visibility: ${({ isPulling }) => (isPulling ? 'visible' : 'hidden')};
+    flex-grow: 1;
 `;
 const NavButtonBar = styled.div`
     width: 100%;
     display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 32px;
-    margin-top: 40px;
-    margin-bottom: 24px;
+    justify-content: space-around;
+    align-items: center;
 `;
 const NavButton = styled.button`
-    background: #fff;
-    border: 2px solid #e6bec2;
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    color: #e6bec2;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    flex-grow: 2;
     cursor: pointer;
-    opacity: 0.9;
-    transition: background 0.2s;
+    transition: all 0.3s ease-in-out;
+
+    border: none;
+`;
+
+const NavButton_Left = styled(NavButton)`
+    background: linear-gradient(to right,
+        #91C4D9 0%, 
+        #FFFFFF 20%,
+        #FFFFFF 100%);
+    background-position: right;
+    background-size: 200% 100%;
+        
     &:hover {
-        background: #f1dddf;
+        background-position: left;
+    }
+`;
+
+const NavButton_Right = styled(NavButton)`
+    background: linear-gradient(to left,
+        #91C4D9 0%, 
+        #FFFFFF 20%,
+        #FFFFFF 100%);
+    background-position: left;
+    background-size: 200% 100%;
+    &:hover {
+        background-position: right;
     }
 `;
 
@@ -162,37 +173,31 @@ export default function Interview() {
                 }
             </InterviewContainer>
             {/* bar: pull-to-next-index progress circle */}
-            <PullProgressBar isPulling={isPulling}>
-                <svg width={barSize} height={barSize}>
-                    <circle
-                        cx={barSize/2}
-                        cy={barSize/2}
-                        r={barRadius}
-                        stroke="#e6bec2"
-                        strokeWidth={barStroke}
-                        fill="none"
-                        opacity={0.2}
-                    />
-                    <circle
-                        cx={barSize/2} cy={barSize/2}
-                        r={barRadius}
-                        stroke="#e6bec2"
-                        strokeWidth={barStroke}
-                        fill="none"
-                        strokeDasharray={barCircum}
-                        strokeDashoffset={barCircum * (1 - Math.min(1, pullDistance/pullThreshold))}
-                        style={{ transition: 'stroke-dashoffset 0.1s' }}
-                    />
-                </svg>
-            </PullProgressBar>
+            
             {/* PC용 인덱스 이동 버튼 */}
             <NavButtonBar>
-                <NavButton onClick={() => setNowIndex((prev) => (prev - 1 + Object.keys(interviewData).length) % Object.keys(interviewData).length)}>
-                    &#8592;
-                </NavButton>
-                <NavButton onClick={() => setNowIndex((prev) => (prev + 1) % Object.keys(interviewData).length)}>
-                    &#8594;
-                </NavButton>
+                <NavButton_Left onClick={() => setNowIndex((prev) => (prev - 1 + Object.keys(interviewData).length) % Object.keys(interviewData).length)}>
+                    ◁
+                </NavButton_Left>
+                <PullProgressBar isPulling={isPulling}>
+                    <svg width={barSize} height={barSize}>
+                        <circle
+                            cx={barSize/2} cy={barSize/2} r={barRadius}
+                            stroke="#e6bec2" strokeWidth={barStroke} 
+                            fill="none" opacity={0.2}
+                        />
+                        <circle
+                            cx={barSize/2} cy={barSize/2} r={barRadius}
+                            stroke="#e6bec2" strokeWidth={barStroke} fill="none"
+                            strokeDasharray={barCircum}
+                            strokeDashoffset={barCircum * (1 - Math.min(1, pullDistance/pullThreshold))}
+                            style={{ transition: 'stroke-dashoffset 0.1s' }}
+                        />
+                    </svg>
+                </PullProgressBar>
+                <NavButton_Right onClick={() => setNowIndex((prev) => (prev + 1) % Object.keys(interviewData).length)}>
+                    ▷
+                </NavButton_Right>
             </NavButtonBar>
         </div> 
     )
