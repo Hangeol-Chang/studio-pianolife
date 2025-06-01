@@ -70,7 +70,7 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
 
         ${index === nowIndex && css`
             display: flex;
-            top: 0%;
+            top: -30%;
             left: 25%;
             animation: ${scale_up} 0.7s linear forwards;
             z-index: 10;
@@ -79,7 +79,7 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
         ${index === (nowIndex - 1 + mediaInfos.length) % mediaInfos.length && css`
             display: flex;
             scale: 1.0;
-            top: -50%;
+            top: -80%;
             left: -20%;
             animation: ${scale_down} 0.7s linear forwards;
             filter: brightness(0.8);
@@ -90,7 +90,7 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
         ${index === (nowIndex + 1) % mediaInfos.length && css`
             display: flex;
             scale: 1.0;
-            top: -50%;
+            top: -80%;
             left: 70%;
             filter: brightness(0.8);
             opacity: 0.3;
@@ -140,7 +140,7 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
         // overflow: hidden;
 
         width: 100%;
-        height: ${imageSize * 1.1}px;
+        height: ${imageSize * 0.9}px;
         z-index: 1;
     `;
 
