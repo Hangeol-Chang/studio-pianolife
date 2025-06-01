@@ -12,7 +12,7 @@ import styled from '@emotion/styled';
 // raw data import
 import { interview as interviewData } from './interview.json';
 import YoutubePlayer from '@/components/media/youtubeSingle';
-import getScrollProgress from '../api/client/getScrollProgress';
+import getPageSize from '../api/client/getPageSize';
 
 const YoutubeContainer = styled.div`
     display: flex;
@@ -166,7 +166,7 @@ export default function Interview() {
                         </DescriptionContainer>
                         {interviewData[nowIndex].youtube &&
                             <YoutubeContainer>
-                                <YoutubePlayer videoId={interviewData[nowIndex].youtube} size={'100%'} autoplay={0}/>
+                                <YoutubePlayer videoId={interviewData[nowIndex].youtube} size={`100%`} autoplay={0}/>
                             </YoutubeContainer>
                         }
                     </>
