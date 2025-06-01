@@ -1,7 +1,7 @@
 {
     "mediaInfos": [
         {
-            "src": "/fourmusics/fourmusics_poster_1.jpg",
+            "src": "fourmusics_poster_1.jpg",
             "title": "Four Colors for Chopin",
             "date": "2023.12",
             "videos" : [
@@ -12,7 +12,7 @@
             ]
         }, 
         {
-            "src": "/fourmusics/fourmusics_poster_2.jpg",
+            "src": "fourmusics_poster_2.jpg",
             "title": "To Europe",
             "date": "2024.06",
             "videos" : [
@@ -23,7 +23,7 @@
             ]
         }, 
         {
-            "src": "/fourmusics/fourmusics_poster_3.jpg",
+            "src": "fourmusics_poster_3.jpg",
             "title": "The Winter",
             "date": "2024.12",
             "videos" : [
@@ -34,7 +34,7 @@
             ]
         },
         {
-            "src": "/fourmusics/fourmusics_poster_4.png",
+            "src": "fourmusics_poster_4.png",
             "title": "Prologue",
             "date": "2025.05",
             "videos" : [

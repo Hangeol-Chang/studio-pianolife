@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import getPageSize from '@/app/api/client/getPageSize';
+import ResponsiveImage from '../layout/responsiveImaage';
 
 export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent }) {
     const [imageSize, setImageSize] = useState(100);
@@ -121,9 +122,9 @@ export default function DiskCarousel({ mediaInfos, nowIndex, changeIndexEvent })
                 key={image + index}  
                 css={getDiskWrapperStyle(index)}
             >
-                <img
-                    css={getDiskStyle(index)} src={image} alt="disc"
-                    style={{ width: '100%', height: '100%' }}
+                <ResponsiveImage path={"/fourmusics"} name={image}
+                    css={getDiskStyle(index)}
+                    alt="disk" width={imageSize} height={imageSize}
                 />
                 <div css={disk_hole} />
             </div>

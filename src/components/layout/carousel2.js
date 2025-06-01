@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { css, keyframes } from '@emotion/react';
 import { IndexChangeBt_Left, IndexChangeBt_Right } from '../common/indexChangeButton';
+import ResponsiveImage from './responsiveImaage';
 
 export default function Carousel2({imageList, imageWidth }) {
     // check mountecd
@@ -120,10 +121,8 @@ export default function Carousel2({imageList, imageWidth }) {
         <div css={image_container_style}>
             {isMounted ?
                 imageList.map((src, index) => (
-                    <Image 
-                        css={GetImageStyle(index)}
-                        key={src+index}
-                        src={src} alt="piano" 
+                    <ResponsiveImage path={"/fourmusics"} name={src} css={GetImageStyle(index)}
+                        key={src+index} alt="poster" 
                         width={imageWidth} height={0} layout="intrinsic"
                     />
                 ))
