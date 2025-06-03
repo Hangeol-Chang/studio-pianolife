@@ -49,7 +49,7 @@ const Title1 = ({title, subTitle, idf=1}) => {
             <div >
                 <div css={music_sheet_container_single_style}>
                     <hr css={music_sheet_line_single_style}/>
-                    <Note index={21} width={20} left={iconLeft} top={-25} />
+                    {/* <Note index={21} width={20} left={iconLeft} top={-25} /> */}
                     {/* <MediumSheet idf={idf} /> */}
                 </div>
             </div>
