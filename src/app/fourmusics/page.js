@@ -2,16 +2,14 @@
 /** @jsxImportSource @emotion/react */
 
 import { Spacer } from "@/components/common/spacer";
-import { Title1, Title2, Title4 } from "@/components/common/title";
-import { useEffect, useRef, useState } from "react";
-import getScrollProgress from "../api/client/getScrollProgress";
+import { Title1, Title2 } from "@/components/common/title";
+import { useEffect, useState } from "react";
 import getPageSize from "../api/client/getPageSize";
 import Carousel2 from "@/components/layout/carousel2";
 import { css } from "@emotion/react";
 import { mediaInfos } from "./media.json";
-import { IndexChangeBt_Left } from "@/components/common/indexChangeButton";
 
-export default function FourMusics() {
+export default function Concerts() {
     const [posterWidth, setPosterWidth] = useState(300);
 
     const posterImageList = mediaInfos.map(info => info.src);
@@ -29,10 +27,6 @@ export default function FourMusics() {
         bottom: 20px;
         z-index: 6;
     `
-
-    const updateScrollBar = () => {
-        const scrollData = getScrollProgress();
-    }
     const resizeEvent = () => {
         const pageSize = getPageSize();
         setPosterWidth(pageSize.width * 0.4);
@@ -41,12 +35,8 @@ export default function FourMusics() {
     useEffect(() => {
         resizeEvent();
 
-        window.addEventListener('scroll', updateScrollBar);
-        window.addEventListener('resize', updateScrollBar);
         window.addEventListener('resize', resizeEvent);
         return () => {
-            window.removeEventListener('scroll', updateScrollBar);
-            window.removeEventListener('resize', updateScrollBar);
             window.removeEventListener('resize', resizeEvent);
         }
     }, []);

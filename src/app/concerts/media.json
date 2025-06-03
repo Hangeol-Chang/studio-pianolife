@@ -1,0 +1,28 @@
+{
+    "mediaInfos": [
+        {
+            "src": "concert_poster_1.png",
+            "title": "슈만, 시인은 말한다.",
+            "date": "2024.02.24",
+            "price" : "10,000원",
+            "videos" : [
+                "JJDmlYblz8w",
+                "YpcGGkCJMxA",
+                "rkFMI3veiv8",
+                "gUN8AoiBhug"
+            ]
+        }, 
+        {
+            "src": "concert_poster_2.png",
+            "title": "쇼팽과 라벨, 춤과 모음곡",
+            "date": "2025.02.15",
+            "price" : "10,000원",
+            "videos" : [
+                "yzlw69uiReE",
+                "aPYA71l1UTI",
+                "c8Vh_BddE7s",
+                "cTffwgqKCOQ"
+            ]
+        } 
+    ]
+}

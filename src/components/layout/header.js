@@ -97,17 +97,13 @@ const sideMenu_style = css`
     right: 0px;
     width: 200px;
     height: 100%;
-    background-color: #f2f2f2; /* Replace with $white2 */
+    background-color: #FFFFFF; /* Replace with $white2 */
     opacity: 0.9;
     box-shadow: -4px 0 6px rgba(50, 50, 50, 0.2);
     transition: transform 0.3s ease-in-out;
     transform: translateX(200px);
 
     z-index: 3;
-
-    @medis (max-width: 768px) { 
-        display: none;
-    }
 `;
 
 const sideMenu_style_open = css`
@@ -153,8 +149,8 @@ const HeaderMenu = ({ toggleMenu, content_style }) => {
                     </Link>
                 </li>
                 <li css={menuItem_style}>
-                    <Link href="/about" onClick={toggleMenu}>
-                        About
+                    <Link href="/concerts" onClick={toggleMenu}>
+                        Concerts
                     </Link>
                 </li>
                 <li css={menuItem_style}>
