@@ -16,7 +16,7 @@ const MainPosterContainer = styled.div`
     flex-direction: ${props => props.viewColumn === 2 ? 'row' : 'column'};
     justify-content: center;
     align-items: ${props => props.viewColumn === 2 ? 'flex-start' : 'center'};
-    margin: 20px;
+    margin: 0px min(5vw, 38.4px);
 `;
 const DescriptionContainer = styled.div`
     flex-grow: 2;
@@ -54,13 +54,24 @@ const BuyButton = styled.button`
     align-self: flex-end;
 `;
 
+const MainPosterImage = styled(ResponsiveImage)`
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    &:hover {
+        transform: scale(1.05);
+    }
+`;
+
 export default function FourMusics() {
     const [posterWidth, setPosterWidth] = useState(300);
     const [prevPosterWidth, setPrevPosterWidth] = useState(300);
     const posterImageList = mediaInfos.map(info => info.src);
     const [viewColumn, setViewColumn] = useState(1);
 
-    const resizeEvent = () => {
+    const resizeEvent= () => {
         const pageSize = getPageSize();
         setPosterWidth(pageSize.width * 0.5);
         
@@ -101,7 +112,7 @@ export default function FourMusics() {
             <Title2 title="Now On" />
 
             <MainPosterContainer viewColumn={viewColumn}>
-                <ResponsiveImage css={main_image_style}
+                <MainPosterImage css={main_image_style}
                     path={"/concerts"} name={mediaInfos[mediaInfos.length - 1].src} 
                     width={posterWidth} height={0} alt="concert_poster" layout="intrinsic"
                 />
@@ -128,9 +139,8 @@ export default function FourMusics() {
 
             <Spacer height={50} />
             <hr></hr>
-            <Spacer height={100} />
-            <hr></hr>
             <Spacer height={50} />
+            <Title2 title="Previous Concerts" />
 
             <PrevConcerts mediaInfos={mediaInfos} imageWidth={prevPosterWidth} />
         </div>
