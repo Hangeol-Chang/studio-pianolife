@@ -196,13 +196,13 @@ h1, h2, h3, h4, h5, h6{
     font-family: 'Pretendard', sans-serif;
     font-weight: 700; // Bold
     color: $black1;
-    margin: 10px clamp(0px, 5vw, 38.4px);
+    margin: 20px clamp(0px, 5vw, 38.4px);
 }
 p {
     font-family: 'Pretendard', sans-serif;
     font-weight: 300;
     color: $black2;
-    margin: 0px clamp(0px, 5vw, 38.4px);
+    margin: 20px clamp(0px, 5vw, 38.4px);
     line-height: 2.0;
 }
 

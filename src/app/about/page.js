@@ -51,9 +51,17 @@ const CoverNameText = styled.h1`
 `;
 
 const CoverNameTextShadow = styled(CoverNameText)`
-    color: rgba(50, 20, 21, 0.5);
+    color: rgba(50, 20, 21, 0.3);
     padding-left: 8px;
     padding-bottom: -10px;
+    font-weight: 900;
+    text-shadow:
+        // 0 0px 6px rgba(50,20,21,0.25),
+        // 0 0 2px rgba(50,20,21,0.5),
+        // 2px 0 0 rgba(50,20,21,0.5),
+        // -2px 0 0 rgba(50,20,21,0.5),
+        0 2px 0 rgba(50,20,21,0.3),
+        0 -2px 0 rgba(50,20,21,0.3);
 `;
 
 const MainImage = styled(ResponsiveImage)`
@@ -66,6 +74,10 @@ const MainImage = styled(ResponsiveImage)`
     z-index: 0;
     width: 70%;
     height: auto;
+    mask-image:
+        linear-gradient(to right, transparent 0%, black 10%, black 80%, transparent 100%),
+        linear-gradient(to left,  transparent 0%, black 10%, black 80%, transparent 100%);
+
     @keyframes image-init-slide {
         from {
             bottom: -40%;
@@ -175,10 +187,10 @@ export default function About() {
                 />
                 <div>
                     <CoverNameTextShadow>
-                        Go Jeong Woo
+                        Studio Piano Life
                     </CoverNameTextShadow>
                     <CoverNameText>
-                        Go Jeong Woo
+                        Studio Piano Life
                     </CoverNameText>
                 </div>
             </CoverContainer>
@@ -186,20 +198,21 @@ export default function About() {
             <Spacer height={50} />
             <Title1 title={"공 피 라"} subTitle={"고정우"} />
             <p>
-                <br />
                 유튜브 채널 &rsquo;공피라-공대생의 piano life&rsquo; 는 건축공학 전공으로 <br />
                 졸업 후 직장 생활을 하며 피아노를 취미로 즐기는 회사원 입니다.
             </p>
-            <Spacer height={100} />
+            <Spacer height={40} />
             <Title2 title="About" subTitle={"유튜브 채널 공피라는 이런걸 해요"} />
             <p>
-                <br /><br />
-                📍피아노 연주 영상 업로드 : 개인 하드웨어로 쓰려 했던 채널이 어쩌다보니 다양해졌어요
-                <br /><br />
+            📍피아노 연주 영상 업로드 : 개인 하드웨어로 쓰려 했던 채널이 어쩌다보니 다양해졌어요
+            </p>
+            <p>
                 📍예술의 전당 대관을 위한 도전 : 아마추어 피아노 앙상블 포뮤직스 (포뮤직스 페이지 참고!)
-                <br /><br />
+            </p>
+            <p>
                 📍아마추어 인터뷰 : 본격 아마추어 음악인 인터뷰 &rsquo;아마추어를 만나다&rsquo;
-                <br /><br />
+            </p>
+            <p>
                 📍연주회 기획 : 아마추어 음악인들을 위한 무대 기획<br />
             </p>
             <div style={{paddingLeft: '1.5em'}}>

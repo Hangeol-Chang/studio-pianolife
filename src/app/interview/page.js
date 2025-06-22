@@ -13,6 +13,7 @@ import styled from '@emotion/styled';
 import { interview as interviewData } from './interview.json';
 import YoutubePlayer from '@/components/media/youtubeSingle';
 import getPageSize from '../api/client/getPageSize';
+import DropText from '@/components/interview/dropText';
 
 const YoutubeContainer = styled.div`
     display: flex;
@@ -23,7 +24,7 @@ const YoutubeContainer = styled.div`
 const InterviewContainer = styled.div`
     width: 100%;
 `;
-const DescriptionContainer = styled.p`
+const DescriptionContainer = styled.div`
     min-height: 100px;
 `;
 const PullProgressBar = styled.div`
@@ -78,7 +79,7 @@ const NavButton_Right = styled(NavButton)`
 `;
 
 export default function Interview() {
-    const [nowIndex, setNowIndex] = useState(1);
+    const [nowIndex, setNowIndex] = useState(0);
     const [pullDistance, setPullDistance] = useState(0);
     const [isPulling, setIsPulling] = useState(false);
     const pullThreshold = 80; // px
@@ -152,27 +153,47 @@ export default function Interview() {
             <Spacer height={20} />
             <PianoIndex nowIndex={nowIndex} setNowIndex={setNowIndex_} />
 
-            <InterviewContainer>
-                {interviewData[nowIndex] && 
-                    <>
-                        <Spacer height={20} />
-                        <Title2 title={interviewData[nowIndex].title} />
-                        <DescriptionContainer>
-                            {interviewData[nowIndex].description.split('\n').map((line, i) => (
-                                <span key={i}>
-                                    {line}
-                                    <br />
-                                </span>
-                            ))}
-                        </DescriptionContainer>
-                        {interviewData[nowIndex].youtube &&
-                            <YoutubeContainer>
-                                <YoutubePlayer videoId={interviewData[nowIndex].youtube} size={`100%`} autoplay={0}/>
-                            </YoutubeContainer>
-                        }
-                    </>
-                }
-            </InterviewContainer>
+            {
+                nowIndex == 0 ?
+                <div>
+                    {/* <Title2 title={"아마추어를 만나다."} /> */}
+                    <div
+                        css={css`
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            margin: 20px 0;
+                        `}
+                    >
+                        <DropText text={`-아마추어를 만나다-`} />
+                    </div>
+
+                    <p>
+                        페이지를 스크롤해서 아마추어를 만나다의 인터뷰를 확인해보세요!
+                    </p>
+                </div>
+                : 
+                <InterviewContainer>
+                    {interviewData[nowIndex] && 
+                        <>
+                            <Spacer height={20} />
+                            <Title2 title={interviewData[nowIndex].title} />
+                            <DescriptionContainer>
+                                {interviewData[nowIndex].description.split('\n').map((line, i) => (
+                                    <p key={i}>
+                                        {line}
+                                    </p>
+                                ))}
+                            </DescriptionContainer>
+                            {interviewData[nowIndex].youtube &&
+                                <YoutubeContainer>
+                                    <YoutubePlayer videoId={interviewData[nowIndex].youtube} size={`100%`} autoplay={0}/>
+                                </YoutubeContainer>
+                            }
+                        </>
+                    }
+                </InterviewContainer>
+            }
             {/* bar: pull-to-next-index progress circle */}
             
             {/* PC용 인덱스 이동 버튼 */}
