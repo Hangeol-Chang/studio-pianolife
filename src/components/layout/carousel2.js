@@ -15,6 +15,10 @@ export default function Carousel2({imageList, imageWidth }) {
         return () => { setIsMounted(false);  }
     }, []);
 
+    useEffect(() => {
+        console.log(imageList);
+    }, [imageList] );
+
     const [imageIndex, setImageIndex] = useState(0);
 
     const image_container_style = css`
@@ -120,7 +124,12 @@ export default function Carousel2({imageList, imageWidth }) {
     return(
         <div css={image_container_style}>
             {isMounted ?
-                imageList.map((src, index) => (
+                imageList?.map((src, index) => (
+                    src.startsWith('http') ?
+                    <Image src={src} css={GetImageStyle(index)}
+                        key={src+index} alt="poster" 
+                        width={imageWidth} height={0} layout="intrinsic" />
+                    :
                     <ResponsiveImage path={"/fourmusics"} name={src} css={GetImageStyle(index)}
                         key={src+index} alt="poster" 
                         width={imageWidth} height={0} layout="intrinsic"

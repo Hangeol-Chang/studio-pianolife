@@ -259,9 +259,6 @@ export default function PlayDescription({ videoIds }) {
             parseDuration(data.items[nowIndex].contentDetails.duration);
             return data.items;
         }
-    
-        // 전처리
-
     }
 
     // 하나만
