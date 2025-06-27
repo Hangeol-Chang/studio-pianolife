@@ -188,7 +188,7 @@ export default function Interview() {
                             {interviewData[nowIndex].youtube &&
                                 <YoutubeContainer>
                                     <YoutubePlayer videoId={interviewData[nowIndex].youtube} size={`100%`} autoplay={0}/>
-                                </YoutubeContainer>
+                                </YoutubeContainer> 
                             }
                         </>
                     }

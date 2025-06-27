@@ -98,8 +98,9 @@ export default function YoutubeCarousel({ videoInfos }) {
         <div style={{ position: 'relative', width: '100%' }}>
             <div css={carousel_container_style}>
                 {videoInfos.map((video_info, index) => (
+                    video_info.videoId? 
                     <div key={video_info.videoId} css={getYoutubeWrapperStyle(index)}>
-                        <div css={css` 
+                        <div css={css`
                                 display: flex;
                                 width: 100%;
                                 justify-content: left;
@@ -112,6 +113,13 @@ export default function YoutubeCarousel({ videoInfos }) {
                         </div>
                         <YoutubePlayer 
                             videoId={video_info.videoId}
+                            size={youtubeWidth}
+                        />
+                    </div>
+                    : 
+                    <div key={video_info} css={getYoutubeWrapperStyle(index)}>
+                        <YoutubePlayer 
+                            videoId={video_info}
                             size={youtubeWidth}
                         />
                     </div>
