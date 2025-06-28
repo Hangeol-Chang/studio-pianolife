@@ -64,6 +64,12 @@ const styles = css`
         font-weight: normal;
         font-style: normal;
     }
+    @font-face {
+        font-family: 'LeferiPoint-SpecialItalicA';
+        src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/LeferiPoint-SpecialItalicA.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
 
     body {
         font-family: 'Pretendard', sans-serif;
