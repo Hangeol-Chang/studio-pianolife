@@ -82,9 +82,12 @@ export default function Footer() {
                 {/* left part */}
                 <div css={footer_left_part_style}>
                     <p css={css`text-align: start;`}>
-                        company. -- / STUDIO PIANOLIFE / owner. 고정우 / phonnumber. 010-XXXX-XXXX
+                        company. STUDIO PIANOLIFE / owner. 고정우 / phonnumber. 010-XXXX-XXXX
                         <br />
-                        business license. XXX-XX-XXXXX / mail. jwgo0311@gmail.com
+                        Contact. (인터뷰, 연주회 참가 문의)
+                        <br />
+                        instagram. @pianolife38 / mail. jwgo0311@gmail.com
+                        <br />
                         <br />
                         © 2024 Hangeol-Chang. All rights reserved.
                     </p>

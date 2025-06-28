@@ -14,6 +14,7 @@ import { interview as interviewData } from './interview.json';
 import YoutubePlayer from '@/components/media/youtubeSingle';
 import getPageSize from '../api/client/getPageSize';
 import DropText from '@/components/interview/dropText';
+import Carousel2 from '@/components/layout/carousel2';
 
 const YoutubeContainer = styled.div`
     display: flex;
@@ -77,6 +78,62 @@ const NavButton_Right = styled(NavButton)`
         background-position: right;
     }
 `;
+
+const YoutubeThumbnailCarousel = ({video_infos}) => {
+    const [thumbnails, setThumbnails] = useState([]);
+    const [pageWidth, setPageWidth] = useState(400); // 기본값
+
+    useEffect(() => {
+        const fetchThumbnails = async () => {
+            try {
+                const result = await video_infos; // Promise를 await로 기다림
+                console.log('Fetched thumbnails:', result); // 디버깅용
+                setThumbnails(result);
+            } catch (error) {
+                console.error('Error fetching thumbnails:', error);
+            } 
+        };
+
+        fetchThumbnails();
+    }, [video_infos]);
+
+    useEffect(() => {
+        // 클라이언트 사이드에서만 getPageSize 호출
+        if (typeof window !== 'undefined') {
+            setPageWidth(getPageSize().width);
+            
+            const handleResize = () => {
+                setPageWidth(getPageSize().width);
+            };
+            window.addEventListener('resize', handleResize);
+            return () => window.removeEventListener('resize', handleResize);
+        }
+    }, []);
+
+    const carouselItems = thumbnails.map((t, index) => {
+        console.log('Carousel item:', t.thumbnails.medium); // 디버깅용
+        return t.thumbnails.medium;
+    });
+
+    console.log('Final carousel items:', carouselItems); // 디버깅용
+
+    return (
+        thumbnails.length > 0 &&
+        <div>
+            <Carousel2
+                imageList={carouselItems}
+                imageWidth={pageWidth * 0.8}
+            />
+
+            {/* {thumbnails.map((thumbnail, index) => (
+                <div key={index}>
+                    <img src={thumbnail.thumbnails.medium} alt={thumbnail.title} />
+                    <p>{thumbnail.title}</p>
+                </div>
+            ))} */}
+        </div>
+    );
+}
 
 export default function Interview() {
     const [nowIndex, setNowIndex] = useState(0);
@@ -145,6 +202,51 @@ export default function Interview() {
         window.scrollTo({ top: 0, behavior: 'auto' });
     }, [nowIndex]);
 
+
+    // 유튜브 썸네일 가져오기
+    async function getVideoThumbnails(vidList) {
+        const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY; // 환경 변수로 관리
+
+        if (process.env.NODE_ENV === 'production') {
+            // 배포(Production) 환경에서만 실행할 코드
+            const res = await fetch(
+                `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${vidList.join(',')}&key=${API_KEY}`,
+                { cache: 'no-store' } // App Router SSR을 사용하는 경우
+            );
+            if (!res.ok) {
+                throw new Error('Failed to fetch video thumbnails');
+            }
+            const data = await res.json();
+            
+            // 썸네일 URL들을 추출해서 반환
+            return data.items.map(item => ({
+                videoId: item.id,
+                title: item.snippet.title,
+                thumbnails: {
+                    default: item.snippet.thumbnails.default?.url,
+                    medium: item.snippet.thumbnails.medium?.url,
+                    high: item.snippet.thumbnails.high?.url,
+                    standard: item.snippet.thumbnails.standard?.url,
+                    maxres: item.snippet.thumbnails.maxres?.url
+                }
+            }));
+
+        } else {
+            // 개발(Development) 환경에서는 간단한 YouTube 썸네일 URL 구조 사용
+            return vidList.map(videoId => ({
+                videoId: videoId,
+                title: `Test Video ${videoId}`,
+                thumbnails: {
+                    default: `https://img.youtube.com/vi/${videoId}/default.jpg`,
+                    medium: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                    high: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                    standard: `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                    maxres: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+                }
+            }));
+        }
+    }
+
     return (
         <div>
             <Spacer height={20} />
@@ -156,8 +258,8 @@ export default function Interview() {
             {
                 nowIndex == 0 ?
                 <div>
-                    {/* <Title2 title={"아마추어를 만나다."} /> */}
-                    <div
+                    <Title2 title={"아마추어를 만나다."} />
+                    {/* <div
                         css={css`
                             display: flex;
                             justify-content: center;
@@ -166,10 +268,10 @@ export default function Interview() {
                         `}
                     >
                         <DropText text={`-아마추어를 만나다-`} />
-                    </div>
+                    </div> */}
 
                     <p>
-                        페이지를 스크롤해서 아마추어를 만나다의 인터뷰를 확인해보세요!
+                        아마추어 연주자들을 만나 그들의 이야기와 음악을 들어보는 시간
                     </p>
                 </div>
                 : 
@@ -188,14 +290,17 @@ export default function Interview() {
                             {interviewData[nowIndex].youtube &&
                                 <YoutubeContainer>
                                     <YoutubePlayer videoId={interviewData[nowIndex].youtube} size={`100%`} autoplay={0}/>
-                                </YoutubeContainer>
+                                </YoutubeContainer> 
                             }
                         </>
                     }
                 </InterviewContainer>
             }
             {/* bar: pull-to-next-index progress circle */}
-            
+
+            {/* image carousel */}
+            <YoutubeThumbnailCarousel video_infos={getVideoThumbnails(Object.values(interviewData).map(item => item.youtube).filter(youtube => youtube))} />
+
             {/* PC용 인덱스 이동 버튼 */}
             <NavButtonBar>
                 <NavButton_Left onClick={() => setNowIndex((prev) => (prev - 1 + Object.keys(interviewData).length) % Object.keys(interviewData).length)}>

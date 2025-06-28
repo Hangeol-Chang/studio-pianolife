@@ -1,16 +1,13 @@
 'use client';
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import getScrollProgress from "../api/client/getScrollProgress";
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { Spacer } from "@/components/common/spacer";
 import { Title1, Title2, Title3 } from "@/components/common/title";
 import YoutubeCarousel from "@/components/media/youtubeCarousel";
 import { YouTubeEmbed } from "@/components/media/youtubeMulti";
 import { videoInfos } from "./videoInfos.json";
-import getSizedImage from "../api/client/getSizedImage";
 import ResponsiveImage from "@/components/layout/responsiveImaage";
 
 const CoverContainer = styled.div`
@@ -26,10 +23,10 @@ const CoverNameText = styled.h1`
     width: 100%;
     align-items: center;
     text-align: center;
-    font-family: 'Cafe24Lovingu';
+    font-family: 'LeferiPoint-SpecialItalicA';
     font-weight: normal;
-    font-size: min(5vw, 60px);
-    letter-spacing: min(2vw, 20px);
+    font-size: min(5vw, 50px);
+    letter-spacing: min(1vw, 8px);
     color: white;
     margin: auto;
     left: 50%;
@@ -228,7 +225,6 @@ export default function About() {
             
             <Spacer height={30} />
             <YoutubeCarousel videoInfos={video_infos} />
-                
             <Spacer height={50} />
         </div>
     );

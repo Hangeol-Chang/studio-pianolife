@@ -45,7 +45,10 @@ export default function PrevConcerts({ mediaInfos, imageWidth = 300 }) {
                     <PosterImage path="/concerts" name={info.src} 
                         width={imageWidth} height={0} alt={`concert_poster_${index}`} layout="intrinsic"
                         style={{ borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
-                        onClick={() => router.push(`/concerts/detail?title=${info.title}`)}
+                        onClick={() => {
+                            localStorage.setItem('concertInfo', JSON.stringify(info));
+                            router.push('/concerts/detail');
+                        }}
                     />
                     <div>[ {info.title} ]</div>
                 </ConcertContainer>
