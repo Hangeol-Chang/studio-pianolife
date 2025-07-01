@@ -49,13 +49,6 @@ const CoverNameText = styled.h1`
         4px 4px 2px rgba(50, 20, 21, 0.6);
 `;
 
-const CoverNameTextShadow = styled(CoverNameText)`
-    // color: rgba(50, 20, 21, 0.3);
-    // padding-left: 8px;
-    // padding-bottom: -10px;
-    // font-weight: 900;
-`;
-
 const MainImage = styled(ResponsiveImage)`
     position: absolute;
     left: 50%;
@@ -82,93 +75,9 @@ const MainImage = styled(ResponsiveImage)`
     }
 `;
 
-const YoutubeV1 = ({youtubeWidth, youtubeHeight}) => {
-    return (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignContent: 'center',
-                justifyContent: 'center',
-                alignItems: 'center',
-                
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                // padding: '10px',
-                gap: '10px',
-                margin: '0 5vw',
-            }}
-        >
-            <YouTubeEmbed videoId="vDs4sTqhmQg" width={youtubeWidth} height={youtubeHeight} />
-
-            <div
-                style={{
-                    display: 'flex',
-                    width: '100%', height: '100%',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: 'px',
-                }}
-            >
-                <YouTubeEmbed videoId="jkb3VdzEn2M" width={youtubeWidth/3*2} height={youtubeHeight/3*2 + 5} />
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '5px',
-                }}>
-                    <YouTubeEmbed videoId="U9C5GZ-G69A" width={youtubeWidth/3} height={youtubeHeight/3} />
-                    <YouTubeEmbed videoId="mXJeCx12igw" width={youtubeWidth/3} height={youtubeHeight/3} />
-                </div>
-
-            </div>
-            <YouTubeEmbed videoId="kYHdmaMZmwo" width={youtubeWidth/3} height={youtubeHeight/3} />
-            <YouTubeEmbed videoId="mja0TKqjtWk" width={youtubeWidth/3} height={youtubeHeight/3} />
-
-        </div>
-    )
-}
-
-
 export default function About() {
     const coverImageRef = useRef(null);
-
-    const [youtubeWidth, setYoutubeWidth] = useState(200);
-    const [youtubeHeight, setYoutubeHeight] = useState(200);
-
     const video_infos = videoInfos;
-
-    const updateScrollBar = () => {
-        const scrollData = getScrollProgress();
-    }
-
-    const resizeEvent = () => {
-        const docWidth = document.documentElement.clientWidth;
-
-        setYoutubeWidth(docWidth * 0.9);
-        setYoutubeHeight(docWidth * 0.5);
-    }
-
-    const mainImageControl = (scrollData) => {
-        // const mainImage = document.querySelector(`.${styles.main_image}`);
-        // mainImage.style.right = `${-scrollData.scrollPosition * 40 / 1000 - 20}%`;
-    }
-
-    useEffect(() => {
-        // const mainImage = document.querySelector(`.${styles.main_image}`);
-        // mainImage.addEventListener('animationend', () => {
-        //     mainImage.style.animation = 'none'; 
-        // });
-        resizeEvent();
-
-        window.addEventListener('scroll', updateScrollBar);
-        window.addEventListener('resize', updateScrollBar);
-        window.addEventListener('resize', resizeEvent);
-        return () => {
-            window.removeEventListener('scroll', updateScrollBar);
-            window.removeEventListener('resize', updateScrollBar);
-            window.removeEventListener('resize', resizeEvent);
-        }
-
-    }, []);
 
     return (
         <div>
@@ -178,9 +87,6 @@ export default function About() {
                     alt="piano" width={1000} height={0} layout="intrinsic"
                 />
                 <div>
-                    <CoverNameTextShadow>
-                        Studio Piano Life
-                    </CoverNameTextShadow>
                     <CoverNameText>
                         Studio Piano Life
                     </CoverNameText>
