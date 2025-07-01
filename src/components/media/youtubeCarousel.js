@@ -59,6 +59,12 @@ export default function YoutubeCarousel({ videoInfos }) {
             opacity: 1;
         `}
 
+        ${index === (nowIndex - 2 + videoInfos.length) % videoInfos.length && css`
+            display: flex;
+            left: -160%;
+            opacity: 0.25;
+        `}
+
         ${index === (nowIndex - 1 + videoInfos.length) % videoInfos.length && css`
             display: flex;
             left: -75%;
@@ -69,6 +75,12 @@ export default function YoutubeCarousel({ videoInfos }) {
             display: flex;
             left: 95%;
             opacity: 0.5;
+        `}
+
+        ${index === (nowIndex + 2) % videoInfos.length && css`
+            display: flex;
+            left: 180%;
+            opacity: 0.25;
         `}
     `;
 

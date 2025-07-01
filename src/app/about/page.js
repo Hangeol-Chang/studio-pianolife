@@ -45,20 +45,15 @@ const CoverNameText = styled.h1`
             opacity: 1;
         }
     }
+    text-shadow:
+        4px 4px 2px rgba(50, 20, 21, 0.6);
 `;
 
 const CoverNameTextShadow = styled(CoverNameText)`
-    color: rgba(50, 20, 21, 0.3);
-    padding-left: 8px;
-    padding-bottom: -10px;
-    font-weight: 900;
-    text-shadow:
-        // 0 0px 6px rgba(50,20,21,0.25),
-        // 0 0 2px rgba(50,20,21,0.5),
-        // 2px 0 0 rgba(50,20,21,0.5),
-        // -2px 0 0 rgba(50,20,21,0.5),
-        0 2px 0 rgba(50,20,21,0.3),
-        0 -2px 0 rgba(50,20,21,0.3);
+    // color: rgba(50, 20, 21, 0.3);
+    // padding-left: 8px;
+    // padding-bottom: -10px;
+    // font-weight: 900;
 `;
 
 const MainImage = styled(ResponsiveImage)`
