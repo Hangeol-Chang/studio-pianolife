@@ -102,17 +102,13 @@ export default function YoutubeCarousel({ videoInfos }) {
         // 일정 거리(100px) 이상 움직였을 때 인덱스 변경
         const threshold = getPageSize().width * 0.1; // 화면 너비의 15%
         const deltaX = startX - clientX;
-        console.log('handleEnd', startX, clientX, deltaX, threshold);
         
         if (Math.abs(deltaX) > threshold) {
-            console.log('change index', deltaX);
             if (deltaX < 0) {
                 // 오른쪽으로 드래그 - 이전 슬라이드
-                console.log('change index left');
                 changeNowIndex({ dir: -1 });
             } else {
                 // 왼쪽으로 드래그 - 다음 슬라이드
-                console.log('change index right');
                 changeNowIndex({ dir: 1 });
             }
         } else {
@@ -142,17 +138,17 @@ export default function YoutubeCarousel({ videoInfos }) {
     // 터치 이벤트
     const handleTouchStart = (e) => {
         e.preventDefault(); // 스크롤 방지
-        handleStart(e.touches[0].clientX);
+        handleStart(e.changedTouches[0].clientX);
     };
 
     const handleTouchMove = (e) => {
         e.preventDefault(); // 스크롤 방지
-        handleMove(e.touches[0].clientX);
+        handleMove(e.changedTouches[0].clientX);
     };
 
     const handleTouchEnd = (e) => {
         e.preventDefault();
-        handleEnd(e.touches[0].clientX);
+        handleEnd(e.changedTouches[0].clientX);
     };
 
     useEffect(() => {
@@ -230,14 +226,21 @@ export default function YoutubeCarousel({ videoInfos }) {
                 ))} 
             </div>
             <IndexChangeBt_Left 
-                onClick={() => changeNowIndex({dir: -1})} 
+                // onClick={() => changeNowIndex({dir: -1})} 
                 onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
             />
-            <IndexChangeBt_Right onClick={() => changeNowIndex({dir: 1})} 
+            <IndexChangeBt_Right 
+                // onClick={() => changeNowIndex({dir: 1})} 
                 onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
