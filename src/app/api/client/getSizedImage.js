@@ -17,9 +17,9 @@ const getSizedImage = (path, name) => {
     // name에서 확장자와 경로를 분리
     const baseName = name.substring(0, name.lastIndexOf('.'));
     // const ext = name.split('.').pop();
-    const ext = "png"; // resizer가 png로 고정되어있음.
+    const ext = "webp";
 
     return `${path}/resized/${baseName}_${size}.${ext}`;
 };
 
-export default getSizedImage;
+export default getSizedImage; 

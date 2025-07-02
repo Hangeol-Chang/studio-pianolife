@@ -5,10 +5,11 @@ import { Spacer } from "@/components/common/spacer";
 import { Title1, Title2 } from "@/components/common/title";
 import { useEffect, useState } from "react";
 import getPageSize from "../api/client/getPageSize";
-import Carousel2 from "@/components/layout/carousel";
+import Carousel from "@/components/layout/carousel";
 import { css } from "@emotion/react";
 import { mediaInfos } from "./media.json";
 import { SP } from "next/dist/shared/lib/utils";
+import YoutubePlayer from "@/components/media/youtubeSingle";
 
 export default function Concerts() {
     const [posterWidth, setPosterWidth] = useState(300);
@@ -59,16 +60,19 @@ export default function Concerts() {
 
             {/* <a href="/fourmusics/media"> */}
                 <div style={{position: 'relative',}}>
-                    <Carousel2
+                    <Carousel
                         imageList={posterImageList}
                         imageWidth={posterWidth}
+                        imageGap={20}
+                        autoscroll={2}
                     >
-                    </Carousel2>
+                    </Carousel>
                     {/* <div css={poster_click_info_style}>
                         포스터 클릭 시 관련 미디어로 연결됩니다.
                     </div> */}
                 </div>
             {/* </a> */}
+            <Spacer height={posterWidth} />
             <div
                 style={{
                     display: 'flex',
@@ -144,16 +148,19 @@ export default function Concerts() {
             <div
                 style={{
                     display: 'flex',
+                    flexDirection: 'column',
+                    gap: '20px',
                     justifyContent: 'center',
                     alignItems: 'center',
                     width: '100%',
                 }}
             >
+                <YoutubePlayer videoId="DUHS00iJGwc" />
                 <a href="/fourmusics/media">
                     더 많은 연주영상 보러가기 ▷
                 </a>
             </div>
-            <Spacer height={20} />
+            <Spacer height={40} />
         </div>
     )
 }
