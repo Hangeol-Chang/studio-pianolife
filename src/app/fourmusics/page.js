@@ -5,7 +5,7 @@ import { Spacer } from "@/components/common/spacer";
 import { Title1, Title2 } from "@/components/common/title";
 import { useEffect, useState } from "react";
 import getPageSize from "../api/client/getPageSize";
-import Carousel2 from "@/components/layout/carousel2";
+import Carousel2 from "@/components/layout/carousel";
 import { css } from "@emotion/react";
 import { mediaInfos } from "./media.json";
 import { SP } from "next/dist/shared/lib/utils";

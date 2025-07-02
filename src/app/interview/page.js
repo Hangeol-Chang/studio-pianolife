@@ -14,7 +14,7 @@ import { interview as interviewData } from './interview.json';
 import YoutubePlayer from '@/components/media/youtubeSingle';
 import getPageSize from '../api/client/getPageSize';
 import DropText from '@/components/interview/dropText';
-import Carousel2 from '@/components/layout/carousel2';
+import Carousel from '@/components/layout/carousel';
 
 const YoutubeContainer = styled.div`
     display: flex;
@@ -87,7 +87,7 @@ const YoutubeThumbnailCarousel = ({video_infos}) => {
         const fetchThumbnails = async () => {
             try {
                 const result = await video_infos; // Promise를 await로 기다림
-                console.log('Fetched thumbnails:', result); // 디버깅용
+                // console.log('Fetched thumbnails:', result); // 디버깅용
                 setThumbnails(result);
             } catch (error) {
                 console.error('Error fetching thumbnails:', error);
@@ -111,18 +111,17 @@ const YoutubeThumbnailCarousel = ({video_infos}) => {
     }, []);
 
     const carouselItems = thumbnails.map((t, index) => {
-        console.log('Carousel item:', t.thumbnails.medium); // 디버깅용
         return t.thumbnails.medium;
     });
-
-    console.log('Final carousel items:', carouselItems); // 디버깅용
 
     return (
         thumbnails.length > 0 &&
         <div>
-            <Carousel2
+            <Carousel
                 imageList={carouselItems}
                 imageWidth={pageWidth * 0.8}
+                imageGap={pageWidth * 0.1}
+                autoscroll={1} 
             />
 
             {/* {thumbnails.map((thumbnail, index) => (
@@ -273,6 +272,8 @@ export default function Interview() {
                     <p>
                         아마추어 연주자들을 만나 그들의 이야기와 음악을 들어보는 시간
                     </p>
+                    <YoutubeThumbnailCarousel video_infos={getVideoThumbnails(Object.values(interviewData).map(item => item.youtube).filter(youtube => youtube))} />
+
                 </div>
                 : 
                 <InterviewContainer>
@@ -297,9 +298,6 @@ export default function Interview() {
                 </InterviewContainer>
             }
             {/* bar: pull-to-next-index progress circle */}
-
-            {/* image carousel */}
-            <YoutubeThumbnailCarousel video_infos={getVideoThumbnails(Object.values(interviewData).map(item => item.youtube).filter(youtube => youtube))} />
 
             {/* PC용 인덱스 이동 버튼 */}
             <NavButtonBar>
