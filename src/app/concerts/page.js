@@ -10,6 +10,7 @@ import { mediaInfos } from "./media.json";
 import ResponsiveImage from "@/components/layout/responsiveImaage";
 import styled from '@emotion/styled';
 import PrevConcerts from "@/components/concerts/prevConcerts";
+import { useRouter } from "next/navigation";
 
 const MainPosterContainer = styled.div`
     display: flex;
@@ -60,6 +61,7 @@ const MainPosterImage = styled(ResponsiveImage)`
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
+    cursor: pointer;
     &:hover {
         transform: scale(1.05);
     }
@@ -68,8 +70,9 @@ const MainPosterImage = styled(ResponsiveImage)`
 export default function FourMusics() {
     const [posterWidth, setPosterWidth] = useState(300);
     const [prevPosterWidth, setPrevPosterWidth] = useState(300);
-    const posterImageList = mediaInfos.map(info => info.src);
     const [viewColumn, setViewColumn] = useState(1);
+    const router = useRouter();
+    
 
     const resizeEvent= () => {
         const pageSize = getPageSize();
@@ -115,6 +118,10 @@ export default function FourMusics() {
                 <MainPosterImage css={main_image_style}
                     path={"/concerts"} name={mediaInfos[mediaInfos.length - 1].src} 
                     width={posterWidth} height={0} alt="concert_poster" layout="intrinsic"
+                    onClick={() => {
+                        localStorage.setItem('concertInfo', JSON.stringify(mediaInfos[mediaInfos.length - 1]));
+                        router.push('/concerts/detail');
+                    }}
                 />
                 <DescriptionContainer width={viewColumn === 2 ? '100%' : `${posterWidth}px`}>
                     <div>

@@ -66,7 +66,6 @@ export default function Carousel({imageList, imageWidth = 300, imageGap = 30,  a
 
         // object-fit: cover;
         position : absolute;
-        // transition: all ${autoscroll * scrollConst} ease-in-out;
         border-radius: 4px;
 
         display: none;
@@ -219,7 +218,7 @@ export default function Carousel({imageList, imageWidth = 300, imageGap = 30,  a
         if (autoscroll > 0) {
             const interval = setInterval(() => {
                 changeimageIndex(1);
-            }, autoscroll * scrollConst);
+            }, scrollConst * autoscroll);
 
             return () => clearInterval(interval);
         }
