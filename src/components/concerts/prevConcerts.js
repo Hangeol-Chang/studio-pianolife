@@ -40,19 +40,23 @@ export default function PrevConcerts({ mediaInfos, imageWidth = 300 }) {
 
     return (
         <ImageListContainer>
-            {mediaInfos.map((info, index) => (
-                <ConcertContainer key={index} style={{ marginBottom: '20px' }}>
-                    <PosterImage path="/concerts" name={info.src} 
-                        width={imageWidth} height={0} alt={`concert_poster_${index}`} layout="intrinsic"
-                        style={{ borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
-                        onClick={() => {
-                            localStorage.setItem('concertInfo', JSON.stringify(info));
-                            router.push('/concerts/detail');
-                        }}
-                    />
-                    <div>[ {info.title} ]</div>
-                </ConcertContainer>
-            ))}
+            {mediaInfos
+                .slice(0, -1) // 마지막 인덱스 제거
+                .reverse() // 배열 순서 뒤집기 (뒷 인덱스부터)
+                .map((info, index) => (
+                    <ConcertContainer key={index} style={{ marginBottom: '20px' }}>
+                        <PosterImage path="/concerts" name={info.src} 
+                            width={imageWidth} height={0} alt={`concert_poster_${index}`} layout="intrinsic"
+                            style={{ borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+                            onClick={() => {
+                                localStorage.setItem('concertInfo', JSON.stringify(info));
+                                router.push('/concerts/detail');
+                            }}
+                        />
+                        <div>[ {info.title} ]</div>
+                    </ConcertContainer>
+                ))
+            }
         </ImageListContainer>
     );
 }
