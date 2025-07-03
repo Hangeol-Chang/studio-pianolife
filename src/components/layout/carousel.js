@@ -8,6 +8,8 @@ import { css, keyframes } from '@emotion/react';
 import { IndexChangeBt_Left, IndexChangeBt_Right } from '../common/indexChangeButton';
 import ResponsiveImage from './responsiveImaage';
 import App from 'next/app';
+import { getPageFiles } from 'next/dist/server/get-page-files';
+import getPageSize from '@/app/api/client/getPageSize';
 
 // autoscroll ? -> scroll speed로 사용
 export default function Carousel({imageList, imageWidth = 300, imageGap = 30,  autoscroll = 0 }) {
@@ -25,7 +27,6 @@ export default function Carousel({imageList, imageWidth = 300, imageGap = 30,  a
     `;
 
     const [nowIndex, setNowIndex] = useState(0);
-    const [scrollConst, setScrollConst] = useState(3000);
     const imageContainerRef = useRef(null);
     const rootsRef = useRef(new Map()); // React 루트들을 관리
 
@@ -71,7 +72,7 @@ export default function Carousel({imageList, imageWidth = 300, imageGap = 30,  a
         display: none;
         
         ${autoscroll > 0 && css`
-            animation: ${auto_scroll_left} ${autoscroll * scrollConst / 275}s linear infinite;
+            animation: ${auto_scroll_left} ${autoscroll}s linear infinite;
         `}
     `;
 
@@ -218,11 +219,10 @@ export default function Carousel({imageList, imageWidth = 300, imageGap = 30,  a
         if (autoscroll > 0) {
             const interval = setInterval(() => {
                 changeimageIndex(1);
-            }, scrollConst * autoscroll);
-
+            }, 1000 * (imageWidth + 2*imageGap) * autoscroll / 4 / imageWidth);
             return () => clearInterval(interval);
         }
-    }, [autoscroll, scrollConst]); // autoscroll 관련 값들만 의존성으로
+    }, [autoscroll]); // autoscroll 관련 값들만 의존성으로
 
     const changeimageIndex = (dir) => {
         setNowIndex((prevIndex => (prevIndex + dir + imageList.length) % imageList.length));

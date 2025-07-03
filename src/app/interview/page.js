@@ -1,7 +1,7 @@
 'use client';
 /** @jsxImportSource @emotion/react */
 
-import { Title1, Title2 } from '@/components/common/title';
+import { Title1, Title2, Title3, Title4 } from '@/components/common/title';
 import { YouTubeEmbed } from '@/components/media/youtubeMulti';
 import { useState, useEffect, useRef } from 'react';
 import { Spacer } from '@/components/common/spacer';
@@ -46,12 +46,14 @@ const NavButtonBar = styled.div`
 const NavButton = styled.button`
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: 1rem;
     flex-grow: 2;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
 
     border: none;
+    display: flex;
+    flex-direction: column;
 `;
 
 const NavButton_Left = styled(NavButton)`
@@ -120,8 +122,8 @@ const YoutubeThumbnailCarousel = ({video_infos}) => {
             <Carousel
                 imageList={carouselItems}
                 imageWidth={pageWidth * 0.8}
-                imageGap={pageWidth * 0.1}
-                autoscroll={1} 
+                imageGap={10}
+                autoscroll={12}
             />
 
             {/* {thumbnails.map((thumbnail, index) => (
@@ -257,7 +259,7 @@ export default function Interview() {
             {
                 nowIndex == 0 ?
                 <div>
-                    <Title2 title={"아마추어를 만나다."} />
+                    {/* <Title2 title={"아마추어를 만나다."} /> */}
                     {/* <div
                         css={css`
                             display: flex;
@@ -269,9 +271,8 @@ export default function Interview() {
                         <DropText text={`-아마추어를 만나다-`} />
                     </div> */}
 
-                    <p>
-                        아마추어 연주자들을 만나 그들의 이야기와 음악을 들어보는 시간
-                    </p>
+                    <Title4 title={"연주자들을 만나 그들의 이야기와 음악을 들어보는 시간"} />
+
                     <YoutubeThumbnailCarousel video_infos={getVideoThumbnails(Object.values(interviewData).map(item => item.youtube).filter(youtube => youtube))} />
 
                 </div>
@@ -300,9 +301,11 @@ export default function Interview() {
             {/* bar: pull-to-next-index progress circle */}
 
             {/* PC용 인덱스 이동 버튼 */}
+            <Spacer height={60} />
             <NavButtonBar>
                 <NavButton_Left onClick={() => setNowIndex((prev) => (prev - 1 + Object.keys(interviewData).length) % Object.keys(interviewData).length)}>
-                    ◁
+                    <div>◁</div>
+                    <div>이전 페이지</div>
                 </NavButton_Left>
                 <PullProgressBar isPulling={isPulling}>
                     <svg width={barSize} height={barSize}>
@@ -321,7 +324,8 @@ export default function Interview() {
                     </svg>
                 </PullProgressBar>
                 <NavButton_Right onClick={() => setNowIndex((prev) => (prev + 1) % Object.keys(interviewData).length)}>
-                    ▷
+                    <div>▷</div>
+                    <div>다음 페이지</div>
                 </NavButton_Right>
             </NavButtonBar>
         </div> 
