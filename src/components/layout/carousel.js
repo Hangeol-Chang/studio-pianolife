@@ -115,8 +115,6 @@ export default function Carousel({imageList, imageWidth = 300, imageGap = 30,  a
         `;
     };
 
-    
-
     const AppendImage = (index) => {
         if (!imageContainerRef.current || !imageList.length) {
             return;
@@ -184,6 +182,8 @@ export default function Carousel({imageList, imageWidth = 300, imageGap = 30,  a
 
     // nowIndex 변경 시 이미지 업데이트
     useEffect(() => {
+        if(!isMounted) return;
+
         // nowIndex+2를 dom에 추가하고, 마지막 child는 지우기
         if (!imageContainerRef.current || !imageList.length) return;
         const container = imageContainerRef.current;
@@ -204,7 +204,7 @@ export default function Carousel({imageList, imageWidth = 300, imageGap = 30,  a
             return;
         }
         
-        for(let i = -1; i <= 1; i++) {
+        for(let i = -1; i <= 2; i++) {
             const index = (nowIndex + i + imageList.length) % imageList.length;      
             try {
                 AppendImage(index);
