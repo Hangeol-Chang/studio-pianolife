@@ -204,7 +204,7 @@ export default function Carousel({imageList, imageWidth = 300, imageGap = 30,  a
             return;
         }
         
-        for(let i = -1; i <= 2; i++) {
+        for(let i = -1; i <= 1; i++) {
             const index = (nowIndex + i + imageList.length) % imageList.length;      
             try {
                 AppendImage(index);
