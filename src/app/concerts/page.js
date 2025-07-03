@@ -120,7 +120,7 @@ export default function FourMusics() {
                     width={posterWidth} height={0} alt="concert_poster" layout="intrinsic"
                     onClick={() => {
                         localStorage.setItem('concertInfo', JSON.stringify(mediaInfos[mediaInfos.length - 1]));
-                        router.push('/concerts/detail');
+                        router.push('/concerts/detail?now=true');
                     }}
                 />
                 <DescriptionContainer width={viewColumn === 2 ? '100%' : `${posterWidth}px`}>

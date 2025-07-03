@@ -6,6 +6,20 @@
             "date": "2024.02.24",
             "location": "로로스페이스",
             "price" : "10,000원",
+            "players": [
+                {
+                    "name": "박태원"
+                },
+                {
+                    "name": "손운배"
+                },
+                {
+                    "name": "신소희"
+                },
+                {
+                    "name": "조항욱"
+                }
+            ],
             "videos" : [
                 "JJDmlYblz8w",
                 "YpcGGkCJMxA",
@@ -34,6 +48,9 @@
                 "cTffwgqKCOQ",
                 "yzlw69uiReE"
             ],
+            "players": [
+
+            ],
             "detail" : {
                 "subtitle": "‘건반 위의 시인’ 쇼팽, ‘형식의 대가이자 혁신가’ 라벨",
                 "descriptions": [
@@ -48,7 +65,7 @@
         {
             "src": "concert_poster_3.png",
             "title": "아마추어를 만나다",
-            "data": "2025.08.09",
+            "date": "2025.08.09",
             "location": "EYE LOVE ART Center",
             "price": "10,000원",
             "videos": [

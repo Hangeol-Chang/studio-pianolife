@@ -64,7 +64,7 @@ export default function Concerts() {
                         imageList={posterImageList}
                         imageWidth={posterWidth}
                         imageGap={20}
-                        autoscroll={2}
+                        autoscroll={8}
                     >
                     </Carousel>
                     {/* <div css={poster_click_info_style}>
@@ -143,7 +143,7 @@ export default function Concerts() {
 
 
             <Spacer height={20} />
-            <Title2 title="Gallary" subTitle="포뮤직스 연주영상" />
+            <Title2 title="Gallary"/>
             {/* Youtube List 추가될 예정. */}
             <div
                 style={{
