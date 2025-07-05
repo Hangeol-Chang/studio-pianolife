@@ -64,7 +64,7 @@ export default function Concerts() {
                         imageList={posterImageList}
                         imageWidth={posterWidth}
                         imageGap={20}
-                        autoscroll={8}
+                        autoscroll={16}
                     >
                     </Carousel>
                     {/* <div css={poster_click_info_style}>

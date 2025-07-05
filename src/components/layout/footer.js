@@ -84,6 +84,8 @@ export default function Footer() {
                     <p css={css`text-align: start;`}>
                         company. STUDIO PIANOLIFE / owner. 고정우 / phonnumber. 010-XXXX-XXXX
                         <br />
+                        BRN. 815-55-00377  
+                        <br />
                         Contact. (인터뷰, 연주회 참가 문의)
                         <br />
                         instagram. @pianolife38 / mail. jwgo0311@gmail.com
