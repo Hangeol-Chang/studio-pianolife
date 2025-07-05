@@ -123,7 +123,7 @@ const YoutubeThumbnailCarousel = ({video_infos}) => {
                 imageList={carouselItems}
                 imageWidth={pageWidth * 0.8}
                 imageGap={10}
-                autoscroll={12}
+                autoscroll={20}
             />
 
             {/* {thumbnails.map((thumbnail, index) => (

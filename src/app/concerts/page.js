@@ -80,7 +80,6 @@ export default function FourMusics() {
         
         let _prevPosterWidth = pageSize.width * 0.4;
         if( _prevPosterWidth < 300 ) _prevPosterWidth = 300;
-        console.log("prevPosterWidth", _prevPosterWidth);
 
         setPrevPosterWidth(_prevPosterWidth);
         if( pageSize.width > 600 ) { setViewColumn(2); }

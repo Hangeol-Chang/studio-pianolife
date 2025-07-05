@@ -10,7 +10,7 @@ const DeveloperInfo = () => {
     return (
         <div>
             
-            <Title2 title="이 사이트 만든 사람 정보" />
+            <Title2 title="사이트 제작" />
             <Spacer height={15} />
             <div style={{
                 display: 'flex', 
