@@ -17,13 +17,15 @@ export default function ConcertDetail() {
     const [concertInfo, setConcertInfo] = useState(null);
 
     const [reserveEnable, setReserveEnable] = useState(false);
+    const [wideMode, setWideMode] = useState(false);
+    const [concertInfoMargin, setConcertInfoMargin] = useState('0 5%');
 
     const PlayerContainer = styled.div`
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: left;
-        margin: 0 20%;
+        margin: ${concertInfoMargin};
     `;
     
     const PlayerRow = styled.div`
@@ -65,14 +67,14 @@ export default function ConcertDetail() {
             opacity: 0;
         }
         to {
-            height: 380px;
+            height: 450px;
             opacity: 1;
         }
     `;
 
     const slideUp = keyframes`
         from {
-            height: 380px;
+            height: 450px;
             opacity: 1;
         }
         to {
@@ -82,10 +84,10 @@ export default function ConcertDetail() {
     `;
 
     const ReserveContainer = styled.div`
-        height: ${reserveEnable ? '380px' : '0px'};
+        height: ${reserveEnable ? '450px' : '0px'};
         opacity: ${reserveEnable ? 1 : 0};
         overflow: hidden;
-        margin: 0 20%;
+        margin: ${concertInfoMargin};
         
         /* 애니메이션은 상태 변경시에만 */
         animation: ${reserveEnable ? slideDown : slideUp} 0.5s ease forwards;
@@ -95,8 +97,8 @@ export default function ConcertDetail() {
         display: flex;
         justify-content: center;
         
-        width: 60%;
-        margin: 0 20%;
+        width: ${imageWidth}px;
+        margin: ${concertInfoMargin};
 
         background-color: white;
         color: black;
@@ -133,7 +135,17 @@ export default function ConcertDetail() {
     }
     const resizeEvent = () => {
         const pageSize = getPageSize();
-        setImageWidth(pageSize.width * 0.6);
+        
+        if( pageSize.width > 500 ) { 
+            setImageWidth(pageSize.width * 0.6);
+            setWideMode(true); 
+            setConcertInfoMargin('0 20%'); // 넓은 모드에서는 양쪽 여백을 20%로 설정
+        }
+        else { 
+            setImageWidth(pageSize.width * 0.9);
+            setWideMode(false); 
+            setConcertInfoMargin('0 5%'); // 좁은 모드에서는 양쪽 여백을 5%로 설정
+        }
     }
 
     useEffect(() => {
@@ -199,7 +211,7 @@ export default function ConcertDetail() {
                     display: flex;
                     flex-direction: column;
                     align-items: end;
-                    margin-right: ${getPageSize().width * 0.2}px;
+                    margin: ${concertInfoMargin};
                 `}
             >
                 <InfoContiner k="Date" val={concertInfo?.date} />
