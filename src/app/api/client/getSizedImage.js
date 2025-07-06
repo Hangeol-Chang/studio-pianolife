@@ -6,9 +6,10 @@ const getSizedImage = (path, name) => {
     const sizeList = [ 128, 320, 720, 1024 ];
     const wid = getPageSize().width;
 
-    // wid보다 작거나 같은 sizeList의 최대값을 찾는다.
+    // wid보다 크거나 같은 sizeList의 최대값을 찾는다.
     const size = sizeList.reduce((prev, curr) => {
-        return (curr <= wid && curr > prev) ? curr : prev;
+        // return (curr <= wid && curr > prev) ? curr : prev;
+        return (curr >= wid && curr > prev) ? curr : prev;
     }, 0);
     if (size === 0) {
         size = 128;
