@@ -105,6 +105,11 @@ export default function FourMusics() {
         flex-grow : 1,
     `;
 
+    const loadDetailPage = () => {
+        localStorage.setItem('concertInfo', JSON.stringify(mediaInfos[mediaInfos.length - 1]));
+        router.push('/concerts/detail?now=true');
+    }
+
     return (
         <div>
             <Spacer height={20} />
@@ -117,10 +122,7 @@ export default function FourMusics() {
                 <MainPosterImage css={main_image_style}
                     path={"/concerts"} name={mediaInfos[mediaInfos.length - 1].src} 
                     width={posterWidth} height={0} alt="concert_poster" layout="intrinsic"
-                    onClick={() => {
-                        localStorage.setItem('concertInfo', JSON.stringify(mediaInfos[mediaInfos.length - 1]));
-                        router.push('/concerts/detail?now=true');
-                    }}
+                    onClick={loadDetailPage}
                 />
                 <DescriptionContainer width={viewColumn === 2 ? '100%' : `${posterWidth}px`}>
                     <div>
@@ -136,7 +138,7 @@ export default function FourMusics() {
                         display: flex;
                         justify-content: flex-end;
                     `}>
-                        <BuyButton>
+                        <BuyButton onClick={loadDetailPage}>
                             buy ticket
                         </BuyButton>
                     </div>
