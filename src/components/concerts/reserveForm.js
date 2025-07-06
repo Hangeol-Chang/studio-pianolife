@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { useState } from "react";
 import { Spacer } from '../common/spacer';
+import getPageSize from '@/app/api/client/getPageSize';
 
 export default function ReserveForm({ concertInfo }) {
     const [reserveSuccess, setReserveSuccess] = useState(false);
@@ -21,14 +22,22 @@ export default function ReserveForm({ concertInfo }) {
         display: flex;
         flex-direction: column;
         background-color: #f9f9f9;
-        padding: 20px;
+        padding: 10px ${getPageSize().width * 0.03}px;
+    `;
+
+    const result_info_container_style = css`
+        display: flex; 
+        flex-direction: ${getPageSize().width >= 350 ? 'row' : 'column'};
+        gap:  ${getPageSize().width >= 350 ? '0px' : '10px' };
+        justify-content: 
+        space-between;
     `;
 
     const Form = styled.form`
         display: flex;
         flex-direction: column;
         gap: 4px;
-        padding: 20px;
+        padding: 10px ${getPageSize().width * 0.03}px;
         background-color: #f9f9f9;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -40,6 +49,7 @@ export default function ReserveForm({ concertInfo }) {
         border-radius: 4px;
         font-size: 14px;
         box-sizing: border-box;
+        min-width: 100px;
         &:focus {
             border-color: #007bff;
             outline: none;
@@ -89,7 +99,7 @@ export default function ReserveForm({ concertInfo }) {
                 justify-content: space-between;
                 align-items: center;
             `}>
-                <label css={css`font-size: 12px;`}> {k} :  </label>
+                <label css={css`font-size: 12px; min-width: 50px;`}> {k} :  </label>
                 <input css={input_style} type="text" name={name} required={req} placeholder={hint} />
             </div>
         )
@@ -175,7 +185,7 @@ export default function ReserveForm({ concertInfo }) {
                 </div>
 
                 <hr css={css`margin: 10px 2px`}/>
-                <div css={css`display: flex; justify-content: space-between;`}>
+                <div css={result_info_container_style}>
                     <div>예약자 정보</div>
                     <div css={css`min-width: 60%`}>
                         <ViewContainer k={"성함(예약자명)"} val={reserveData.name}/>
@@ -197,7 +207,7 @@ export default function ReserveForm({ concertInfo }) {
 
                 <hr css={css`margin: 10px 2px`}/>
 
-                <div css={css`display: flex; justify-content: space-between;`}>
+                <div css={result_info_container_style}>
                     <div>결제 정보</div>
                     <div css={css`min-width: 80%`}>
                         <ViewContainer k={"입금 계좌"} val={"우리은행 1002-759-062723"}/>
