@@ -82,7 +82,7 @@ export default function Footer() {
                 {/* left part */}
                 <div css={footer_left_part_style}>
                     <p css={css`text-align: start;`}>
-                        company. STUDIO PIANOLIFE / owner. 고정우 / phonnumber. 010-XXXX-XXXX
+                        company. STUDIO PIANOLIFE / owner. 고정우
                         <br />
                         BRN. 815-55-00377  
                         <br />
@@ -97,7 +97,7 @@ export default function Footer() {
 
                 {/* right part */}
                 <div css={footer_right_part_style}>
-                    <p css={css`margin: 0px;`}>gong-pira</p>
+                    <p css={css`margin: 0px;`}>공대생의 piano life</p>
                     <div css={icon_container_style}>
                         <a href="https://www.instagram.com/pianolife38/" css={contact_link_style}>
                             <FaInstagram size={20} color="black"/> 
