@@ -55,6 +55,35 @@ const BuyButton = styled.button`
     align-self: flex-end;
 `;
 
+const NoUpcomingContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0px min(5vw, 38.4px);
+    padding: 60px 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    text-align: center;
+`;
+
+const NoUpcomingText = styled.div`
+    font-size: 18px;
+    color: #666;
+    line-height: 1.6;
+    
+    h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 20px;
+    }
+    
+    p {
+        margin: 0;
+        font-weight: lighter;
+    }
+`;
+
 const MainPosterImage = styled(ResponsiveImage)`
     width: 100%;
     height: auto;
@@ -71,6 +100,8 @@ export default function FourMusics() {
     const [posterWidth, setPosterWidth] = useState(300);
     const [prevPosterWidth, setPrevPosterWidth] = useState(300);
     const [viewColumn, setViewColumn] = useState(1);
+    const [currentConcert, setCurrentConcert] = useState(null);
+    const [previousConcerts, setPreviousConcerts] = useState([]);
     const router = useRouter();
     
 
@@ -86,8 +117,45 @@ export default function FourMusics() {
         else { setViewColumn(1); }
     }
 
+    const categorizeEvents = () => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정
+        
+        let upcomingConcert = null;
+        let pastConcerts = [];
+        
+        // 날짜순으로 정렬 (가장 최근 날짜부터)
+        const sortedConcerts = [...mediaInfos].sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateB - dateA;
+        });
+        
+        // 미래 콘서트와 과거 콘서트 분류
+        console.log("prev concerts checking")
+        sortedConcerts.forEach(concert => {
+            const concertDate = new Date(concert.date);
+            concertDate.setHours(0, 0, 0, 0);
+            
+            if (concertDate >= today) {
+                // 미래 콘서트 중 가장 가까운 것을 현재 콘서트로 설정
+                if (!upcomingConcert) {
+                    upcomingConcert = concert;
+                } else {
+                    pastConcerts.push(concert);
+                }
+            } else {
+                pastConcerts.push(concert);
+            }
+        });
+        
+        setCurrentConcert(upcomingConcert);
+        setPreviousConcerts(pastConcerts);
+    };
+
     useEffect(() => {
         resizeEvent();
+        categorizeEvents();
 
         window.addEventListener('resize', resizeEvent);
         return () => {
@@ -106,8 +174,10 @@ export default function FourMusics() {
     `;
 
     const loadDetailPage = () => {
-        localStorage.setItem('concertInfo', JSON.stringify(mediaInfos[mediaInfos.length - 1]));
-        router.push('/concerts/detail?now=true');
+        if (currentConcert) {
+            localStorage.setItem('concertInfo', JSON.stringify(currentConcert));
+            router.push('/concerts/detail?now=true');
+        }
     }
 
     return (
@@ -118,39 +188,48 @@ export default function FourMusics() {
             <Spacer height={20} />
             <Title2 title="Now On" />
 
-            <MainPosterContainer viewColumn={viewColumn}>
-                <MainPosterImage css={main_image_style}
-                    path={"/concerts"} name={mediaInfos[mediaInfos.length - 1].src} 
-                    width={posterWidth} height={0} alt="concert_poster" layout="intrinsic"
-                    onClick={loadDetailPage}
-                />
-                <DescriptionContainer width={viewColumn === 2 ? '100%' : `${posterWidth}px`}>
-                    <div>
-                        <h3>
-                            {mediaInfos[mediaInfos.length - 1].title}
-                        </h3>
-                        <p>{mediaInfos[mediaInfos.length - 1].description}</p>
-                        <p style={{ fontWeight : 'lighter'}}>
-                            {mediaInfos[mediaInfos.length - 1].price}
-                        </p>
-                    </div>
-                    <div css={css`
-                        display: flex;
-                        justify-content: flex-end;
-                    `}>
-                        <BuyButton onClick={loadDetailPage}>
-                            buy ticket
-                        </BuyButton>
-                    </div>
-                </DescriptionContainer>
-            </MainPosterContainer>
+            {currentConcert ? (
+                <MainPosterContainer viewColumn={viewColumn}>
+                    <MainPosterImage css={main_image_style}
+                        path={"/concerts"} name={currentConcert.src} 
+                        width={posterWidth} height={0} alt="concert_poster" layout="intrinsic"
+                        onClick={loadDetailPage}
+                    />
+                    <DescriptionContainer width={viewColumn === 2 ? '100%' : `${posterWidth}px`}>
+                        <div>
+                            <h3>
+                                {currentConcert.title}
+                            </h3>
+                            <p>{currentConcert.description || currentConcert.detail?.subtitle}</p>
+                            <p style={{ fontWeight : 'lighter'}}>
+                                {currentConcert.price}
+                            </p>
+                        </div>
+                        <div css={css`
+                            display: flex;
+                            justify-content: flex-end;
+                        `}>
+                            <BuyButton onClick={loadDetailPage}>
+                                buy ticket
+                            </BuyButton>
+                        </div>
+                    </DescriptionContainer>
+                </MainPosterContainer>
+            ) : (
+                <NoUpcomingContainer>
+                    <NoUpcomingText>
+                        <h3>예정된 콘서트가 없습니다</h3>
+                        <p>다음 콘서트를 기대해주세요!</p>
+                    </NoUpcomingText>
+                </NoUpcomingContainer>
+            )}
 
             <Spacer height={50} />
             <hr></hr>
             <Spacer height={50} />
             <Title2 title="Previous Concerts" />
 
-            <PrevConcerts mediaInfos={mediaInfos} imageWidth={prevPosterWidth} />
+            <PrevConcerts mediaInfos={previousConcerts} imageWidth={prevPosterWidth} />
         </div>
     )
 }

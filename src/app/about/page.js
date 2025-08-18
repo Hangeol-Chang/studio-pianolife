@@ -60,8 +60,10 @@ const MainImage = styled(ResponsiveImage)`
     width: 70%;
     height: auto;
     mask-image:
-        linear-gradient(to right, transparent 0%, black 10%, black 80%, transparent 100%),
-        linear-gradient(to left,  transparent 0%, black 10%, black 80%, transparent 100%);
+        linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%),
+        linear-gradient(to top, black 0%, black 95%, transparent 100%);
+
+    mask-composite: intersect;
 
     @keyframes image-init-slide {
         from {

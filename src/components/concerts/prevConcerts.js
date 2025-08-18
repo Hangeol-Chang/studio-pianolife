@@ -41,7 +41,6 @@ export default function PrevConcerts({ mediaInfos, imageWidth = 300 }) {
     return (
         <ImageListContainer>
             {mediaInfos
-                .slice(0, -1) // 마지막 인덱스 제거
                 .reverse() // 배열 순서 뒤집기 (뒷 인덱스부터)
                 .map((info, index) => (
                     <ConcertContainer key={index} style={{ marginBottom: '20px' }}>
