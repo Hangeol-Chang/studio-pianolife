@@ -3,13 +3,71 @@
 import { css, keyframes } from '@emotion/react';
 import getPageSize from '@/app/api/client/getPageSize';
 import { Spacer } from '@/components/common/spacer';
-import { Title1 } from '@/components/common/title';
+import { HrV, Title1, Title2, Title3 } from '@/components/common/title';
 import ResponsiveImage from '@/components/layout/responsiveImaage';
 import YoutubeCarousel from '@/components/media/youtubeCarousel';
 /** @jsxImportSource @emotion/react */
 import styled from '@emotion/styled';
 import { useEffect, useState } from "react";
 import ReserveForm from '@/components/concerts/reserveForm';
+
+const PlayerImageUnit = ({playerName, playerImageName, width = 75}) => {
+    
+    const ImageContainer = styled.div`
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 8px 10px;
+        cursor: pointer;
+        
+        &:hover img {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        &:hover div {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: black;
+            transform: translateY(-2px);
+            border: 4px solid white;
+        }
+    `;
+
+    const PlayerImage = styled.img`
+        width: ${width}px;
+        height: ${width}px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    `;
+
+    const PlayerName = styled.div`
+        font-size: 12px;
+        font-weight: regular;
+        padding: 2px 12px;
+        border-radius: 22px;
+        border: 4px solid black;
+        margin: 4px;
+        background-color: black;
+        color: white;
+        transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    `;
+
+    return (
+        <ImageContainer>
+            <PlayerImage
+                src={`/profile/face/${playerImageName}.png`} 
+                alt={playerName}
+            />
+            <PlayerName>
+                {playerName}
+            </PlayerName>
+        </ImageContainer>
+    );
+
+}
 
 export default function ConcertDetail() {
     const [mounted, setMounted] = useState(false);
@@ -20,29 +78,22 @@ export default function ConcertDetail() {
     const [wideMode, setWideMode] = useState(false);
     const [concertInfoMargin, setConcertInfoMargin] = useState('0 5%');
 
+    const [profileImageSize, setProfileImageSize] = useState(75);
+
     const PlayerContainer = styled.div`
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        justify-content: left;
+        justify-content: space-around;
         margin: ${concertInfoMargin};
     `;
-    
-    const PlayerRow = styled.div`
-        display: flex;
-    `;
+    const TitleContainer = styled.div`
+        margin: ${concertInfoMargin};
 
-    const PlayerName = styled.div`
-        font-size: 12px;
-        font-weight: regular;
-        padding: 2px 10px;
-        border-radius: 22px;
-        border: 4px solid black;
-        margin: 4px;
-
-        background-color: black;
-        color: white;
-    `;
+        & h2 {
+            margin: 10px;
+        }
+    `
 
     const DescriptionContainer = styled.div`
         flex-grow: 2;
@@ -146,9 +197,19 @@ export default function ConcertDetail() {
             setWideMode(false); 
             setConcertInfoMargin('0 5%'); // 좁은 모드에서는 양쪽 여백을 5%로 설정
         }
+
+        if(pageSize.width > 422) {
+            setProfileImageSize(75);
+        }
+        else {
+            setProfileImageSize(50);
+        }
     }
 
     useEffect(() => {
+        // 페이지 접근 시 스크롤을 맨 위로 이동
+        window.scrollTo(0, 0);
+        
         setMounted(true);
         window.addEventListener('resize', resizeEvent);
         resizeEvent(); // 초기 크기 설정
@@ -176,35 +237,26 @@ export default function ConcertDetail() {
             />
             <Spacer height={10} />
 
-            {
-                // concertInfo.players.length > 4 ? 
-                // <PlayerContainer>
-                //     <PlayerRow>
-                //         {concertInfo.players.slice(0, concertInfo.players.length / 2).map((player, index) => 
-                //             <PlayerName key={index + player.name}>
-                //                 {player.name}
-                //             </PlayerName>
-                //         )}
-                //     </PlayerRow>
-                //     <PlayerRow>
-                //         {concertInfo.players.slice(concertInfo.players.length / 2).map((player, index) => 
-                //             <PlayerName key={index + player.name}>
-                //                 {player.name}
-                //             </PlayerName>
-                //         )}
-                //     </PlayerRow>
-                // </PlayerContainer>
-                // :
-                <PlayerContainer>
-                    {concertInfo.players.map((player, index) => 
-                        <PlayerName key={index + player.name}>
-                            {player.name}
-                        </PlayerName>
-                    )}
-                </PlayerContainer>
+            <TitleContainer>
+                <Title2 title="Players" />
+            </TitleContainer>
+            <PlayerContainer>
+                {concertInfo.players.map((player, index) => 
+                    <PlayerImageUnit 
+                        key={player.name + index} 
+                        playerName={player.name} playerImageName={player.name} 
+                        width={profileImageSize}
+                    />
+                )}
+            </PlayerContainer>
 
-            }
-            <Spacer height={20} />
+            <Spacer height={10} />
+
+            <TitleContainer>
+                <hr style={{ margin: '10px 0' }}/>
+            </TitleContainer>
+
+            <Spacer height={10} />
 
             <div
                 css={css`
