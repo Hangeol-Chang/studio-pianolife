@@ -123,6 +123,10 @@ export default function ConcertDetail() {
     const [concertInfoMargin, setConcertInfoMargin] = useState('0 5%');
 
     const [profileImageSize, setProfileImageSize] = useState(75);
+    
+    // 예매 가능 여부와 D-day 계산
+    const [canReserve, setCanReserve] = useState(false);
+    const [daysUntilReserve, setDaysUntilReserve] = useState(null);
 
     const PlayerContainer = styled.div`
         display: flex;
@@ -195,30 +199,30 @@ export default function ConcertDetail() {
         width: ${imageWidth}px;
         margin: ${concertInfoMargin};
 
-        background-color: white;
-        color: black;
-        border: 1px solid black;
+        background-color: ${({ disabled }) => disabled ? '#e0e0e0' : 'white'};
+        color: ${({ disabled }) => disabled ? '#999' : 'black'};
+        border: 1px solid ${({ disabled }) => disabled ? '#ccc' : 'black'};
         border-radius: 2px;
         padding: 8px 16px;
-        cursor: pointer;
+        cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
         font-size: 12px;
 
         font-weight: light;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.3s ease, color 0.3s ease;
         // margin: auto;
         &:hover {
-            background-color: #333333;
-            color: white;
+            background-color: ${({ disabled }) => disabled ? '#e0e0e0' : '#333333'};
+            color: ${({ disabled }) => disabled ? '#999' : 'white'};
         }
         &:active {
-            background-color: #555555;
-            color: white;
+            background-color: ${({ disabled }) => disabled ? '#e0e0e0' : '#555555'};
+            color: ${({ disabled }) => disabled ? '#999' : 'white'};
         }
         &:focus {
             outline: none;
-            box-shadow: 0 0 0 2px rgba(50, 50, 50, 0.5);
+            box-shadow: ${({ disabled }) => disabled ? 'none' : '0 0 0 2px rgba(50, 50, 50, 0.5)'};
         }
-    }`
+    `;
 
     const InfoContiner = ({k, val}) => {
         return (
@@ -268,6 +272,40 @@ export default function ConcertDetail() {
             window.removeEventListener('resize', resizeEvent);
         }
     }, []);
+
+    // 공연 날짜 기반으로 예매 가능 여부 계산
+    useEffect(() => {
+        if (concertInfo?.date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // 시간 정보 제거
+            
+            // concertInfo.date 형식을 파싱 (예: "2025.10.26" 또는 "2025-10-26")
+            const dateParts = concertInfo.date.split(/[.\-/]/);
+            const concertDate = new Date(
+                parseInt(dateParts[0]), // year
+                parseInt(dateParts[1]) - 1, // month (0-based)
+                parseInt(dateParts[2]) // day
+            );
+            
+            // 날짜 차이 계산 (일 단위)
+            const diffTime = concertDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays >= 1 && diffDays <= 30) {
+                // 공연까지 1~30일 남음: 예매 가능
+                setCanReserve(true);
+                setDaysUntilReserve(null);
+            } else if (diffDays >= 31 && diffDays <= 35) {
+                // 공연까지 31~35일 남음: 예매까지 D-X일 표시
+                setCanReserve(false);
+                setDaysUntilReserve(diffDays - 30); // 예매 시작까지 남은 일수
+            } else {
+                // 그 외: 예매 불가
+                setCanReserve(false);
+                setDaysUntilReserve(null);
+            }
+        }
+    }, [concertInfo]);
 
     return (
         mounted &&
@@ -341,12 +379,29 @@ export default function ConcertDetail() {
             {/* url에서 now=true인지 검사 */}
             {new URLSearchParams(window.location.search).get('now') === 'true' && (
                 <div>
-                    <ReserveButton onClick={() => setReserveEnable((prev) => !prev)}>
-                        예매하기
+                    <ReserveButton 
+                        onClick={() => canReserve && setReserveEnable((prev) => !prev)}
+                        disabled={!canReserve}
+                    >
+                        {canReserve 
+                            ? '예매하기' 
+                            : daysUntilReserve 
+                                ? 
+                                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                    <div>
+                                        예매 오픈까지
+                                    </div>
+                                    <div style={{fontSize: '20px', fontWeight: 'bold', marginTop: '4px'}}>
+                                        D-{daysUntilReserve}
+                                    </div>
+                                </div>
+                                : '예매 불가'}
                     </ReserveButton>
-                    <ReserveContainer>
-                        <ReserveForm concertInfo={concertInfo} />
-                    </ReserveContainer>
+                    {canReserve && (
+                        <ReserveContainer>
+                            <ReserveForm concertInfo={concertInfo} />
+                        </ReserveContainer>
+                    )}
                 </div>
             )}
 
