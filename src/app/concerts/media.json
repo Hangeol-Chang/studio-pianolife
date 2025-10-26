@@ -149,20 +149,18 @@
                     "오로지 피아노 협주곡 1번을 잘 연주하기 위한 마음가짐을 1년간 기른 ‘고정우’",
                     "두 아마추어 연주자가 들려줄 쇼팽 피아노 협주곡은 저 마다의 어떤 색깔로 여러분들에게 다가올지 그 아름다운 순간을 현장에서 함께하세요."
                 ],
-                "program": [
-                    {
-                        "title": "1부",
+                "program": {
+                    "1부": {
                         "items": [
                             "F.Chopin Piano Concerto No.2 in f minor, Op.21"
                         ]
                     },
-                    {
-                        "title": "2부",
+                    "2부": {
                         "items": [
                             "F.Chopin Piano Concerto No.1 in e minor, Op.11"
                         ]
                     }
-                ]
+                }
             }
         }
     ]

@@ -3,7 +3,7 @@
 import { css, keyframes } from '@emotion/react';
 import getPageSize from '@/app/api/client/getPageSize';
 import { Spacer } from '@/components/common/spacer';
-import { HrV, Title1, Title2, Title3 } from '@/components/common/title';
+import { HrV, Title1, Title2, Title3, Title4, Title5 } from '@/components/common/title';
 import ResponsiveImage from '@/components/layout/responsiveImaage';
 import YoutubeCarousel from '@/components/media/youtubeCarousel';
 /** @jsxImportSource @emotion/react */
@@ -80,7 +80,7 @@ const PlayerImageUnit = ({playerName, playerImageName, width = 75}) => {
         object-fit: cover;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-    `;
+    `;  
 
     const PlayerName = styled.div`
         font-size: 12px;
@@ -107,6 +107,11 @@ const PlayerImageUnit = ({playerName, playerImageName, width = 75}) => {
     );
 
 }
+
+const ProgramContainer = styled.div`
+    margin: 0 5%;
+    margin-bottom: 30px;
+`;
 
 export default function ConcertDetail() {
     const [mounted, setMounted] = useState(false);
@@ -356,6 +361,27 @@ export default function ConcertDetail() {
                     </p>
                 ))}
             </DescriptionContainer>
+
+
+            {
+                concertInfo?.detail.program ? 
+                <>
+                    <Title2 title="Program"/>
+                    <ProgramContainer>
+                        {Object.entries(concertInfo.detail.program).map(([part, details]) => (
+                            <div key={part}>
+                                <Title4 title={part} />
+                                {details.items.map((item, index) => (
+                                    <p key={item[0] + index} style={{ marginLeft: '20px' }}>
+                                        {item}
+                                    </p>
+                                ))}
+                            </div>
+                        ))}
+                    </ProgramContainer>
+                </>
+                : <></>
+            }
 
             <hr />
             <Spacer height={20} />
