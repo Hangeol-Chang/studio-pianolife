@@ -11,13 +11,52 @@ import styled from '@emotion/styled';
 import { useEffect, useState } from "react";
 import ReserveForm from '@/components/concerts/reserveForm';
 
+const PartedPlayerContainer = ({children, style}) => {
+    const Container = styled.div`
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        ${style}
+    `;
+
+    return (
+        <Container>
+            {children}
+        </Container>
+    );
+};
+
+const PartedPlayerImageUnit = ({children, part, style}) => {
+
+    const Container = styled.div`
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        ${style}
+        flex-grow: 1;
+        margin: 8px 0;
+    `;
+
+    const PartTitle = styled.h3`
+        margin: 4px 4px 30px 4px;
+        font-size: 18px;
+        font-weight: bold;
+    `;
+
+    return (
+        <Container>
+            <PartTitle>{part}</PartTitle>
+            {children}
+        </Container>
+    );
+};
+
 const PlayerImageUnit = ({playerName, playerImageName, width = 75}) => {
-    
     const ImageContainer = styled.div`
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin: 8px 10px;
+        margin: 8px ${getPageSize().width / 50}px;
         cursor: pointer;
         
         &:hover img {
@@ -240,15 +279,38 @@ export default function ConcertDetail() {
             <TitleContainer>
                 <Title2 title="Players" />
             </TitleContainer>
-            <PlayerContainer>
-                {concertInfo.players.map((player, index) => 
-                    <PlayerImageUnit 
-                        key={player.name + index} 
-                        playerName={player.name} playerImageName={player.name} 
-                        width={profileImageSize}
-                    />
-                )}
-            </PlayerContainer>
+            
+            {
+                Array.isArray(concertInfo.players) ?
+                    <PlayerContainer>
+                        {concertInfo.players.map((player, index) => 
+                            <PlayerImageUnit 
+                                key={player.name + index} 
+                                playerName={player.name} playerImageName={player.name} 
+                                width={profileImageSize}
+                            />
+                        )}
+                    </PlayerContainer>
+                    :
+                    <PartedPlayerContainer style={{margin: concertInfoMargin}}>
+                        {
+                            Object.entries(concertInfo.players).map(([part, players], index) =>
+                                <PartedPlayerImageUnit key={part + index} part={part} style={{width: '100%'}}>
+                                    <hr style={{flexGrow: 1, margin: '8px 4px 34px 4px'}}/>
+                                    <div style={{display: 'flex'}}>
+                                        {players.map((player, idx) => 
+                                            <PlayerImageUnit 
+                                                key={player.name + idx} 
+                                                playerName={player.name} playerImageName={player.name} 
+                                                width={profileImageSize}
+                                            />
+                                        )}
+                                    </div>
+                                </PartedPlayerImageUnit>
+                            )
+                        }
+                    </PartedPlayerContainer>
+            }
 
             <Spacer height={10} />
 
