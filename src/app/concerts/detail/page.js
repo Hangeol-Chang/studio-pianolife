@@ -3,7 +3,7 @@
 import { css, keyframes } from '@emotion/react';
 import getPageSize from '@/app/api/client/getPageSize';
 import { Spacer } from '@/components/common/spacer';
-import { HrV, Title1, Title2, Title3 } from '@/components/common/title';
+import { HrV, Title1, Title2, Title3, Title4, Title5 } from '@/components/common/title';
 import ResponsiveImage from '@/components/layout/responsiveImaage';
 import YoutubeCarousel from '@/components/media/youtubeCarousel';
 /** @jsxImportSource @emotion/react */
@@ -11,13 +11,52 @@ import styled from '@emotion/styled';
 import { useEffect, useState } from "react";
 import ReserveForm from '@/components/concerts/reserveForm';
 
+const PartedPlayerContainer = ({children, style}) => {
+    const Container = styled.div`
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        ${style}
+    `;
+
+    return (
+        <Container>
+            {children}
+        </Container>
+    );
+};
+
+const PartedPlayerImageUnit = ({children, part, style}) => {
+
+    const Container = styled.div`
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        ${style}
+        flex-grow: 1;
+        margin: 8px 0;
+    `;
+
+    const PartTitle = styled.h3`
+        margin: 4px 4px 30px 4px;
+        font-size: 18px;
+        font-weight: bold;
+    `;
+
+    return (
+        <Container>
+            <PartTitle>{part}</PartTitle>
+            {children}
+        </Container>
+    );
+};
+
 const PlayerImageUnit = ({playerName, playerImageName, width = 75}) => {
-    
     const ImageContainer = styled.div`
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin: 8px 10px;
+        margin: 8px ${getPageSize().width / 50}px;
         cursor: pointer;
         
         &:hover img {
@@ -41,7 +80,7 @@ const PlayerImageUnit = ({playerName, playerImageName, width = 75}) => {
         object-fit: cover;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-    `;
+    `;  
 
     const PlayerName = styled.div`
         font-size: 12px;
@@ -68,6 +107,11 @@ const PlayerImageUnit = ({playerName, playerImageName, width = 75}) => {
     );
 
 }
+
+const ProgramContainer = styled.div`
+    margin: 0 5%;
+    margin-bottom: 30px;
+`;
 
 export default function ConcertDetail() {
     const [mounted, setMounted] = useState(false);
@@ -240,15 +284,38 @@ export default function ConcertDetail() {
             <TitleContainer>
                 <Title2 title="Players" />
             </TitleContainer>
-            <PlayerContainer>
-                {concertInfo.players.map((player, index) => 
-                    <PlayerImageUnit 
-                        key={player.name + index} 
-                        playerName={player.name} playerImageName={player.name} 
-                        width={profileImageSize}
-                    />
-                )}
-            </PlayerContainer>
+            
+            {
+                Array.isArray(concertInfo.players) ?
+                    <PlayerContainer>
+                        {concertInfo.players.map((player, index) => 
+                            <PlayerImageUnit 
+                                key={player.name + index} 
+                                playerName={player.name} playerImageName={player.name} 
+                                width={profileImageSize}
+                            />
+                        )}
+                    </PlayerContainer>
+                    :
+                    <PartedPlayerContainer style={{margin: concertInfoMargin}}>
+                        {
+                            Object.entries(concertInfo.players).map(([part, players], index) =>
+                                <PartedPlayerImageUnit key={part + index} part={part} style={{width: '100%'}}>
+                                    <hr style={{flexGrow: 1, margin: '8px 4px 34px 4px'}}/>
+                                    <div style={{display: 'flex'}}>
+                                        {players.map((player, idx) => 
+                                            <PlayerImageUnit 
+                                                key={player.name + idx} 
+                                                playerName={player.name} playerImageName={player.name} 
+                                                width={profileImageSize}
+                                            />
+                                        )}
+                                    </div>
+                                </PartedPlayerImageUnit>
+                            )
+                        }
+                    </PartedPlayerContainer>
+            }
 
             <Spacer height={10} />
 
@@ -294,6 +361,27 @@ export default function ConcertDetail() {
                     </p>
                 ))}
             </DescriptionContainer>
+
+
+            {
+                concertInfo?.detail.program ? 
+                <>
+                    <Title2 title="Program"/>
+                    <ProgramContainer>
+                        {Object.entries(concertInfo.detail.program).map(([part, details]) => (
+                            <div key={part}>
+                                <Title4 title={part} />
+                                {details.items.map((item, index) => (
+                                    <p key={item[0] + index} style={{ marginLeft: '20px' }}>
+                                        {item}
+                                    </p>
+                                ))}
+                            </div>
+                        ))}
+                    </ProgramContainer>
+                </>
+                : <></>
+            }
 
             <hr />
             <Spacer height={20} />
