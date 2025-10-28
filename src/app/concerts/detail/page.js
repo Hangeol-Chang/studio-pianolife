@@ -291,14 +291,14 @@ export default function ConcertDetail() {
             const diffTime = concertDate - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
-            if (diffDays >= 1 && diffDays <= 30) {
-                // 공연까지 1~30일 남음: 예매 가능
+            if (diffDays >= 1 && diffDays <= 32) {
+                // 공연까지 1~32일 남음: 예매 가능
                 setCanReserve(true);
                 setDaysUntilReserve(null);
-            } else if (diffDays >= 31 && diffDays <= 35) {
-                // 공연까지 31~35일 남음: 예매까지 D-X일 표시
+            } else if (diffDays >= 33 && diffDays <= 37) {
+                // 공연까지 33~37일 남음: 예매까지 D-X일 표시
                 setCanReserve(false);
-                setDaysUntilReserve(diffDays - 30); // 예매 시작까지 남은 일수
+                setDaysUntilReserve(diffDays - 32); // 예매 시작까지 남은 일수
             } else {
                 // 그 외: 예매 불가
                 setCanReserve(false);
