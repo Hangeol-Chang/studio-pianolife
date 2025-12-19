@@ -1,9 +1,8 @@
-import { getPageSize } from './getPageSize';
 import { PUBLIC_BACKEND_URL } from '$env/static/public';
 
 export const getSizedImage = (path, name) => {
     const sizeList = [ 128, 320, 720, 1024 ];
-    const { width: wid } = getPageSize();
+    const wid = typeof window !== 'undefined' ? window.innerWidth : 0;
     
     // Ensure path starts with / if not present, but usually it is passed as /concerts
     // We want to construct: http://localhost:8000/static/concerts/resized/...

@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // 기본 색상 정의
 $primary: #8BBad4;
 $secondary: #2ecc71;
@@ -18,19 +20,19 @@ $gray3: #777777;
 
 // 유틸리티 함수
 @function intensed($color) {
-  @return darken($color, 10%);
+  @return color.adjust($color, $lightness: -10%);
 }
 
 @function disabled($color) {
-  @return mix($color, #ccc, 50%);
+  @return color.mix($color, #ccc, 50%);
 }
 
 @function outline($color) {
-  @return mix($color, #fff, 80%);
+  @return color.mix($color, #fff, 80%);
 }
 
 @function dark-mode($color) {
-  @return lighten($color, 20%);
+  @return color.adjust($color, $lightness: 20%);
 }
 
 // 색상 팔레트 생성

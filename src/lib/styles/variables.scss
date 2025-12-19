@@ -1,7 +1,51 @@
 
-$max-width: 768px;
-$min-width: 320px;
+@forward 'colors';
 
-$min-height: 1000px;
+// Breakpoints
+$mobile: 450px;
+$tablet: 768px;
+$desktop: 1280px;
+$large-desktop: 1920px;
+
+// Mixins for media queries
+@mixin mobile {
+  @media (max-width: #{$mobile}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{$mobile + 1}) and (max-width: #{$tablet}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$tablet + 1}) and (max-width: #{$desktop}) {
+    @content;
+  }
+}
+
+@mixin large-desktop {
+  @media (min-width: #{$desktop + 1}) and (max-width: #{$large-desktop}) {
+    @content;
+  }
+}
+
+// Generic mixin for custom breakpoints if needed
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == mobile {
+    @media (max-width: #{$mobile}) { @content; }
+  }
+  @else if $breakpoint == tablet {
+    @media (min-width: #{$mobile + 1}) and (max-width: #{$tablet}) { @content; }
+  }
+  @else if $breakpoint == desktop {
+    @media (min-width: #{$tablet + 1}) and (max-width: #{$desktop}) { @content; }
+  }
+  @else if $breakpoint == large {
+    @media (min-width: #{$desktop + 1}) { @content; }
+  }
+}
 
 

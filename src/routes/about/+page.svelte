@@ -47,22 +47,22 @@
     .cover-container {
         position: relative;
         width: 100%;
-        height: min(120vw, 900px);
         overflow: hidden;
         background: linear-gradient(30deg, #e6bec2 10%, #f1dddf 30%, #f2dfe1 90%);
         background-color: black;
+
+        // Responsive Height
+        height: 900px;
+        
+        @include tablet {
+            height: 700px;
+        }
+
+        @include mobile {
+            height: 120vw;
+        }
     }
 
-    .cover-name-text {
-        width: 100%;
-        text-align: center;
-        font-weight: normal;
-        font-size: min(5vw, 50px);
-        letter-spacing: min(1vw, 8px);
-        color: white;
-        margin: auto;
-        left: 50%;
-        bottom: 10%;
     :global(.main-image) {
         position: absolute;
         left: 50%;
@@ -70,12 +70,52 @@
         transform: translate(-50%, 0);
         animation: image-init-slide 1s ease-in-out forwards;
         z-index: 0;
-        width: 70%;
         height: auto;
         mask-image:
             linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%),
             linear-gradient(to top, black 0%, black 95%, transparent 100%);
         mask-composite: intersect;
+
+        // Responsive Width
+        width: 50%;
+
+        @include tablet {
+            width: 70%;
+        }
+
+        @include mobile {
+            width: 90%;
+        }
+    }
+
+    .cover-name-text {
+        width: 100%;
+        text-align: center;
+        font-weight: normal;
+        color: white;
+        margin: auto;
+        left: 50%;
+        bottom: 10%;
+        position: absolute;
+        z-index: 10;
+        transform: translate(-50%, 0);
+        animation: cover-name-init-slide 1s ease-in-out forwards;
+        text-shadow: 4px 4px 2px rgba(50, 20, 21, 0.6);
+
+        // Responsive Font
+        font-size: 50px;
+        letter-spacing: 8px;
+
+        @include tablet {
+            font-size: 40px;
+            letter-spacing: 6px;
+        }
+
+        @include mobile {
+            font-size: 24px;
+            letter-spacing: 3px;
+            bottom: 15%;
+        }
     }
 
     @keyframes image-init-slide {
@@ -87,13 +127,6 @@
             bottom: 0%;
             opacity: 1;
         }
-    }
-
-        position: absolute;
-        z-index: 10;
-        transform: translate(-50%, 0);
-        animation: cover-name-init-slide 1s ease-in-out forwards;
-        text-shadow: 4px 4px 2px rgba(50, 20, 21, 0.6);
     }
 
     @keyframes cover-name-init-slide {

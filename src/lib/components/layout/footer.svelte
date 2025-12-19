@@ -1,17 +1,5 @@
 <script>
-    import { FaEnvelope, FaGithub, FaInstagram, FaYoutube } from "react-icons/fa";
-    // Note: react-icons might need a wrapper or svelte-icons-pack in Svelte, 
-    // but often they work if configured or we can use svelte-fa or similar.
-    // For now, assuming we might need to replace them or use a svelte compatible library.
-    // Let's use a generic placeholder or assume we install svelte-icons.
-    // Actually, let's use font-awesome classes or SVG directly if possible, 
-    // but for quick migration, we can try to use `svelte-icons` or just SVGs.
-    // I will use simple text or SVGs for now to avoid dependency hell in this snippet,
-    // or better, I'll assume the user will install `svelte-fa` or similar.
-    // Let's just use standard HTML/CSS for icons or keep the import if we install the package.
-    
-    // Since we are in a "rewrite" mode, let's use a svelte-compatible icon set or just SVGs.
-    // I'll use simple SVGs for the icons to be safe and dependency-free.
+    // Icons are now SVG directly in the template
 </script>
 
 <footer class="footer">
