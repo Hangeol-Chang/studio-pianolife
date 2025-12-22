@@ -1,10 +1,11 @@
 <script>
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { fade } from 'svelte/transition';
+    import { fade, fly } from 'svelte/transition';
 
     let isMenuOpen = false;
     let scrollProgress = 0;
+    let isScrolled = false;
 
     function toggleMenu() {
         isMenuOpen = !isMenuOpen;
@@ -18,6 +19,7 @@
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         scrollProgress = (winScroll / height) * 100;
+        isScrolled = winScroll > 50;
     }
 
     onMount(() => {
@@ -28,7 +30,11 @@
     });
 </script>
 
-<div class="header-container">
+<div class="header-container" class:scrolled={isScrolled}>
+    <div class="progress-container">
+        <div class="progress-bar" style="width: {scrollProgress}%"></div>
+    </div>
+
     <header class="header">
         <div class="logo">
             <a href="/">Studio PianoLife</a>
@@ -45,41 +51,75 @@
             </ul>
         </nav>
 
-        <button class="hamburger-menu" on:click={toggleMenu} aria-label="Toggle menu">
+        <button class="hamburger-menu" onclick={toggleMenu} aria-label="Toggle menu">
             <div class="line"></div>
             <div class="line"></div>
             <div class="line"></div>
         </button>
     </header>
-
-    {#if isMenuOpen}
-        <div class="side-menu-overlay" on:click={closeMenu} transition:fade></div>
-        <div class="side-menu" transition:fade>
-            <button class="close-button" on:click={closeMenu}>&times;</button>
-            <ul class="menu-vertical">
-                <li class="menu-item"><a href="/about" on:click={closeMenu}>About</a></li>
-                <li class="menu-item"><a href="/concerts" on:click={closeMenu}>Concerts</a></li>
-                <li class="menu-item"><a href="/fourmusics" on:click={closeMenu}>Four Musics</a></li>
-                <li class="menu-item"><a href="/gallary" on:click={closeMenu}>Gallery</a></li>
-                <li class="menu-item"><a href="/interview" on:click={closeMenu}>Interview</a></li>
-                <li class="menu-item"><a href="/contact" on:click={closeMenu}>Contact</a></li>
-            </ul>
-        </div>
-    {/if}
-
-    <div class="progress-container">
-        <div class="progress-bar" style="width: {scrollProgress}%"></div>
-    </div>
 </div>
 
-<style lang="scss">
+{#if isMenuOpen}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="side-menu-overlay" onclick={closeMenu} transition:fade></div>
+    <div class="side-menu" transition:fly={{ x: 200, duration: 300 }}>
+        <button class="close-button" onclick={closeMenu}>&times;</button>
+        <ul class="menu-vertical">
+            <li class="menu-item"><a href="/about" onclick={closeMenu}>About</a></li>
+            <li class="menu-item"><a href="/concerts" onclick={closeMenu}>Concerts</a></li>
+            <li class="menu-item"><a href="/fourmusics" onclick={closeMenu}>Four Musics</a></li>
+            <li class="menu-item"><a href="/gallary" onclick={closeMenu}>Gallery</a></li>
+            <li class="menu-item"><a href="/interview" onclick={closeMenu}>Interview</a></li>
+            <li class="menu-item"><a href="/contact" onclick={closeMenu}>Contact</a></li>
+        </ul>
+    </div>
+{/if}
+
+<style>
+
     .header-container {
-        position: fixed;
+        position: absolute;
         top: 0;
         width: 100%;
         z-index: 100;
         height: 60px;
-        box-shadow: 0 4px 6px rgba(250, 250, 250, 0.1);
+        background-color: rgba(255, 255, 255, 0.9);
+        color: black;
+        transition: background-color 0.5s ease, color 0.5s ease, box-shadow 0.5s ease;
+
+        &.scrolled {
+            position: fixed;
+            top: 0;
+            animation: slideDown 0.5s ease forwards;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: white;
+            backdrop-filter: blur(5px);
+            
+            .header {
+                background: transparent;
+            }
+
+            .line {
+                background-color: white;
+            }
+
+            .menu-item {
+                &:hover {
+                    color: #66b3ff;
+                    background-color: #333;
+                }
+            }
+        }
+    }
+
+    @keyframes slideDown {
+        from {
+            transform: translateY(-100%);
+        }
+        to {
+            transform: translateY(0);
+        }
     }
 
     .header {
@@ -88,8 +128,8 @@
         align-items: center;
         padding: 0 5vw;
         height: 60px;
-        background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, white 65%);
-        color: black;
+        background: transparent;
+        color: inherit;
     }
 
     .logo {
@@ -103,7 +143,8 @@
 
     .nav-menu {
         display: block;
-        @media (max-width: 768px) {
+        
+        @media (--tablet) {
             display: none;
         }
     }
@@ -120,20 +161,23 @@
 
     .menu-vertical {
         height: 100%;
+        width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        margin-left: 10px;
+        gap: 2px;
         z-index: 10;
         list-style: none;
         padding: 0;
     }
 
     .menu-item {
-        padding: 0 1vw;
+        padding: 12px calc(1vw + 8px);
         display: flex;
         align-items: center;
+        transition: all 0.3s ease;
+
         a {
+            width: 100%;
             text-decoration: none;
             color: inherit;
             height: 100%;
@@ -143,6 +187,7 @@
         &:hover {
             color: #0056b3;
             background-color: #f5f5f5;
+            font-size: 1.1rem;
         }
     }
 
@@ -157,7 +202,7 @@
         width: 20px;
         padding: 0;
 
-        @media (max-width: 768px) {
+        @media (--tablet) {
             display: flex;
         }
     }
@@ -206,13 +251,13 @@
 
     .progress-container {
         width: 100%;
-        height: 4px;
-        background: #ccc;
+        height: 2px;
+        background: transparent;
     }
 
     .progress-bar {
-        height: 4px;
-        background: #0056b3;
+        height: 2px;
+        background: #FFFFFF;
         width: 0%;
     }
 </style>

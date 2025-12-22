@@ -1,50 +1,56 @@
 
 @forward 'colors';
 
-// Breakpoints
-$mobile: 450px;
-$tablet: 768px;
-$desktop: 1280px;
-$large-desktop: 1920px;
+// Breakpoints Map
+$breakpoints: (
+  'mobile': 450px,
+  'tablet': 768px,
+  'desktop': 1280px,
+  'large-desktop': 1920px
+);
 
-// Mixins for media queries
-@mixin mobile {
-  @media (max-width: #{$mobile}) {
+// Mixin for max-width (Desktop First / Hiding on smaller screens)
+@mixin max($key) {
+  $value: map-get($breakpoints, $key);
+  @media (max-width: $value) {
     @content;
   }
 }
 
-@mixin tablet {
-  @media (min-width: #{$mobile + 1}) and (max-width: #{$tablet}) {
+// Mixin for min-width (Mobile First / Showing on larger screens)
+@mixin min($key) {
+  $value: map-get($breakpoints, $key);
+  @media (min-width: $value + 1px) {
     @content;
+  }
+}
+
+// Legacy mixins for backward compatibility (optional, but good for transition)
+@mixin mobile {
+  @include max(mobile) { @content; }
+}
+
+@mixin tablet {
+  @include min(mobile) { 
+    @media (max-width: map-get($breakpoints, tablet)) {
+      @content;
+    }
   }
 }
 
 @mixin desktop {
-  @media (min-width: #{$tablet + 1}) and (max-width: #{$desktop}) {
-    @content;
+  @include min(tablet) {
+    @media (max-width: map-get($breakpoints, desktop)) {
+      @content;
+    }
   }
 }
 
 @mixin large-desktop {
-  @media (min-width: #{$desktop + 1}) and (max-width: #{$large-desktop}) {
-    @content;
-  }
-}
-
-// Generic mixin for custom breakpoints if needed
-@mixin respond-to($breakpoint) {
-  @if $breakpoint == mobile {
-    @media (max-width: #{$mobile}) { @content; }
-  }
-  @else if $breakpoint == tablet {
-    @media (min-width: #{$mobile + 1}) and (max-width: #{$tablet}) { @content; }
-  }
-  @else if $breakpoint == desktop {
-    @media (min-width: #{$tablet + 1}) and (max-width: #{$desktop}) { @content; }
-  }
-  @else if $breakpoint == large {
-    @media (min-width: #{$desktop + 1}) { @content; }
+  @include min(desktop) {
+    @media (max-width: map-get($breakpoints, large-desktop)) {
+      @content;
+    }
   }
 }
 
