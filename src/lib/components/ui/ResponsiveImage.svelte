@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { getSizedImage } from '@/utils/getSizedImage';
-    import { PUBLIC_BACKEND_URL } from '$env/static/public';
+    import { PIANOLIFE_BACKEND_URL } from '$env/static/public';
 
     export let path;
     export let name;
@@ -16,7 +16,7 @@
     const ext = "webp";
     // src = `${path}/resized/${baseName}_320.${ext}`;
     // Update initial src to use backend URL
-    const backendUrl = PUBLIC_BACKEND_URL || '';
+    const backendUrl = PIANOLIFE_BACKEND_URL || '';
     const staticPath = '/static';
     src = `${backendUrl}${staticPath}${path}/resized/${baseName}_320.${ext}`;
 

@@ -6,6 +6,9 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
+		env: {
+			publicPrefix: 'PIANOLIFE_'
+		},
 		adapter: adapter(),
 		alias: {
 			'@': 'src/lib'

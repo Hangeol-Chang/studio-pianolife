@@ -1,4 +1,4 @@
-import { PUBLIC_BACKEND_URL } from '$env/static/public';
+import { PIANOLIFE_BACKEND_URL } from '$env/static/public';
 
 export const getSizedImage = (path, name) => {
     const sizeList = [ 128, 320, 720, 1024 ];
@@ -8,7 +8,7 @@ export const getSizedImage = (path, name) => {
     // We want to construct: http://localhost:8000/static/concerts/resized/...
     // If path is "/concerts", we need to handle the leading slash or just join.
     
-    const backendUrl = PUBLIC_BACKEND_URL || '';
+    const backendUrl = PIANOLIFE_BACKEND_URL || '';
     const staticPath = '/static';
     
     // Clean up path to avoid double slashes if needed, but simple concatenation is often enough if conventions are followed.
