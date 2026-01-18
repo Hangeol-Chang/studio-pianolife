@@ -1,0 +1,58 @@
+
+@use "sass:map";
+@forward 'colors';
+
+// Breakpoints Map
+$breakpoints: (
+  'mobile': 450px,
+  'tablet': 768px,
+  'desktop': 1280px,
+  'large-desktop': 1920px
+);
+
+// Mixin for max-width (Desktop First / Hiding on smaller screens)
+@mixin max($key) {
+  $value: map.get($breakpoints, $key);
+  @media (max-width: $value) {
+    @content;
+  }
+}
+
+// Mixin for min-width (Mobile First / Showing on larger screens)
+@mixin min($key) {
+  $value: map.get($breakpoints, $key);
+  @media (min-width: $value + 1px) {
+    @content;
+  }
+}
+
+// Legacy mixins for backward compatibility (optional, but good for transition)
+@mixin mobile {
+  @include max(mobile) { @content; }
+}
+
+@mixin tablet {
+  @include min(mobile) { 
+    @media (max-width: map.get($breakpoints, tablet)) {
+      @content;
+    }
+  }
+}
+
+@mixin desktop {
+  @include min(tablet) {
+    @media (max-width: map.get($breakpoints, desktop)) {
+      @content;
+    }
+  }
+}
+
+@mixin large-desktop {
+  @include min(desktop) {
+    @media (max-width: map.get($breakpoints, large-desktop)) {
+      @content;
+    }
+  }
+}
+
+

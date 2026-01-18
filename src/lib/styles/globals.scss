@@ -1,0 +1,164 @@
+// Pretendard font is loaded via CDN in +layout.svelte
+
+// 캘리그래피용 글씨체
+@font-face {
+    font-family: 'Cafe24Lovingu';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2405-3@1.1/Cafe24Lovingu.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'LeferiPoint-SpecialItalicA';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/LeferiPoint-SpecialItalicA.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 400; // Light
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+}
+
+:root {
+    --border-radius: 12px;
+    --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
+        'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
+        'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+
+        --primary-glow: radial-gradient(rgba(1, 65, 255, 0.4), rgba(1, 65, 255, 0));
+        --secondary-glow: linear-gradient(
+        to bottom right,
+        rgba(1, 65, 255, 0),
+        rgba(1, 65, 255, 0),
+        rgba(1, 65, 255, 0.3)
+        );
+
+        --tile-start-rgb: 2, 13, 46;
+        --tile-end-rgb: 2, 5, 19;
+    }
+}
+
+:root {
+    background-color: $white2;
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    background-color: $white2;
+}
+
+body {
+    overflow-x: hidden;
+}
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.content {
+    margin: 60px auto 0px auto;
+    // padding: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: $white1;
+    
+    overflow: hidden;
+
+
+    display : flex;
+    justify-content: center;
+}
+.content > * {
+    overflow : hidden;
+    position: relative;
+    width: 100%;
+}
+
+@include mobile {
+    h1 {
+        font-size: 24px;
+    }
+    h3 {
+        font-size: 14px;
+    }
+    p {
+        font-size: 12px;
+    }
+}
+  
+@include tablet {
+    h1 {
+        font-size: 32px;
+    }
+    h3 {
+        font-size: 18px;
+    }
+    p {
+        font-size: 14px;
+    }
+}
+  
+@include desktop {
+    h1 {
+        font-size: 40px;
+    }
+    h3 {
+        font-size: 22px;
+    }
+    p {
+        font-size: 16px;
+    }
+}
+
+@include large-desktop {
+    h1 {
+        font-size: 48px;
+    }
+    h3 {
+        font-size: 26px;
+    }
+    p {
+        font-size: 18px;
+    }
+}
+
+h1, h2, h3, h4, h5, h6{
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 700; // Bold
+    color: $black1;
+    margin: 20px clamp(0px, 5vw, 38.4px);
+}
+p {
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 300;
+    color: $black2;
+    margin: 20px clamp(0px, 5vw, 38.4px);
+    line-height: 2.0;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: $gray1;
+    margin: 3px clamp(0px, 5vw, 38.4px) 8px clamp(0px, 5vw, 38.4px);
+}
