@@ -1,4 +1,5 @@
 
+@use "sass:map";
 @forward 'colors';
 
 // Breakpoints Map
@@ -11,7 +12,7 @@ $breakpoints: (
 
 // Mixin for max-width (Desktop First / Hiding on smaller screens)
 @mixin max($key) {
-  $value: map-get($breakpoints, $key);
+  $value: map.get($breakpoints, $key);
   @media (max-width: $value) {
     @content;
   }
@@ -19,7 +20,7 @@ $breakpoints: (
 
 // Mixin for min-width (Mobile First / Showing on larger screens)
 @mixin min($key) {
-  $value: map-get($breakpoints, $key);
+  $value: map.get($breakpoints, $key);
   @media (min-width: $value + 1px) {
     @content;
   }
@@ -32,7 +33,7 @@ $breakpoints: (
 
 @mixin tablet {
   @include min(mobile) { 
-    @media (max-width: map-get($breakpoints, tablet)) {
+    @media (max-width: map.get($breakpoints, tablet)) {
       @content;
     }
   }
@@ -40,7 +41,7 @@ $breakpoints: (
 
 @mixin desktop {
   @include min(tablet) {
-    @media (max-width: map-get($breakpoints, desktop)) {
+    @media (max-width: map.get($breakpoints, desktop)) {
       @content;
     }
   }
@@ -48,7 +49,7 @@ $breakpoints: (
 
 @mixin large-desktop {
   @include min(desktop) {
-    @media (max-width: map-get($breakpoints, large-desktop)) {
+    @media (max-width: map.get($breakpoints, large-desktop)) {
       @content;
     }
   }
