@@ -1,30 +1,32 @@
 <script>
-    // Icons are now SVG directly in the template
+    import fioreLogoText from '$lib/assets/icons/fiore_logo_text.png';
 </script>
 
 <footer class="footer">
-    <hr class="divider"/>
     <div class="footer-container">
         
         <!-- left part -->
         <div class="footer-left-part">
+            <!-- Logo -->
+            <div class="footer-logo">
+                <a href="/">
+                    <img src={fioreLogoText} alt="Fiore" class="footer-logo-img" />
+                </a>
+            </div>
+
             <p class="company-info">
-                company. STUDIO PIANOLIFE / owner. 고정우
+                company. Fiore / owner. 고정우
                 <br />
-                BRN. 815-55-00377  
+                BRN. 443-02-03983 
                 <br />
                 Contact. (인터뷰, 연주회 참가 문의)
                 <br />
                 instagram. @pianolife38 / mail. jwgo0311@gmail.com
-                <br />
-                <br />
-                © 2024 Hangeol-Chang. All rights reserved.
             </p>
         </div>
 
         <!-- right part -->
         <div class="footer-right-part">
-            <p class="slogan">공대생의 piano life</p>
             <div class="icon-container">
                 <a href="mailto:jwgo0311@gmail.com" aria-label="Email">
                     <!-- Envelope Icon -->
@@ -43,71 +45,77 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
                 </a>
             </div>
+            <p class="company-info">
+                © 2026 Hangeol-Chang. All rights reserved.
+            </p>
         </div>
     </div>
 </footer>
 
 <style lang="scss">
     .footer {
-        background-color: #FFFFFF;
+        background-color: #000000;
         color: white;
         padding: 0;
-        text-align: center;
-    }
-
-    .divider {
-        margin: 0;
     }
 
     .footer-container {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        color: black;
+        align-items: stretch;
+        padding: 40px 5vw;
+        gap: 40px;
 
         * {
-            font-size: 12px;
+            font-size: 0.75rem;
         }
+    }
+
+    .footer-logo {
+        flex-shrink: 0;
+        margin-bottom: 20px;
+    }
+
+    .footer-logo-img {
+        height: 80px;
+        width: auto;
+        filter: brightness(0) invert(1);
     }
 
     .footer-left-part {
         display: flex;
         flex-direction: column;
         flex-grow: 2;
-        align-items: start;
     }
 
     .company-info {
         text-align: start;
         margin: 0;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.8;
     }
 
     .footer-right-part {
         display: flex;
         flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
         flex-grow: 1;
-        align-items: end;
         gap: 10px;
-    }
-
-    .slogan {
-        margin: 0;
     }
 
     .icon-container {
         display: flex;
         gap: 10px; 
-        justify-content: end;
 
         a {
-            color: #000000;
-            transition: color 0.3s ease-in-out;
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.3s ease;
             display: flex;
             align-items: center;
             
             &:hover {
-                color: #ccc;
+                color: #66b3ff;
             }
         }
     }

@@ -332,7 +332,6 @@
         position: relative;
         display: flex;
         align-items: center;
-        transition: color 0.3s ease;
         justify-content: center;
 
         text-decoration: none;
