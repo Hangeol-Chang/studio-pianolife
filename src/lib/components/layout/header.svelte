@@ -102,7 +102,7 @@
                 <div class="logo-mobile">
                     <img src={fioreLogoText} alt="Fiore" class="logo-combined" />
                 </div>
-                <div role="none" class="logo-desktop">
+                <div class="logo-desktop">
                     <img src={fioreLogo} alt="Fiore Logo" class="logo-icon" />
                     <img src={fioreText} alt="Fiore" class="logo-text" />
                 </div>
@@ -171,7 +171,7 @@
     </div>
 {/if}
 
-<style>
+<style lang="scss">
     .header-container {
         position: absolute;
         top: 0;
@@ -231,7 +231,6 @@
 
                 .logo {
                     opacity: 0;
-                    pointer-events: none;
                 }
             }
             
