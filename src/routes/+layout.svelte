@@ -8,9 +8,9 @@
 </script>
 
 <svelte:head>
-	<title>Studio PianoLife</title>
+	<title>Fiore</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-	<link rel="icon" type="image/x-icon" href="/common/icon.ico">
+	<link rel="icon" type="image/x-icon" href={favicon}>
 	<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 </svelte:head>
 
@@ -20,9 +20,9 @@
 </div>
 <Footer />
 
-<style lang="scss">
+<style>
 	.content {
-		min-height: calc(100vh - 160px); // Adjust based on header and footer height
+		min-height: calc(100vh - 160px);
 		margin: 60px 0;
 	}
 	
