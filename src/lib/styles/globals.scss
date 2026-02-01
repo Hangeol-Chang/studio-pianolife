@@ -144,7 +144,7 @@ a {
 
 h1, h2, h3, h4, h5, h6{
     font-family: 'Pretendard', sans-serif;
-    font-weight: 700; // Bold
+    font-weight: 200;
     color: $black1;
     margin: 12px clamp(0px, 5vw, 38.4px);
 }
@@ -166,5 +166,12 @@ hr {
 section {
     padding: 4rem 0;
     margin: 120px 0;
+    z-index: 5;
     background-color: white;
+}
+
+.title-center {
+    font-weight: 200;
+    text-align: center;
+    letter-spacing: 0.1em;
 }
