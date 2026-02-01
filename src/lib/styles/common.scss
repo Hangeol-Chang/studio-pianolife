@@ -1,0 +1,76 @@
+// Typography
+$font-family-base: 'Pretendard', sans-serif;
+$font-weight-thin: 100;
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-bold: 700;
+
+// Colors
+$color-black: #000000;
+$color-white: #ffffff;
+$color-gray-100: #f3f3f3;
+$color-gray-300: #e0e0e0;
+$color-gray-500: #888888;
+$color-gray-900: #1a1a1a;
+
+$color-text-primary: $color-gray-900;
+$color-text-secondary: $color-gray-500;
+
+// Spacing
+$spacing-unit: 1rem;
+$section-padding-mobile: 4rem 1.5rem;
+$section-padding-desktop: 8rem 3rem;
+
+// Container
+$container-max-width: 1200px;
+
+// Mixins
+@mixin container {
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+
+@mixin min-width($width) {
+  @media (min-width: $width) {
+    @content;
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin section-base {
+  padding: $section-padding-mobile;
+  @media (min-width: 768px) {
+    padding: $section-padding-desktop;
+  }
+}
+
+@mixin text-title-lg {
+  font-size: 2.5rem;
+  font-weight: $font-weight-thin;
+  letter-spacing: 0.1em;
+  @media (min-width: 768px) {
+    font-size: 3.5rem;
+  }
+}
+
+@mixin text-title-md {
+  font-size: 1.8rem;
+  font-weight: $font-weight-light;
+  letter-spacing: 0.05em;
+  @media (min-width: 768px) {
+    font-size: 2.5rem;
+  }
+}
+
+@mixin text-body {
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: $font-weight-light;
+}
