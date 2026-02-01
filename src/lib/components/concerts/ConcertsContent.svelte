@@ -1,6 +1,12 @@
 <script>
   import { onMount } from 'svelte';
   
+  // Import concert images
+  import concertShuman from '$lib/assets/images/concerts/250224_shuman.jpg';
+  import concertShopinRavel from '$lib/assets/images/concerts/250215_shopinRavel.jpg';
+  import concertAmatuer from '$lib/assets/images/concerts/250829_amatuer.png';
+  import concertChopin from '$lib/assets/images/concerts/251140_chopin.png';
+  
   // Data extraction from the raw code provided
   const concerts = [
     {
@@ -11,40 +17,40 @@
       time: "19:30",
       location: "Hall Fioreum",
       price: "10,000 Won",
-      image: "", // Placeholder
+      image: concertShuman,
       status: "booking" 
     },
     {
       id: 2,
-      title: "슈만, 시인은 말한다",
+      title: "쇼팽과 라벨",
       description: "피아노라는 악기를 누구보다 열망하고 사랑한 슈만. 정해진 음악 형식을 벗어나 깊은 곳에서 부터 묻어나는",
       date: "2025년 3월 15일",
       time: "19:30",
       location: "Hall Fioreum",
       price: "10,000 Won",
-      image: "",
+      image: concertShopinRavel,
       status: "booking"
     },
     {
       id: 3,
-      title: "슈만, 시인은 말한다",
+      title: "아마추어를 만나다",
       description: "피아노라는 악기를 누구보다 열망하고 사랑한 슈만. 정해진 음악 형식을 벗어나 깊은 곳에서 부터 묻어나는",
       date: "2025년 3월 15일",
       time: "19:30",
       location: "Hall Fioreum",
       price: "10,000 Won",
-      image: "",
+      image: concertAmatuer,
       status: "booking"
     },
      {
       id: 4,
-      title: "슈만, 시인은 말한다",
+      title: "쇼팽의 밤",
       description: "피아노라는 악기를 누구보다 열망하고 사랑한 슈만. 정해진 음악 형식을 벗어나 깊은 곳에서 부터 묻어나는",
       date: "2025년 3월 15일",
       time: "19:30",
       location: "Hall Fioreum",
       price: "10,000 Won",
-      image: "",
+      image: concertChopin,
       status: "booking"
     }
   ];

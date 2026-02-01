@@ -1,45 +1,115 @@
 <script>
-    // Asset Imports (실제 경로에 맞춰 수정이 필요하면 변경해주세요)
-    const bgImage = "/background/raw/hq720.avif"; 
+    import { ChevronLeft, ChevronRight } from 'lucide-svelte';
+    import { onMount } from 'svelte';
+
+    // Asset Imports
+    import bgImage from '$lib/assets/images/home/home_wallpaper.png';
+    import profile1 from '$lib/assets/images/artists/artist_1.png';
+    import profile2 from '$lib/assets/images/artists/profile_2.png';
+    import profile3 from '$lib/assets/images/artists/profile_3.png';
+    import concertShuman from '$lib/assets/images/concerts/250224_shuman.jpg';
+    import concertShopinRavel from '$lib/assets/images/concerts/250215_shopinRavel.jpg';
+    import concertAmatuer from '$lib/assets/images/concerts/250829_amatuer.png';
+    import Vision from '@/components/about/Vision.svelte';
     
     // Data Definition
     const artists = [
-        { nameKo: '고정우 (공피라)', nameEn: 'Ko Jeong Woo', image: '/profile/face/default.jpg' },
-        { nameKo: '포뮤직스', nameEn: 'Four Musics', image: '/profile/face/default.jpg' },
-        { nameKo: '김준한', nameEn: 'JunHan', image: '/profile/face/default.jpg' },
-        { nameKo: '밤하늘', nameEn: 'Night Sky', image: '/profile/face/default.jpg' }
+        { nameKo: '고정우 (공피라)', nameEn: 'Ko Jeong Woo', image: profile1 },
+        { nameKo: '포뮤직스', nameEn: 'Four Musics', image: profile2 },
+        { nameKo: '김준한', nameEn: 'JunHan', image: profile3 },
+        { nameKo: '밤하늘', nameEn: 'Night Sky', image: profile1 }
     ];
 
     const concerts = [
-        { title: '슈만 | 시인은, 말한다', image: '' },
-        { title: '쇼팽과 라벨', image: '' },
-        { title: '아마추어를 만나다', image: '' }
+        { title: '슈만 | 시인은, 말한다', image: concertShuman },
+        { title: '쇼팽과 라벨', image: concertShopinRavel },
+        { title: '아마추어를 만나다', image: concertAmatuer }
     ];
+
+    // Banner Slides Data
+    const slides = [
+        { type: 'main' },
+        { type: 'link', image: concertShuman, link: '/concerts/shuman', title: '슈만 | 시인은, 말한다' },
+        { type: 'link', image: concertShopinRavel, link: '/concerts/chopin', title: '쇼팽과 라벨' },
+        { type: 'link', image: concertAmatuer, link: '/concerts/amatuer', title: '아마추어를 만나다' }
+    ];
+
+    let scrollY = 0;
+    let currentSlide = 0;
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+    }
+
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+    }
+
+    function goToSlide(index) {
+        currentSlide = index;
+    }
 </script>
 
-<div class="main-container">
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-bg">
-            <img src={bgImage} alt="Hero Background" onerror={(e) => e.currentTarget.src = '/background/play_cut_wide_1.png'}/>
-            <div class="overlay"></div>
-        </div>
-        
-        <div class="hero-content">
-            <h1 class="hero-title">Fiore에서 만나는 클래식의 감동</h1>
-            <p class="hero-subtitle">예술가들의 음악이 피어나는 곳</p>
-            
-            <div class="hero-divider">
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <div class="dash-group">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dash"></span>
+<svelte:window bind:scrollY={scrollY} />
+
+<div>
+    <!-- Main Banner Slider -->
+    <div class="banner-slider-container">
+        <div class="slider-track" style="transform: translateX(-{currentSlide * 100}%)">
+            {#each slides as slide, index}
+                <div class="slide-item">
+                    {#if slide.type === 'main'}
+                        <!-- Main Banner (Original Content) -->
+                        <div class="main-banner">
+                            <div class="main-banner-bg" style="--scroll-y: {scrollY}">
+                                <img src={bgImage} alt="Hero Background" />
+                                <div class="overlay"></div>
+                            </div>
+                            
+                            <div class="banner-content">
+                                <h3 class="sub-title">예술가들의 음악이 피어나는 곳</h3>
+                                <h1 class="main-title">Fiore에서 만나는 클래식의 감동</h1>
+                            </div>
+                        </div>
+                    {:else}
+                        <!-- Link Banner -->
+                        <a href={slide.link} class="link-banner main-banner-bg" style="--scroll-y: {scrollY}">
+                            <img src={slide.image} alt={slide.title} />
+                            <div class="link-overlay">
+                                <h2 class="link-title">{slide.title}</h2>
+                            </div>
+                        </a>
+                    {/if}
                 </div>
-            </div>
+            {/each}
         </div>
-    </section>
+
+        <!-- Navigation Controls -->
+        <button class="nav-btn prev" onclick={prevSlide} aria-label="Previous slide">
+            <ChevronLeft size={32} color="white" />
+        </button>
+        <button class="nav-btn next" onclick={nextSlide} aria-label="Next slide">
+            <ChevronRight size={32} color="white" />
+        </button>
+
+        <!-- Indicators -->
+        <div class="indicators">
+            {#each slides as _, i}
+                <button 
+                    class="indicator-dot {currentSlide === i ? 'active' : ''}" 
+                    onclick={() => goToSlide(i)}
+                    aria-label="Go to slide {i + 1}"
+                ></button>
+            {/each}
+        </div>
+    </div>
+
+    <!-- VIsion -->
+    <div>
+        <Vision />
+    </div>
+
+    <hr />
 
     <!-- Artists Section -->
     <section class="section artists-section">
@@ -76,7 +146,7 @@
             {#each concerts as concert}
                 <div class="concert-item">
                     <div class="concert-image">
-                        <!-- Placeholder for Concert Image -->
+                        <img src={concert.image} alt={concert.title} />
                     </div>
                     <div class="concert-info">
                         <h3>{concert.title}</h3>
@@ -127,28 +197,8 @@
 <style lang="scss">
     // SCSS Variables & Mixins could be imported here
     // @use "@/styles/variables";
-
-    $text-main: #000;
     $text-light: #fff;
     $bg-gray: #f3f3f3;
-    
-    // Component Styles
-    .main-container {
-        width: 100%;
-        overflow-x: hidden;
-        font-family: 'Pretendard', sans-serif; // 기본 폰트 가정
-    }
-
-    /* Common Styles */
-    .section {
-        padding: 4rem 1.5rem;
-        max-width: 1200px;
-        margin: 0 auto;
-        
-        @media (min-width: 768px) {
-            padding: 6rem 3rem;
-        }
-    }
 
     .section-title {
         font-size: 2rem;
@@ -156,7 +206,6 @@
         text-align: center;
         margin-bottom: 0.5rem;
         letter-spacing: 0.1em;
-        color: $text-main;
     }
 
     .section-desc {
@@ -181,56 +230,177 @@
         }
     }
 
-    /* Hero Section */
-    .hero-section {
+    /* Slider Styles */
+    .banner-slider-container {
         position: relative;
+        width: 100vw;
         height: 100vh;
-        max-height: 900px;
-        min-height: 600px;
+        max-height: 700px;
+        margin-left: calc(50% - 50vw);
+        overflow: hidden;
+        background-color: black;
+    }
+
+    .slider-track {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        will-change: transform;
+    }
+
+    .slide-item {
+        min-width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .link-banner {
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        text-decoration: none;
+        
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .link-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 4rem 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            text-align: center;
+        }
+
+        .link-title {
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            color: white;
+        }
+    }
+
+    /* Navigation */
+    .nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.2);
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        z-index: 10;
+        transition: background 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        &:hover {
+            background: rgba(0,0,0,0.5);
+        }
+
+        &.prev {
+            left: 0;
+            border-radius: 0 50% 50% 0;
+        }
+        &.next { 
+            right: 0; 
+            border-radius: 50% 0 0 50%;
+        }
+    }
+
+    .indicators {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.5rem;
+        z-index: 10;
+
+        .indicator-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.4);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0;
+            border-radius: 50%;
+
+            &.active {
+                background: white;
+                transform: scale(1.2);
+            }
+        }
+    }
+
+    /* Hero Section */
+    .main-banner {
+        position: relative;
+        width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: $text-light;
         text-align: center;
+        // overflow: hidden;
+        background-color: black;
+        z-index: -1;
     }
 
-    .hero-bg {
+    .main-banner-bg {
+        will-change: transform, opacity;
+        transform: translateY(calc(var(--scroll-y) * 0.7px));
+        // opacity: calc(1 - (var(--scroll-y) / 2000));
         position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        z-index: -1;
-        background-color: #1a1a1a;
+        top: 0;
+        left: 0;
+        width: 100%; 
+        height: 100%;
         
         img {
-            width: 100%; height: 100%; object-fit: cover;
-            opacity: 0.8;
+            width: 100%;
+            height: 100%; 
+            object-fit: cover;
+            opacity: 1;
         }
         .overlay {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5));
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: 
+            linear-gradient(to bottom, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.9) 100%);
         }
     }
 
-    .hero-content {
+    .banner-content {
         z-index: 1;
         padding: 0 1rem;
 
-        .hero-title {
-            font-size: 1.8rem;
-            font-weight: 200;
+        .main-title {
+            font-weight: 100;
             letter-spacing: 0.15em;
             margin-bottom: 1rem;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            
-            @media (min-width: 768px) {
-                font-size: 2.5rem;
-            }
+            color: white;
+            animation: spacingDown 1s ease-out forwards;
         }
         
-        .hero-subtitle {
-            font-size: 1rem;
-            font-weight: 200;
+        .sub-title {
+            font-weight: 100;
             letter-spacing: 0.1em;
             opacity: 0.9;
+            color: white;
+            animation: floatUp 1s ease-out forwards;
         }
 
         .hero-divider {
@@ -244,6 +414,16 @@
             .dash-group { display: flex; gap: 0.5rem; align-items: center; }
             .dash { width: 24px; height: 1px; background: #fff; opacity: 0.8; }
         }
+    }
+
+    @keyframes spacingDown {
+        0% { letter-spacing: 0.5em; opacity: 0; }
+        100% { letter-spacing: 0.15em; opacity: 1; }
+    }
+    @keyframes floatUp {
+        0% { transform: translateY(10px); opacity: 0; }
+        50% { transform: translateY(10px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
     }
 
     /* Artists Section */
@@ -325,13 +505,6 @@
             flex-direction: row;
             align-items: stretch;
             gap: 3rem;
-            
-            // 짝수 번째 아이템 이미지를 오른쪽으로 배치하려면 아래 주석 해제
-            /* &:nth-child(even) {
-                flex-direction: row-reverse;
-                text-align: right;
-                .btn-detail { align-self: flex-end; }
-            } */
         }
 
         .concert-image {
@@ -339,6 +512,13 @@
             height: 250px;
             background-color: #e5e5e5;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+            
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
             
             @media (min-width: 768px) {
                 width: 280px;

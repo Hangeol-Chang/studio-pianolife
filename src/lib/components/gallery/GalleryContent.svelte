@@ -1,6 +1,13 @@
 <script>
     import { onMount } from 'svelte';
     import { fade } from 'svelte/transition';
+    
+    // Import gallery images
+    import artist1 from '$lib/assets/images/artists/artist_1.png';
+    import profile2 from '$lib/assets/images/artists/profile_2.png';
+    import profile3 from '$lib/assets/images/artists/profile_3.png';
+    import about1 from '$lib/assets/images/about/about_1.jpg';
+    import about2 from '$lib/assets/images/about/about_2.jpg';
 
     // Mock Data
     const galleryItems = [
@@ -9,24 +16,24 @@
             category: 'artist',
             title: 'Ko Jeong Woo',
             subTitle: '고정우',
-            mainImage: '', // Placeholder
-            thumbnails: ['', '', '', '']
+            mainImage: artist1,
+            thumbnails: [artist1, about1, about2, profile2]
         },
         {
             id: 2,
             category: 'artist',
             title: 'Kim Jun Han',
             subTitle: '김준한',
-            mainImage: '',
-            thumbnails: ['', '', '']
+            mainImage: profile2,
+            thumbnails: [profile2, about1, about2]
         },
         {
             id: 3,
             category: 'artist',
             title: 'Park Seo Hyeon',
             subTitle: '박서현',
-            mainImage: '',
-            thumbnails: ['', '', '', '']
+            mainImage: profile3,
+            thumbnails: [profile3, about1, about2, artist1]
         }
     ];
 

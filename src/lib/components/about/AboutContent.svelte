@@ -1,5 +1,7 @@
 <script>
     import { onMount } from 'svelte';
+    import visionImage from '$lib/assets/images/about/about_1.jpg';
+    import heroBg from '$lib/assets/images/about/about_wallpaper.jpg';
     
     // Timeline Data
     const historyEvents = [
@@ -8,11 +10,7 @@
         { year: '2024', title: '스튜디오 피아노라이프로 사업자명 변경', content: '' },
         { year: '2023', title: '첫 단독 기획 공연', content: '' }, // 연도가 명시되지 않아 2023으로 추정
         { year: '2019', title: '사업자 설립', content: '' }
-    ];
-
-    // Images (Replace with actual paths)
-    const visionImage = "/background/raw/hq720 (2).avif"; 
-    const heroBg = "/background/raw/hq720.avif"; 
+    ]; 
 
     // Animation Logic (Simple Scroll Reveal)
     let visibleItems = new Set();

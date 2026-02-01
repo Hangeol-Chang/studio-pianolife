@@ -1,6 +1,11 @@
 <script>
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation'; // Update: Use for navigation if needed, or just anchor tags
+    
+    // Import artist images
+    import artist1 from '$lib/assets/images/artists/artist_1.png';
+    import profile2 from '$lib/assets/images/artists/profile_2.png';
+    import profile3 from '$lib/assets/images/artists/profile_3.png';
 
     // Mock Data for Artists
     const artists = [
@@ -10,7 +15,7 @@
             en: "KO JEONG WOO",
             instrument: "Piano",
             intro: "음악 속에서 자유를 찾는 연주자",
-            image: ""
+            image: artist1
         },
         {
             id: 'hwang-soo-yeon',
@@ -18,7 +23,7 @@
             en: "HWANG SOO YEON",
             instrument: "Piano",
             intro: "섬세한 터치로 감동을 전하는 피아니스트",
-            image: ""
+            image: profile2
         },
         {
             id: 'kim-hyo-jae',
@@ -26,7 +31,7 @@
             en: "KIM HYO JAE",
             instrument: "Piano",
             intro: "강렬한 에너지와 열정의 하모니",
-            image: ""
+            image: profile3
         },
         {
             id: 'park-tae-won',
@@ -34,7 +39,7 @@
             en: "PARK TAE WON",
             instrument: "Piano",
             intro: "깊이 있는 해석, 진정성 있는 울림",
-            image: ""
+            image: artist1
         },
          {
             id: 'lee-jun-ho',
@@ -42,7 +47,7 @@
             en: "LEE JUN HO",
             instrument: "Violin",
             intro: "노래하듯 흐르는 선율의 미학",
-            image: ""
+            image: profile2
         },
          {
             id: 'park-jimin',
@@ -50,7 +55,7 @@
             en: "PARK JIMIN",
             instrument: "Cello",
             intro: "중저음의 따뜻함으로 위로를 건네다",
-            image: ""
+            image: profile3
         }
     ];
 

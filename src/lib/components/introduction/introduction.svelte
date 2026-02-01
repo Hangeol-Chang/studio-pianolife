@@ -1,5 +1,6 @@
 <script>
     import { onMount } from 'svelte';
+    import introImage from '$lib/assets/images/about/about_2.jpg';
 
     let listContainer;
     let imageContainer;
@@ -54,7 +55,7 @@
 <div>
     <div class="intro-top-container">
         <div class="top-image-wrapper" bind:this={imageContainer}>
-            <img src="/background/CMJ_2025_2.jpg" class="top-image" alt="img" />
+            <img src={introImage} class="top-image" alt="img" />
         </div>
         <ul class="intro-top-text" bind:this={listContainer}>
             <li class="visible"></li>
