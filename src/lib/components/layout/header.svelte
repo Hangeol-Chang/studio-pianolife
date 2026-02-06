@@ -124,7 +124,6 @@
         </button>
     </header>
     
-    <!-- 메가 드롭다운 (전체 width) -->
     <div role="none" class="header-expand" class:active={isNavHovered} onmouseenter={showNav} onmouseleave={hideNav}>
         <!-- 왼쪽: 큰 로고 -->
         <div class="logo-expand">
@@ -322,6 +321,7 @@
         margin: 0 0;
         grid-template-columns: repeat(6, 1fr);
         
+        padding: 12px 0;
         @media (--tablet) {
             display: none;
         }

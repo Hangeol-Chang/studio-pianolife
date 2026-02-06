@@ -7,7 +7,7 @@
     import Vision from '@/components/about/Vision.svelte';
     import ArtistsDashboard from '$routes/artists/dashboard.svelte';
     import ConcertsDashboard from '$routes/concerts/dashboard.svelte';
-    import GalleryDashboard from '$routes/gallary/dashboard.svelte';
+    import GalleryDashboard from '$routes/gallery/dashboard.svelte';
     
     import concertShuman from '$lib/assets/images/concerts/250224_shuman.jpg';
     import concertShopinRavel from '$lib/assets/images/concerts/250215_shopinRavel.jpg';

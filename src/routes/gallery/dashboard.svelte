@@ -1,8 +1,8 @@
 <script>
 </script>
 
-<section class="section gallery-section">
-    <div class="section-header center">
+<section>
+    <div class="section-title-center">
         <h2 class="section-title">Gallery</h2>
         <p class="section-desc">우리들이 음악으로 채운 순간들</p>
     </div>
@@ -14,19 +14,11 @@
     </div>
 
     <div class="more-link text-right">
-        <a href="/gallary">+ more</a>
+        <a href="/gallery">+ more</a>
     </div>
 </section>
 
 <style lang="scss">
-    .section-title {
-        font-size: 2rem;
-        font-weight: 300;
-        text-align: center;
-        margin-bottom: 0.5rem;
-        letter-spacing: 0.1em;
-    }
-
     .section-desc {
         font-size: 0.9rem;
         font-weight: 300;
@@ -48,18 +40,7 @@
             &:hover { opacity: 0.7; }
         }
     }
-
-    /* Gallery Section */
-    .gallery-section {
-        padding: 4rem 1.5rem;
-        max-width: 1200px;
-        margin: 0 auto;
-        
-        @media (min-width: 768px) {
-            padding: 6rem 3rem;
-        }
-    }
-
+    
     .gallery-grid {
         display: grid;
         grid-template-columns: 1fr;

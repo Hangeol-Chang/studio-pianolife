@@ -100,7 +100,7 @@
 </script>
 
 <section bind:this={sectionRef}>
-    <div class="content-wrapper">
+    <div class="section-content-wrapper">
         <div class="image-area {isVisible ? 'animate' : ''}">
             {#key currentVisionIndex}
                 <img 
@@ -147,11 +147,13 @@
 </section>
 
 <style lang="scss">
-    .content-wrapper {
+    section {
+        padding: 4rem 0;
+    }
+    .section-content-wrapper {
         display: grid;
         grid-template-columns: 2fr minmax(380px, 1fr);
         align-items: stretch;
-        
         @media(--tablet) {
             grid-template-columns: 1fr minmax(300px, 1fr);
         }
@@ -164,7 +166,7 @@
     .image-area {
         flex: 1; // Tablet & Desktop: 1:1 비율
         width: 100%;
-        height: 800px;
+        height : 1200px;
         max-width: 800px;
 
         overflow: hidden;
@@ -173,6 +175,9 @@
         transform: translateY(40px);
         transition: all 2s cubic-bezier(0.22, 1, 0.36, 1);
 
+        @media(--desktop) {
+            height: 900px;
+        }
         @media(--tablet) {
             height: 600px;
         }
@@ -188,6 +193,7 @@
         img {
             width: 100%;
             height: 100%;
+            aspect-ratio: 1 / 5;
             object-fit: cover;
             display: block;
             border-top-right-radius: 4px;

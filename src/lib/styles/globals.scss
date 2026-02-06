@@ -95,51 +95,43 @@ a {
 }
 
 @include mobile {
-    h1 {
-        font-size: 24px;
-    }
-    h3 {
-        font-size: 14px;
-    }
-    p {
-        font-size: 12px;
-    }
+    h1 { font-size: 24px; }
+    h2 { font-size: 18px; }
+    h3 { font-size: 14px; }
+    h4 { font-size: 13px; }
+    h5 { font-size: 12px; }
+    p { font-size: 12px; }
+    div { font-size: 12px; }
 }
   
 @include tablet {
-    h1 {
-        font-size: 32px;
-    }
-    h3 {
-        font-size: 18px;
-    }
-    p {
-        font-size: 14px;
-    }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 18px; }
+    h4 { font-size: 16px; }
+    h5 { font-size: 14px; }
+    p { font-size: 14px; }
+    div { font-size: 14px; }
 }
   
 @include desktop {
-    h1 {
-        font-size: 40px;
-    }
-    h3 {
-        font-size: 22px;
-    }
-    p {
-        font-size: 16px;
-    }
+    h1 { font-size: 40px; }
+    h2 { font-size: 30px; }
+    h3 { font-size: 22px; }
+    h4 { font-size: 20px; }
+    h5 { font-size: 18px; }
+    p { font-size: 16px; }
+    div { font-size: 16px; }
 }
 
 @include large-desktop {
-    h1 {
-        font-size: 48px;
-    }
-    h3 {
-        font-size: 26px;
-    }
-    p {
-        font-size: 18px;
-    }
+    h1 { font-size: 48px; }
+    h2 { font-size: 36px; }
+    h3 { font-size: 26px; }
+    h4 { font-size: 24px; }
+    h5 { font-size: 22px; }
+    p { font-size: 18px; }
+    div { font-size: 18px; }
 }
 
 h1, h2, h3, h4, h5, h6{
@@ -164,14 +156,42 @@ hr {
 }
 
 section {
-    padding: 4rem 0;
+    padding: 4rem 1vw;
     margin: 120px 0;
     z-index: 5;
     background-color: white;
 }
 
-.title-center {
+.section-content-wrapper {
+    max-width: 1600px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.section-title-center {
     font-weight: 200;
     text-align: center;
     letter-spacing: 0.1em;
+}
+
+.section-subtitle-center {
+    font-weight: 200;
+    text-align: center;
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+    color: $gray3;
+}
+
+.section-title-left {
+    font-weight: 200;
+    text-align: left;
+    letter-spacing: 0.1em;
+}
+
+.section-subtitle-left {
+    font-weight: 200;
+    text-align: left;
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+    color: $gray3;
 }
