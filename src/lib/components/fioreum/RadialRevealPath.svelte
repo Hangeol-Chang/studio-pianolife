@@ -7,6 +7,7 @@
     export let fill = "black";
     export let delay = 0;
     export let duration = 2000;
+    export let visible = true;
     
     // Unique ID for the gradient
     const uid = "grad-" + Math.random().toString(36).substr(2, 9);
@@ -17,9 +18,7 @@
         delay
     });
 
-    onMount(() => {
-        progress.set(1);
-    });
+    $: if (visible) { progress.set(1); }
 </script>
 
 <defs>
