@@ -277,18 +277,6 @@
             color: white;
             animation: floatUp 1s ease-out forwards;
         }
-
-        .hero-divider {
-            margin-top: 4rem;
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            align-items: center;
-            
-            .dot { width: 4px; height: 4px; background: #fff; border-radius: 50%; opacity: 0.8; }
-            .dash-group { display: flex; gap: 0.5rem; align-items: center; }
-            .dash { width: 24px; height: 1px; background: #fff; opacity: 0.8; }
-        }
     }
 
     @keyframes spacingDown {

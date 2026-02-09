@@ -107,7 +107,7 @@
             Where Music Blooms
         </h1>
         <h3 class="section-subtitle-center" style="letter-spacing: 0.8rem;">
-            연주자의 음악을 치어나게 하는 곳
+            연주자의 음악을 피어나게 하는 곳
         </h3>
     </div>
     <div style="height: 150px;"></div>

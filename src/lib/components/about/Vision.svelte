@@ -4,7 +4,7 @@
     import { ChevronLeft, ChevronRight } from 'lucide-svelte';
     import aboutImage from '$lib/assets/images/about/about_1.jpg';
     import aboutImage2 from '$lib/assets/images/about/about_2.jpg';
-    import aboutImage3 from '$lib/assets/images/about/about_wallpaper.jpg';
+    import aboutImage3 from '$lib/assets/images/about/about_wallpaper.png';
     import aboutImage4 from '$lib/assets/images/about/membership_wallpaper.jpg';
 
     let isVisible = false;
