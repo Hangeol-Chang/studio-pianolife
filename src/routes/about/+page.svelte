@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import visionImage from '$lib/assets/images/about/about_1.jpg';
     import heroImage from '$lib/assets/images/about/about_wallpaper.png';
+    import Vision from '@/components/about/Vision.svelte';
     
     // Timeline Data
     const historyEvents = [
@@ -45,11 +46,14 @@
         
         <div class="hero-content">
             <h1 class="main-title">FIORE</h1>
-            <h2 class="sub-title">Where Musicians’ Music Blooms</h2>
-            <div class="divider"></div>
-            <p class="description">연주자의 음악을 피어나게 하는 곳</p>
+            <div class="hero-description">
+                <h3>Where Musicians’ Music Blooms</h3>
+                <h4>연주자의 음악을 피어나게 하는 곳</h4>
+            </div>
         </div>
     </section>
+
+    <Vision />
 
     <!-- 2. Vision Section -->
     <section class="vision-section">
@@ -115,7 +119,7 @@
     </section>
 </div>
 
-<style>
+<style lang="scss">
     .hero-section {
         position: relative;
 
@@ -170,54 +174,55 @@
 
 
     .hero-content {
-        position: relative;
-        height: 0;
+        position: absolute;
+        top: 0; 
+        left: 0;
+        height: 100%;
+        display: flex; 
+        flex-direction: column; 
+        justify-content: space-between;
+        align-items: center;
+        text-align: center;
+        
         z-index: 5;
         opacity: 1;
+        width: 100%;
 
         .main-title {
-            position: absolute;
-            left: 50%;
-            top: 150px;
-            transform: translateX(-50%);
-
-            position: relative;
-            
             color: white;
             font-weight: 100;
 
-            font-size: 3.5rem;
-            margin: 0 auto;
+            font-size: 5rem;
+            margin-top: 6rem;
             letter-spacing: 0.5em;
             margin-bottom: 1rem;
             
-            @media (min-width: 768px) {
-                font-size: 5rem; 
+            @media (--tablet) {
+                font-size: 3rem;
             }
         }
         
-        .sub-title {
-            font-size: 1.2rem;
-            letter-spacing: 0.1em;
-            margin-bottom: 2rem;
-            color: rgba(255, 255, 255, 0.9);
-            
-            @media (min-width: 768px) {
+        .hero-description * {
+            letter-spacing: 0.3em;
+            font-weight: 100;
+            opacity: 0.7;
+            color: white;
+        }
+
+        .hero-description {
+            padding-bottom: 6rem;
+            h3 {
                 font-size: 2rem;
+                @media(--tablet) {
+                    font-size: 1.2rem;
+                }
             }
-        }
-        
-        .divider {
-            width: 1px;
-            height: 60px;
-            background-color: rgba(255,255,255,0.5);
-            margin: 0 auto 2rem;
-        }
-        
-        .description {
-            font-size: 1rem;
-            letter-spacing: 0.2em;
-            opacity: 0.8;
+            h4 {
+                font-size: 1.4rem;
+                @media(--tablet) {
+                    font-size: 1rem;
+                }
+            }
         }
     }
 
@@ -241,8 +246,6 @@
         opacity: 0;
         transform: translateX(-30px);
         transition: all 0.8s ease;
-        
-        &.visible { opacity: 1; transform: translateX(0); }
 
         .vision-label {
             font-size: 1.5rem;
@@ -284,9 +287,7 @@
         opacity: 0;
         transform: translateX(30px);
         transition: all 0.8s ease 0.2s;
-        
-        &.visible { opacity: 1; transform: translateX(0); }
-        
+
         img {
             width: 100%;
             height: auto;
@@ -308,8 +309,7 @@
         opacity: 0;
         transform: translateY(20px);
         transition: opacity 0.8s ease;
-        &.visible { opacity: 1; transform: translateY(0); }
-        
+
         .section-title {
             font-size: 2rem;
             font-weight: light;
@@ -352,8 +352,7 @@
         opacity: 0;
         transform: translateY(20px);
         transition: all 0.6s ease;
-        &.visible { opacity: 1; transform: translateY(0); }
-        
+
         &:last-child { margin-bottom: 0; }
         
         @media (min-width: 768px) {
