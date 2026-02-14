@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { fly, fade } from 'svelte/transition';
-    import { ChevronLeft, ChevronRight } from 'lucide-svelte';
+    import { ChevronLeft, ChevronRight, Users, Heart, TrendingUp, Sparkles, Theater } from 'lucide-svelte';
     import aboutImage from '$lib/assets/images/about/about_1.jpg';
     import aboutImage2 from '$lib/assets/images/about/about_2.jpg';
     import aboutImage3 from '$lib/assets/images/about/about_wallpaper.png';
@@ -14,34 +14,29 @@
 
     const visions = [
         {
-            title: "Our Vision",
-            desc: "Fiore는 연주자의 음악이 가장 아름답게 피어날 수 있도록,<br />최상의 무대와 감동적인 경험을 만들어갑니다.",
-            image: aboutImage
+            title: "고객이 아닌 소속 아티스트",
+            desc: "연주자가 그저 기획사의 고객이 아닌 소속 아티스트로서 오직 음악에만 집중할 수 있는 무대를 만들어 나갑니다.",
+            icon: Users
         },
         {
-            title: "Respect",
-            desc: "연주자가 오직 음악에만 몰입하여 최고의 기량을 펼칠 수 있는<br />완벽한 무대를 만듭니다.",
-            image: aboutImage2
+            title: "아티스트와 팬덤",
+            desc: "인터뷰, 연주회 홍보 프로모션 등 아티스트 홍보 뿐만이 아니라 '팬덤'을 만들어 나갈 수 있는 다양한 컨텐츠를 제작해 나갑니다.",
+            icon: Sparkles
         },
         {
-            title: "Creation",
-            desc: "무대위 뿐만이 아닌 무대 밖에서도 연주자를 만나 교감할 수 있는<br />다채로운 컨텐츠를 기획합니다.",
-            image: aboutImage3
+            title: "오늘의 신예, 내일의 거장",
+            desc: "숨겨진  보석 같은 신예 아티스트를 발굴하고 그들의 무대를 지원해 나갑니다.",
+            icon: TrendingUp
         },
         {
-            title: "Ultimate Experience",
-            desc: "다양한 기획 무대로 관객의 오감을 만족시키며<br />단순한 관람을 넘어 감동적인 경험을 선사합니다",
-            image: aboutImage4
+            title: "사랑하는 마음, Amo",
+            desc: "음악을 사랑하는 아마추어들을 위한 다양한 무대를 제공해드립니다.",
+            icon: Heart
         },
         {
-            title: "Discovery & Growth",
-            desc: "숨겨진 보석같은 아티스트를 발굴하고,<br />그들이 세계적인 연주자로 성장할 수 있도록 든든한 발판이 됩니다.",
-            image: aboutImage2
-        },
-        {
-            title: "Pure Passion",
-            desc: "음악을 사랑하는 마음(Amo)을 원동력 삼아,<br />연주자와 관객 모두가 행복할 수 있는 서비스를 지향합니다.",
-            image: aboutImage4
+            title: "무대의 다양성",
+            desc: "단순히 이름만 걸고 하는 연주회가 아닌 다양한 기획 무대를 통해 단순한 관람을 넘어 새로운 경험을 선사해드립니다.",
+            icon: Theater
         }
     ];
 
@@ -50,9 +45,7 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     isVisible = true;
-                    startSlide();
                 } else {
-                    stopSlide();
                 }
             });
         }, { 
@@ -65,84 +58,49 @@
 
         return () => {
             if (sectionRef) observer.unobserve(sectionRef);
-            stopSlide();
         };
     });
-
-    function startSlide() {
-        if (timer) return;
-        timer = setInterval(() => {
-            currentVisionIndex = (currentVisionIndex + 1) % visions.length;
-        }, 8000);
-    }
-
-    function stopSlide() {
-        if (timer) {
-            clearInterval(timer);
-            timer = null;
-        }
-    }
-
-    function nextVision() {
-        currentVisionIndex = (currentVisionIndex + 1) % visions.length;
-        resetTimer();
-    }
-
-    function prevVision() {
-        currentVisionIndex = (currentVisionIndex - 1 + visions.length) % visions.length;
-        resetTimer();
-    }
-
-    function resetTimer() {
-        stopSlide();
-        startSlide();
-    }
 </script>
 
-<section bind:this={sectionRef}>
-    <div class="section-content-wrapper">
+<section>
+    <div bind:this={sectionRef} class="section-content-wrapper">
         <div class="image-area {isVisible ? 'animate' : ''}">
-            {#key currentVisionIndex}
-                <img 
-                    src={visions[currentVisionIndex].image} 
-                    alt={visions[currentVisionIndex].title} 
-                    in:fade={{ duration: 1000 }}
-                    out:fade={{ duration: 1000 }}
-                />
-            {/key}
+            <img 
+                src={aboutImage} 
+                alt="Vision" 
+                in:fade={{ duration: 1000 }}
+                out:fade={{ duration: 1000 }}
+            />
         </div>
         
         <div class="text-area {isVisible ? 'animate' : ''}">
-            <div class="visions-slider">
-                {#key currentVisionIndex}
-                    {@const ActiveVision = visions[currentVisionIndex]}
-                    <div class="vision-item" 
-                        in:fly={{ y: 20, duration: 1000, delay: 400 }} 
-                        out:fly={{ y: -20, duration: 1000 }}>
-                        
-                        <h1 class="title">
-                            {ActiveVision.title}
-                        </h1>
-                        
-                        <p class="desc">
-                            {@html ActiveVision.desc}
-                        </p>
-                    </div>
-                {/key}
+            <div class="main-vision" 
+                in:fly={{ y: 20, duration: 1000, delay: 400 }} 
+                out:fly={{ y: -20, duration: 1000 }}>
+                
+                <h1 class="title">Our Vision</h1>
+                <p class="desc">
+                    Fiore는 연주자의 음악이<br />
+                    가장 아름답게 피어날 수 있도록,
+                    <br /><br />
+                    아티스트가 무대를 소모하는 것이 아닌<br />
+                    아티스트가 빝나는 무대를 만드는 것.<br />
+                    그것이 피오레의 핵심 목표입니다.
+                </p>
             </div>
-
-            <p class="controls">
-                <button class="nav-btn" onclick={prevVision} aria-label="Previous Vision">
-                    <ChevronLeft size={20} strokeWidth={1} />
-                </button>
-                <span class="page-indicator">
-                    {currentVisionIndex + 1} / {visions.length}
-                </span>
-                <button class="nav-btn" onclick={nextVision} aria-label="Next Vision">
-                    <ChevronRight size={20} strokeWidth={1} />
-                </button>
-            </p>
         </div>
+    </div>
+
+    <div class="vision-grid section-content-wrapper">
+        {#each visions as vision, index}
+            <div class="vision-item">
+                <div class="vision-icon">
+                    <svelte:component this={vision.icon} size={24} strokeWidth={1.5} />
+                </div>
+                <h3>{vision.title}</h3>
+                <p>{@html vision.desc}</p>
+            </div>
+        {/each}
     </div>
 </section>
 
@@ -221,13 +179,7 @@
         }
     }
 
-    .visions-slider {
-        position: relative;
-        width: 100%;
-        height: 350px; /* 슬라이더 영역 높이 고정 */
-    }
-
-    .vision-item {
+    .main-vision {
         position: absolute;
         top: 0;
         right: 0;
@@ -251,37 +203,45 @@
         word-break: keep-all;
     }
 
-    .controls {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
+    .vision-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-top: 4rem;
 
-    .nav-btn {
-        border: none;
-        background: none;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        border-radius: 50%;
-            
-        transition: all 0.2s;
-        &:hover {
-            background-color: #f0f0f0;
+        @media(--tablet) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
         }
-    }
 
-    .page-indicator {
-        font-size: 0.9rem;
-        font-weight: 100;
-        color: #888;
-        letter-spacing: 0.1em;
-        min-width: 60px;
-        text-align: center;
+        .vision-item {
+            padding: 1rem;
+            max-width: 400px;
+
+            .vision-icon {
+                display: inline-block;
+                margin-left: clamp(0px, 5vw, 38.4px);
+                opacity: 0.8;
+            }
+
+            h3 {
+                margin-top: 4px;
+                font-weight: 500;
+                margin-bottom: 1rem;
+                color: #333;
+            }
+
+            p {
+                line-height: 1.6;
+                color: #666;
+            }
+
+            @media(--tablet) {
+                padding: 0.5rem;
+            }
+            @media(--mobile) {
+                padding: 0rem;
+            }
+        }
     }
 </style>

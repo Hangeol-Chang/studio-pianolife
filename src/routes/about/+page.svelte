@@ -3,6 +3,7 @@
     import visionImage from '$lib/assets/images/about/about_1.jpg';
     import heroImage from '$lib/assets/images/about/about_wallpaper.png';
     import Vision from '@/components/about/Vision.svelte';
+    import MembershipHero from '@/components/about/MembershipHero.svelte';
     
     // Timeline Data
     const historyEvents = [
@@ -39,8 +40,7 @@
         <div class="hero-image-container">
             <img src={heroImage} alt="Hero Background" class="hero-image-background" />
             <div class="hero-image-background-overlay"></div>
-
-            <img src={heroImage} alt="Hero Image" class="hero-image" />
+            <img src={heroImage} alt="Hero" class="hero-image" />
             <div class="hero-image-overlay"></div>
         </div>
         
@@ -55,26 +55,7 @@
 
     <Vision />
 
-    <!-- 2. Vision Section -->
-    <section class="vision-section">
-        <div class="vision-content-wrapper">
-            <div class="vision-text" use:observe>
-                <h3 class="vision-label">Our Vision</h3>
-                <p class="vision-desc">
-                    Fiore는 연주자의 음악이 <br class="mobile-only" />가장 아름답게 피어날 수 있도록,<br/>
-                    최상의 무대와 감동적인 경험을 만들어갑니다.
-                </p>
-                
-                <div class="detail-link">
-                   <a href="/vision">+ more</a>
-                </div>
-            </div>
-            
-            <div class="vision-image-container" use:observe>
-                <img src={visionImage} alt="Vision" onerror={(e) => e.currentTarget.parentNode.style.backgroundColor='#ddd'} />
-            </div>
-        </div>
-    </section>
+    <MembershipHero />
 
     <!-- 3. History Section -->
     <section class="history-section">
@@ -119,7 +100,7 @@
     </section>
 </div>
 
-<style lang="scss">
+<style >
     .hero-section {
         position: relative;
 
@@ -172,7 +153,6 @@
 
     }
 
-
     .hero-content {
         position: absolute;
         top: 0; 
@@ -195,15 +175,24 @@
             font-size: 5rem;
             margin-top: 6rem;
             letter-spacing: 0.5em;
+            padding-left: 0.5em;
             margin-bottom: 1rem;
             
             @media (--tablet) {
                 font-size: 3rem;
+                letter-spacing: 0.3em;
+                padding-left: 0.3em;
+            }
+            @media(--mobile) {
+                font-size: 2rem;
+                letter-spacing: 0.2em;
+                padding-left: 0.2em;
             }
         }
         
         .hero-description * {
             letter-spacing: 0.3em;
+            padding-left: 0.3em;
             font-weight: 100;
             opacity: 0.7;
             color: white;
@@ -223,77 +212,6 @@
                     font-size: 1rem;
                 }
             }
-        }
-    }
-
-    /* 2. Vision Section */
-
-    .vision-content-wrapper {
-        display: flex;
-        flex-direction: column-reverse;
-        gap: 3rem;
-        
-        @media (min-width: 768px) {
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-        }
-    }
-
-    .vision-text {
-        flex: 1;
-        text-align: right; 
-        opacity: 0;
-        transform: translateX(-30px);
-        transition: all 0.8s ease;
-
-        .vision-label {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            
-            @media (min-width: 768px) { font-size: 2.5rem; }
-        }
-        
-        .vision-desc {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            color: #333;
-            word-break: keep-all;
-        }
-        
-        .detail-link {
-            a {
-                display: inline-block;
-                padding: 0.5rem 1.5rem;
-                border: 1px solid #ccc;
-                text-decoration: none;
-                color: #333;
-                font-size: 0.9rem;
-                transition: 0.3s;
-                
-                &:hover {
-                    background-color: #000;
-                    color: #fff;
-                    border-color: #000;
-                }
-            }
-        }
-    }
-
-    .vision-image-container {
-        flex: 1.2;
-        min-height: 300px;
-        position: relative;
-        opacity: 0;
-        transform: translateX(30px);
-        transition: all 0.8s ease 0.2s;
-
-        img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
     }
 

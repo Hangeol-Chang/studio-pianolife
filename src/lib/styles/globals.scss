@@ -1,3 +1,5 @@
+@use './variables.scss' as *;
+
 // Pretendard font is loaded via CDN in +layout.svelte
 
 // 캘리그래피용 글씨체
@@ -35,13 +37,6 @@ textarea {
     font-family: inherit;
 }
 
-:root {
-    --border-radius: 12px;
-    --font-mono: 'Pretendard' ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
-        'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
-        'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
-}
-
 @media (prefers-color-scheme: dark) {
     :root {
         --foreground-rgb: 255, 255, 255;
@@ -61,12 +56,9 @@ textarea {
     }
 }
 
-:root {
-    background-color: transparent;
-}
-
 * {
     font-weight: 200;
+    font-family: 'Pretendard', sans-serif;
     box-sizing: border-box;
     padding: 0;
     margin: 0;
@@ -101,27 +93,17 @@ a {
     width: 100%;
 }
 
-@include mobile {
-    h1 { font-size: 24px; }
-    h2 { font-size: 18px; }
-    h3 { font-size: 14px; }
-    h4 { font-size: 13px; }
-    h5 { font-size: 12px; }
-    p { font-size: 12px; }
-    div { font-size: 12px; }
-}
-  
-@include tablet {
-    h1 { font-size: 32px; }
-    h2 { font-size: 24px; }
-    h3 { font-size: 18px; }
-    h4 { font-size: 16px; }
-    h5 { font-size: 14px; }
-    p { font-size: 14px; }
-    div { font-size: 14px; }
-}
-  
-@include desktop {
+// 기본 스타일 (모든 화면 크기에 적용)
+h1 { font-size: 48px; }
+h2 { font-size: 36px; }
+h3 { font-size: 26px; }
+h4 { font-size: 24px; }
+h5 { font-size: 22px; }
+p { font-size: 18px; }
+div { font-size: 18px; }
+
+// 반응형 오버라이드
+@media (max-width: 1280px) {
     h1 { font-size: 40px; }
     h2 { font-size: 30px; }
     h3 { font-size: 22px; }
@@ -131,24 +113,32 @@ a {
     div { font-size: 16px; }
 }
 
-@include large-desktop {
-    h1 { font-size: 48px; }
-    h2 { font-size: 36px; }
-    h3 { font-size: 26px; }
-    h4 { font-size: 24px; }
-    h5 { font-size: 22px; }
-    p { font-size: 18px; }
-    div { font-size: 18px; }
+@media (max-width: 768px) {
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 18px; }
+    h4 { font-size: 16px; }
+    h5 { font-size: 14px; }
+    p { font-size: 14px; }
+    div { font-size: 14px; }
+}
+
+@media (max-width: 450px) {
+    h1 { font-size: 24px; }
+    h2 { font-size: 18px; }
+    h3 { font-size: 14px; }
+    h4 { font-size: 13px; }
+    h5 { font-size: 12px; }
+    p { font-size: 12px; }
+    div { font-size: 12px; }
 }
 
 h1, h2, h3, h4, h5, h6{
-    font-family: 'Pretendard', sans-serif;
     font-weight: 200;
     color: $black1;
     margin: 12px clamp(0px, 5vw, 38.4px);
 }
 p {
-    font-family: 'Pretendard', sans-serif;
     font-weight: 300;
     color: $black2;
     margin: 12px clamp(0px, 5vw, 38.4px);
