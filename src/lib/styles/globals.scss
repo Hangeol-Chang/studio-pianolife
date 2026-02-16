@@ -76,23 +76,6 @@ a {
     text-decoration: none;
 }
 
-.content {
-    margin: 60px auto 0px auto;
-    // padding: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-
-    background-color: transparent;
-
-    display : flex;
-    justify-content: center;
-}
-.content > * {
-    overflow : hidden;
-    position: relative;
-    width: 100%;
-}
-
 // 기본 스타일 (모든 화면 크기에 적용)
 h1 { font-size: 48px; }
 h2 { font-size: 36px; }
