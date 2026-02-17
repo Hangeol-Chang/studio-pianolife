@@ -15,6 +15,7 @@
   let form = $state({
     name: '',
     name_en: '',
+    headline: '',
     role_id: null,
     description: '',
     career: '',
@@ -81,7 +82,7 @@
   // ── 폼 초기화 ──────────────────────────────
   function resetForm() {
     form = {
-      name: '', name_en: '', role_id: null, description: '', career: '',
+      name: '', name_en: '', headline: '', role_id: null, description: '', career: '',
       videos: [], notice: '', sort_order: 0, image_media_id: null, concert_ids: [],
     };
     selectedImageUrl = '';
@@ -99,6 +100,7 @@
     form = {
       name: artist.name || '',
       name_en: artist.name_en || '',
+      headline: artist.headline || '',
       role_id: artist.role_id || null,
       description: artist.description || '',
       career: artist.career || '',
@@ -198,6 +200,7 @@
     const formData = new FormData();
     formData.append('name', form.name);
     if (form.name_en) formData.append('name_en', form.name_en);
+    if (form.headline) formData.append('headline', form.headline);
     if (form.role_id) formData.append('role_id', String(form.role_id));
     if (form.description) formData.append('description', form.description);
     if (form.career) formData.append('career', form.career);
@@ -317,6 +320,10 @@
           <label>
             이름 (영어)
             <input type="text" bind:value={form.name_en} placeholder="Hong Gildong" />
+          </label>
+          <label>
+            한 줄 소개 (Headline)
+            <input type="text" bind:value={form.headline} placeholder="피아니스트, 작곡가" maxlength="200" />
           </label>
           <label>
             역할
