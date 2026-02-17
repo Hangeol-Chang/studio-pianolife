@@ -30,13 +30,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #1a1a2e;
-    color: #eee;
+    background-color: #ffffff;
+    color: #222;
   }
 
   .login-box {
     padding: 3rem;
-    background-color: #16213e;
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
     border-radius: 12px;
     text-align: center;
     max-width: 400px;
@@ -45,16 +46,17 @@
     h1 {
       margin: 0 0 1rem;
       font-size: 1.75rem;
+      color: #111;
     }
 
     p {
-      color: #aaa;
+      color: #666;
       margin-bottom: 0.5rem;
     }
 
     .notice {
       font-size: 0.85rem;
-      color: #e94560;
+      color: #dc3545;
       margin-bottom: 2rem;
     }
   }
@@ -64,9 +66,9 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1.5rem;
-    background-color: white;
+    background-color: #fff;
     color: #333;
-    border: none;
+    border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
     font-weight: 500;
@@ -74,7 +76,7 @@
     transition: box-shadow 0.2s;
 
     &:hover {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
   }
 </style>

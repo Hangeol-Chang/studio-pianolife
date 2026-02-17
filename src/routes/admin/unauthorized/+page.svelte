@@ -23,13 +23,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #1a1a2e;
-    color: #eee;
+    background-color: #ffffff;
+    color: #222;
   }
 
   .unauthorized-box {
     padding: 3rem;
-    background-color: #16213e;
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
     border-radius: 12px;
     text-align: center;
     max-width: 450px;
@@ -38,11 +39,11 @@
     h1 {
       margin: 0 0 1rem;
       font-size: 1.75rem;
-      color: #e94560;
+      color: #dc3545;
     }
 
     p {
-      color: #aaa;
+      color: #666;
       margin-bottom: 0.5rem;
     }
   }
@@ -71,13 +72,13 @@
   }
 
   .btn-primary {
-    background-color: #0f3460;
+    background-color: #2563eb;
     color: white;
   }
 
   .btn-secondary {
     background-color: transparent;
-    color: #aaa;
-    border: 1px solid #aaa;
+    color: #666;
+    border: 1px solid #ccc;
   }
 </style>

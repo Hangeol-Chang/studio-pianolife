@@ -59,8 +59,8 @@
 <style lang="scss">
   .admin-container {
     min-height: 100vh;
-    background-color: #1a1a2e;
-    color: #eee;
+    background: #ffffff;
+    color: #222;
   }
 
   .admin-header {
@@ -68,18 +68,19 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background-color: #16213e;
-    border-bottom: 1px solid #0f3460;
+    border-bottom: 1px solid #e0e0e0;
 
     h1 {
       margin: 0;
       font-size: 1.5rem;
+      color: #111;
     }
 
     .user-info {
       display: flex;
       align-items: center;
       gap: 1rem;
+      color: #555;
     }
 
     .profile-img {
@@ -90,7 +91,7 @@
 
     .logout-btn {
       padding: 0.5rem 1rem;
-      background-color: #e94560;
+      background-color: #dc3545;
       color: white;
       border: none;
       border-radius: 4px;
@@ -98,7 +99,7 @@
       transition: background-color 0.2s;
 
       &:hover {
-        background-color: #c73e54;
+        background-color: #c82333;
       }
     }
   }
@@ -115,7 +116,7 @@
     h2 {
       margin-bottom: 1rem;
       font-size: 1.25rem;
-      color: #a0a0a0;
+      color: #666;
     }
   }
 
@@ -128,27 +129,28 @@
   .admin-card {
     display: block;
     padding: 1.5rem;
-    background-color: #16213e;
-    border: 1px solid #0f3460;
+    border: 1px solid #e0e0e0;
     border-radius: 8px;
     text-decoration: none;
     color: inherit;
     transition: transform 0.2s, box-shadow 0.2s;
+    background: #fff;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     h3 {
       margin: 0 0 0.5rem;
       font-size: 1.1rem;
+      color: #222;
     }
 
     p {
       margin: 0;
-      color: #888;
       font-size: 0.9rem;
+      color: #888;
     }
   }
 </style>

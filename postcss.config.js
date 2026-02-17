@@ -5,7 +5,9 @@ import postcssNesting from 'postcss-nesting';
 export default {
 	plugins: [
 		postcssGlobalData({
-			files: ['src/lib/styles/variables.css']
+			files: [
+				'src/lib/styles/variables.css',
+			]
 		}),
 		postcssCustomMedia(),
 		postcssNesting()

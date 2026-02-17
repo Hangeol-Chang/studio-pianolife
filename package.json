@@ -20,7 +20,7 @@
 		"lucide-svelte": "^0.563.0",
 		"postcss-custom-media": "^11.0.6",
 		"postcss-nesting": "^13.0.2",
-		"sass": "^1.97.0",
+		"sass": "^1.97.3",
 		"svelte": "^5.45.6",
 		"svelte-check": "^4.3.4",
 		"typescript": "^5.9.3",

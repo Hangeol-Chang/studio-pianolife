@@ -165,7 +165,9 @@
     {width}
     height={width}
     xmlns="http://www.w3.org/2000/svg"
-    class="flower-svg"
+    class="flower-svg {$$props.class || ''}"
+    style="width: {width}px; height: {width}px;"
+    {...$$restProps}
 >
     <!-- Outline -->
     <g stroke-linecap="round" stroke-linejoin="round">
