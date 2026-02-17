@@ -72,8 +72,38 @@
     uploading = true;
     uploadResults = [];
 
+    // 중복 체크를 위해 전체 미디어 목록 조회
+    let allMedia = [];
+    try {
+      const res = await fetch(`${API}/api/media?limit=10000`);
+      const data = await res.json();
+      allMedia = data.items || [];
+    } catch (e) {
+      console.error('Failed to load media for duplicate check:', e);
+    }
+
     for (const file of files) {
       try {
+        // 중복 파일명 체크
+        const duplicate = allMedia.find(m => m.original_filename === file.name);
+        if (duplicate) {
+          const proceed = confirm(
+            `⚠️ 동일한 파일명이 이미 존재합니다.\n\n` +
+            `파일명: ${file.name}\n` +
+            `기존 업로드: ${new Date(duplicate.created_at).toLocaleString()}\n` +
+            `카테고리: ${duplicate.category}\n\n` +
+            `그래도 업로드하시겠습니까?`
+          );
+          if (!proceed) {
+            uploadResults = [...uploadResults, { 
+              success: false, 
+              name: file.name, 
+              error: '사용자가 취소함 (중복 파일)' 
+            }];
+            continue;
+          }
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('category', category);
@@ -313,7 +343,7 @@
 
   <!-- ── 상세 모달 ────────────────────────── -->
   {#if selectedMedia}
-    <div class="modal-overlay" onclick={() => selectedMedia = null} role="dialog">
+    <div class="modal-overlay" role="dialog">
       <div class="modal" onclick|stopPropagation role="document">
         <button class="modal-close" onclick={() => selectedMedia = null}>✕</button>
 
@@ -359,8 +389,8 @@
 <style lang="scss">
   .page {
     min-height: 100vh;
-    background: #1a1a2e;
-    color: #eee;
+    background: #ffffff;
+    color: #222;
     padding: 2rem;
     max-width: 1400px;
     margin: 0 auto;
@@ -375,33 +405,33 @@
     .back-link {
       color: #888;
       text-decoration: none;
-      &:hover { color: #fff; }
+      &:hover { color: #222; }
     }
 
-    h1 { margin: 0; font-size: 1.5rem; }
+    h1 { margin: 0; font-size: 1.5rem; color: #111; }
   }
 
   /* ── 업로드 섹션 ────────────────────── */
   .upload-section {
-    background: #16213e;
-    border: 1px solid #0f3460;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 2rem;
 
-    h2 { margin: 0 0 1rem; font-size: 1.2rem; }
+    h2 { margin: 0 0 1rem; font-size: 1.2rem; color: #111; }
   }
 
   .drop-zone {
-    border: 2px dashed #0f3460;
+    border: 2px dashed #d1d5db;
     border-radius: 8px;
     padding: 2rem;
     text-align: center;
     cursor: pointer;
     position: relative;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background 0.2s;
 
-    &:hover, &.drag-over { border-color: #e94560; }
+    &:hover, &.drag-over { border-color: #2563eb; background: #f0f4ff; }
 
     p { margin: 0; color: #888; }
 
@@ -416,14 +446,15 @@
   .upload-preview {
     margin-top: 1rem;
     padding: 0.75rem;
-    background: #0d1b30;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
     border-radius: 6px;
 
     .file-list {
       margin: 0.5rem 0 0;
       padding-left: 1.5rem;
       font-size: 0.85rem;
-      color: #aaa;
+      color: #666;
     }
   }
 
@@ -438,28 +469,28 @@
       flex-direction: column;
       gap: 0.25rem;
       font-size: 0.85rem;
-      color: #aaa;
+      color: #666;
     }
 
     select, input {
       padding: 0.5rem;
-      background: #0d1b30;
-      border: 1px solid #0f3460;
+      background: #fff;
+      border: 1px solid #d1d5db;
       border-radius: 4px;
-      color: #eee;
+      color: #222;
     }
   }
 
   .btn-upload {
     margin-top: 1rem;
     padding: 0.75rem 2rem;
-    background: #e94560;
+    background: #2563eb;
     color: white;
     border: none;
     border-radius: 6px;
     font-size: 1rem;
     cursor: pointer;
-    &:hover:not(:disabled) { background: #c73e54; }
+    &:hover:not(:disabled) { background: #1d4ed8; }
     &:disabled { opacity: 0.5; cursor: not-allowed; }
   }
 
@@ -470,14 +501,14 @@
       border-radius: 4px;
       margin-bottom: 0.25rem;
       font-size: 0.9rem;
-      &.success { background: rgba(46, 204, 113, 0.15); }
-      &.error { background: rgba(233, 69, 96, 0.15); }
+      &.success { background: rgba(34, 197, 94, 0.1); color: #166534; }
+      &.error { background: rgba(220, 53, 69, 0.1); color: #991b1b; }
     }
   }
 
   /* ── 라이브러리 ─────────────────────── */
   .library-section {
-    h2 { margin: 0; font-size: 1.2rem; }
+    h2 { margin: 0; font-size: 1.2rem; color: #111; }
   }
 
   .library-header {
@@ -497,38 +528,38 @@
 
     select, input {
       padding: 0.4rem 0.6rem;
-      background: #16213e;
-      border: 1px solid #0f3460;
+      background: #fff;
+      border: 1px solid #d1d5db;
       border-radius: 4px;
-      color: #eee;
+      color: #222;
       font-size: 0.85rem;
     }
   }
 
   .btn-search {
     padding: 0.4rem 0.8rem;
-    background: #0f3460;
-    color: #eee;
+    background: #2563eb;
+    color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    &:hover { background: #1a4a8a; }
+    &:hover { background: #1d4ed8; }
   }
 
   .btn-delete-batch {
     padding: 0.4rem 0.8rem;
-    background: #e94560;
+    background: #dc3545;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    &:hover { background: #c73e54; }
+    &:hover { background: #c82333; }
   }
 
   .loading, .empty {
     text-align: center;
     padding: 3rem;
-    color: #666;
+    color: #999;
     font-size: 1rem;
   }
 
@@ -541,15 +572,15 @@
 
   .media-card {
     position: relative;
-    background: #16213e;
-    border: 2px solid transparent;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
     transition: border-color 0.2s, transform 0.15s;
 
-    &:hover { border-color: #0f3460; transform: translateY(-1px); }
-    &.selected { border-color: #e94560; }
+    &:hover { border-color: #2563eb; transform: translateY(-1px); }
+    &.selected { border-color: #dc3545; }
 
     .card-checkbox {
       position: absolute;
@@ -586,6 +617,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        color: #333;
       }
 
       .card-category {
@@ -606,11 +638,12 @@
 
     button {
       padding: 0.4rem 0.8rem;
-      background: #16213e;
-      color: #eee;
-      border: 1px solid #0f3460;
+      background: #fff;
+      color: #444;
+      border: 1px solid #d1d5db;
       border-radius: 4px;
       cursor: pointer;
+      &:hover { background: #f3f4f6; }
       &:disabled { opacity: 0.4; cursor: not-allowed; }
     }
 
@@ -621,7 +654,7 @@
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -630,14 +663,15 @@
   }
 
   .modal {
-    background: #16213e;
-    border: 1px solid #0f3460;
+    background: #fff;
+    border: 1px solid #e0e0e0;
     border-radius: 12px;
     max-width: 900px;
     width: 100%;
     max-height: 85vh;
     overflow-y: auto;
     position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   }
 
   .modal-close {
@@ -650,7 +684,7 @@
     font-size: 1.4rem;
     cursor: pointer;
     z-index: 1;
-    &:hover { color: #fff; }
+    &:hover { color: #222; }
   }
 
   .modal-content {
@@ -675,7 +709,7 @@
   }
 
   .modal-details {
-    h3 { margin: 0 0 1rem; font-size: 1.1rem; }
+    h3 { margin: 0 0 1rem; font-size: 1.1rem; color: #111; }
 
     table {
       width: 100%;
@@ -693,6 +727,7 @@
       td {
         padding: 0.3rem 0;
         word-break: break-all;
+        color: #333;
       }
     }
   }
@@ -704,10 +739,10 @@
       width: 100%;
       margin-top: 0.25rem;
       padding: 0.4rem;
-      background: #0d1b30;
-      border: 1px solid #0f3460;
+      background: #f9fafb;
+      border: 1px solid #d1d5db;
       border-radius: 4px;
-      color: #eee;
+      color: #222;
       font-size: 0.8rem;
     }
   }
@@ -726,15 +761,15 @@
     }
 
     .btn-copy {
-      background: #0f3460;
-      color: #eee;
-      &:hover { background: #1a4a8a; }
+      background: #2563eb;
+      color: #fff;
+      &:hover { background: #1d4ed8; }
     }
 
     .btn-delete {
-      background: #e94560;
+      background: #dc3545;
       color: white;
-      &:hover { background: #c73e54; }
+      &:hover { background: #c82333; }
     }
   }
 </style>
