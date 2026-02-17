@@ -287,7 +287,7 @@
   <!-- ── 편집 / 생성 폼 ──────────────────── -->
   {#if showForm}
     <div class="modal-overlay">
-      <div class="modal" role="dialog" onclick={(e) => e.stopPropagation()}>
+      <div class="modal" role="none" onclick={(e) => e.stopPropagation()}>
         <button class="modal-close" onclick={resetForm}>✕</button>
         <h2>{editing ? '공연 편집' : '새 공연'}</h2>
 
@@ -383,7 +383,7 @@
   <!-- ── 미디어 피커 모달 ─────────────────── -->
   {#if showMediaPicker}
     <div class="modal-overlay">
-      <div class="modal media-picker" role="dialog" onclick={(e) => e.stopPropagation()}>
+      <div class="modal media-picker" role="none" onclick={(e) => e.stopPropagation()}>
         <button class="modal-close" onclick={() => (showMediaPicker = false)}>✕</button>
         <h2>포스터 이미지 선택</h2>
         <div class="media-grid">

@@ -310,7 +310,7 @@
             role="button"
             tabindex="0"
           >
-            <div class="card-checkbox" onclick|stopPropagation={() => toggleSelect(media.id)}>
+            <div class="card-checkbox" onclick={(e) => { e.stopPropagation(); toggleSelect(media.id); }}>
               <input type="checkbox" checked={selectedIds.has(media.id)} />
             </div>
             <div class="card-image">
@@ -344,7 +344,7 @@
   <!-- ── 상세 모달 ────────────────────────── -->
   {#if selectedMedia}
     <div class="modal-overlay" role="dialog">
-      <div class="modal" onclick|stopPropagation role="document">
+      <div class="modal" onclick={(e) => e.stopPropagation()} role="document">
         <button class="modal-close" onclick={() => selectedMedia = null}>✕</button>
 
         <div class="modal-content">
@@ -355,15 +355,17 @@
           <div class="modal-details">
             <h3>상세 정보</h3>
             <table>
-              <tr><th>ID</th><td>{selectedMedia.id}</td></tr>
-              <tr><th>원본 파일명</th><td>{selectedMedia.original_filename}</td></tr>
-              <tr><th>저장 파일명</th><td>{selectedMedia.stored_filename}</td></tr>
-              <tr><th>카테고리</th><td>{selectedMedia.category}</td></tr>
-              <tr><th>크기</th><td>{formatSize(selectedMedia.file_size)}</td></tr>
-              <tr><th>타입</th><td>{selectedMedia.content_type}</td></tr>
-              <tr><th>태그</th><td>{selectedMedia.tags || '-'}</td></tr>
-              <tr><th>대체 텍스트</th><td>{selectedMedia.alt_text || '-'}</td></tr>
-              <tr><th>업로드일</th><td>{new Date(selectedMedia.created_at).toLocaleString('ko-KR')}</td></tr>
+              <tbody>
+                <tr><th>ID</th><td>{selectedMedia.id}</td></tr>
+                <tr><th>원본 파일명</th><td>{selectedMedia.original_filename}</td></tr>
+                <tr><th>저장 파일명</th><td>{selectedMedia.stored_filename}</td></tr>
+                <tr><th>카테고리</th><td>{selectedMedia.category}</td></tr>
+                <tr><th>크기</th><td>{formatSize(selectedMedia.file_size)}</td></tr>
+                <tr><th>타입</th><td>{selectedMedia.content_type}</td></tr>
+                <tr><th>태그</th><td>{selectedMedia.tags || '-'}</td></tr>
+                <tr><th>대체 텍스트</th><td>{selectedMedia.alt_text || '-'}</td></tr>
+                <tr><th>업로드일</th><td>{new Date(selectedMedia.created_at).toLocaleString('ko-KR')}</td></tr>
+              </tbody>
             </table>
 
             <div class="modal-url">
