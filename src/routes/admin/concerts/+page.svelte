@@ -17,8 +17,10 @@
     time: '',
     brief_description: '',
     location: '',
+    location_data: null,
     poster_media_id: null,
     program: [],
+    artist_ids: [],
     is_active: true,
   });
 
@@ -30,7 +32,11 @@
   // ── 드래그 앤 드롭 ────────────────────────────
   let imageUploading = $state(false);
   let imageDragOver = $state(false);
-
+  // ── 장소 검색 ────────────────────────────
+  let placeQuery = $state('');
+  let placeResults = $state([]);
+  let placeSearching = $state(false);
+  let showPlaceResults = $state(false);
   // ── 초기 로드 ──────────────────────────────
   $effect(() => {
     loadConcerts();
@@ -71,9 +77,12 @@
   function resetForm() {
     form = {
       title: '', date: '', time: '', brief_description: '',
-      location: '', poster_media_id: null, program: [], is_active: true,
+      location: '', location_data: null, poster_media_id: null, program: [], artist_ids: [], is_active: true,
     };
     selectedPosterUrl = '';
+    placeQuery = '';
+    placeResults = [];
+    showPlaceResults = false;
     editing = null;
     showForm = false;
   }
@@ -99,21 +108,68 @@
       time: timeStr,
       brief_description: concert.brief_description || '',
       location: concert.location || '',
+      location_data: concert.location_data || null,
       poster_media_id: null,
-      program: concert.program ? concert.program.map(p => ({ ...p })) : [],
+      program: concert.program ? concert.program.map(p => ({
+        ...p,
+        player_ids: p.player_ids || (p.player_id ? [p.player_id] : []),
+      })) : [],
+      artist_ids: (concert.artists || []).map(a => a.id),
       is_active: concert.is_active ?? true,
     };
     selectedPosterUrl = concert.poster_url || '';
+    placeQuery = '';
+    placeResults = [];
+    showPlaceResults = false;
+    programPlayerQuery = (form.program || []).map(() => '');
+    programPlayerOpen = (form.program || []).map(() => false);
     showForm = true;
   }
 
   // ── Program 관리 ───────────────────────────
+  // 각 프로그램 행의 연주자 검색 상태 (인덱스별)
+  let programPlayerQuery = $state([]);
+  let programPlayerOpen = $state([]);
+
   function addProgram() {
-    form.program = [...form.program, { composer: '', title: '', player_id: null }];
+    form.program = [...form.program, { composer: '', title: '', player_ids: [] }];
+    programPlayerQuery = [...programPlayerQuery, ''];
+    programPlayerOpen = [...programPlayerOpen, false];
   }
 
   function removeProgram(idx) {
     form.program = form.program.filter((_, i) => i !== idx);
+    programPlayerQuery = programPlayerQuery.filter((_, i) => i !== idx);
+    programPlayerOpen = programPlayerOpen.filter((_, i) => i !== idx);
+  }
+
+  function addProgramPlayer(progIdx, artistId) {
+    const prog = form.program[progIdx];
+    if (!prog.player_ids) prog.player_ids = [];
+    if (!prog.player_ids.includes(artistId)) {
+      form.program[progIdx] = { ...prog, player_ids: [...prog.player_ids, artistId] };
+    }
+    // 연결 아티스트에도 자동 추가
+    if (!form.artist_ids.includes(artistId)) {
+      form.artist_ids = [...form.artist_ids, artistId];
+    }
+    programPlayerQuery[progIdx] = '';
+    programPlayerOpen[progIdx] = false;
+  }
+
+  function removeProgramPlayer(progIdx, artistId) {
+    const prog = form.program[progIdx];
+    form.program[progIdx] = { ...prog, player_ids: (prog.player_ids || []).filter(id => id !== artistId) };
+  }
+
+  function getProgramPlayerResults(progIdx) {
+    const q = (programPlayerQuery[progIdx] || '').trim().toLowerCase();
+    if (!q) return [];
+    const taken = form.program[progIdx]?.player_ids || [];
+    return artists.filter(a =>
+      !taken.includes(a.id) &&
+      ((a.name || '').toLowerCase().includes(q) || (a.name_en || '').toLowerCase().includes(q))
+    );
   }
 
   // ── 미디어 선택 ────────────────────────────
@@ -188,8 +244,10 @@
     if (combinedDate) formData.append('date', combinedDate);
     if (form.brief_description) formData.append('brief_description', form.brief_description);
     if (form.location) formData.append('location', form.location);
+    if (form.location_data) formData.append('location_data', JSON.stringify(form.location_data));
     if (form.poster_media_id) formData.append('poster_media_id', String(form.poster_media_id));
     if (form.program.length > 0) formData.append('program', JSON.stringify(form.program));
+    formData.append('artist_ids', JSON.stringify(form.artist_ids));
     formData.append('is_active', String(form.is_active));
 
     try {
@@ -222,6 +280,80 @@
     const artist = artists.find(a => a.id === playerId);
     return artist ? artist.name : '';
   }
+
+  // ── 아티스트 검색 & 선택 ───────────────────────
+  let artistQuery = $state('');
+  let showArtistResults = $state(false);
+  let filteredArtistResults = $derived(
+    artistQuery.trim()
+      ? artists.filter(a =>
+          !form.artist_ids.includes(a.id) &&
+          ((a.name || '').toLowerCase().includes(artistQuery.trim().toLowerCase()) ||
+           (a.name_en || '').toLowerCase().includes(artistQuery.trim().toLowerCase()))
+        )
+      : []
+  );
+  let selectedArtists = $derived(
+    form.artist_ids.map(id => artists.find(a => a.id === id)).filter(Boolean)
+  );
+
+  function addArtist(artistId) {
+    form.artist_ids = [...form.artist_ids, artistId];
+    artistQuery = '';
+    showArtistResults = false;
+  }
+  function removeArtist(artistId) {
+    form.artist_ids = form.artist_ids.filter(id => id !== artistId);
+  }
+
+  // ── 장소 검색 ──────────────────────────────
+  let placeSearchTimer;
+
+  function onPlaceInput() {
+    clearTimeout(placeSearchTimer);
+    if (!placeQuery.trim()) {
+      placeResults = [];
+      showPlaceResults = false;
+      return;
+    }
+    placeSearchTimer = setTimeout(() => searchPlaces(), 400);
+  }
+
+  async function searchPlaces() {
+    if (!placeQuery.trim()) return;
+    placeSearching = true;
+    showPlaceResults = true;
+    try {
+      const res = await fetch(`/api/places/search?q=${encodeURIComponent(placeQuery)}`);
+      const data = await res.json();
+      placeResults = data.items || [];
+    } catch (e) {
+      console.error('Place search failed:', e);
+      placeResults = [];
+    }
+    placeSearching = false;
+  }
+
+  function selectPlace(place) {
+    form.location = place.title;
+    form.location_data = {
+      title: place.title,
+      address: place.address,
+      roadAddress: place.roadAddress,
+      mapx: place.mapx,
+      mapy: place.mapy,
+      link: place.link,
+      category: place.category,
+    };
+    placeQuery = '';
+    placeResults = [];
+    showPlaceResults = false;
+  }
+
+  function clearPlace() {
+    form.location = '';
+    form.location_data = null;
+  }
 </script>
 
 <svelte:head>
@@ -250,6 +382,7 @@
             <th>날짜/시간</th>
             <th>장소</th>
             <th>프로그램</th>
+            <th>아티스트</th>
             <th>상태</th>
             <th>작업</th>
           </tr>
@@ -268,6 +401,7 @@
               <td>{concert.date || '-'}</td>
               <td>{concert.location || '-'}</td>
               <td>{(concert.program || []).length}곡</td>
+              <td>{(concert.artists || []).length}명</td>
               <td>
                 <span class="badge" class:active={concert.is_active}>
                   {concert.is_active ? '활성' : '비활성'}
@@ -310,8 +444,48 @@
           </div>
           <label>
             장소
-            <input type="text" bind:value={form.location} placeholder="공연 장소" />
           </label>
+          {#if form.location_data}
+            <div class="selected-place">
+              <div class="place-info">
+                <strong>{form.location_data.title}</strong>
+                <span class="place-address">{form.location_data.roadAddress || form.location_data.address}</span>
+                {#if form.location_data.category}
+                  <span class="place-category">{form.location_data.category}</span>
+                {/if}
+              </div>
+              <button type="button" class="btn-sm btn-delete" onclick={clearPlace}>×</button>
+            </div>
+          {:else}
+            <div class="place-search-wrap">
+              <input
+                type="text"
+                bind:value={placeQuery}
+                oninput={onPlaceInput}
+                placeholder="장소 검색 (네이버 지도)"
+              />
+              {#if showPlaceResults}
+                <div class="place-dropdown">
+                  {#if placeSearching}
+                    <div class="place-item loading">검색 중...</div>
+                  {:else if placeResults.length === 0}
+                    <div class="place-item empty">검색 결과가 없습니다</div>
+                  {:else}
+                    {#each placeResults as place}
+                      <button type="button" class="place-item" onclick={() => selectPlace(place)}>
+                        <strong>{place.title}</strong>
+                        <span>{place.roadAddress || place.address}</span>
+                        {#if place.category}
+                          <span class="place-cat">{place.category}</span>
+                        {/if}
+                      </button>
+                    {/each}
+                  {/if}
+                </div>
+              {/if}
+            </div>
+            <input type="text" bind:value={form.location} placeholder="또는 직접 입력" style="margin-top: 0.5rem;" />
+          {/if}
           <label class="checkbox-label">
             <input type="checkbox" bind:checked={form.is_active} />
             활성 상태
@@ -356,18 +530,88 @@
           <h3>프로그램 (Program)</h3>
           {#each form.program as item, i}
             <div class="program-row">
-              <input type="text" bind:value={item.composer} placeholder="작곡가" />
-              <input type="text" bind:value={item.title} placeholder="곡명" />
-              <select bind:value={item.player_id}>
-                <option value={null}>연주자 선택</option>
-                {#each artists as artist}
-                  <option value={artist.id}>{artist.name}</option>
+              <div class="program-fields">
+                <input type="text" bind:value={item.composer} placeholder="작곡가" />
+                <input type="text" bind:value={item.title} placeholder="곡명" />
+              </div>
+              <div class="program-players">
+                {#each (item.player_ids || []) as pid}
+                  {@const pa = artists.find(a => a.id === pid)}
+                  {#if pa}
+                    <span class="artist-tag small">
+                      {pa.name}
+                      <button type="button" class="tag-remove" onclick={() => removeProgramPlayer(i, pid)}>&times;</button>
+                    </span>
+                  {/if}
                 {/each}
-              </select>
-              <button class="btn-sm btn-delete" onclick={() => removeProgram(i)}>×</button>
+                <div class="prog-player-search">
+                  <input
+                    type="text"
+                    placeholder="연주자 검색..."
+                    value={programPlayerQuery[i] || ''}
+                    oninput={e => { programPlayerQuery[i] = e.target.value; programPlayerOpen[i] = true; }}
+                    onfocus={() => programPlayerOpen[i] = true}
+                  />
+                  {#if programPlayerOpen[i] && getProgramPlayerResults(i).length > 0}
+                    <ul class="artist-dropdown">
+                      {#each getProgramPlayerResults(i) as a}
+                        <li>
+                          <button type="button" onclick={() => addProgramPlayer(i, a.id)}>
+                            {a.name}{#if a.name_en} <small>({a.name_en})</small>{/if}
+                          </button>
+                        </li>
+                      {/each}
+                    </ul>
+                  {/if}
+                  {#if (programPlayerQuery[i] || '').trim() && getProgramPlayerResults(i).length === 0 && programPlayerOpen[i]}
+                    <ul class="artist-dropdown"><li class="no-result">결과 없음</li></ul>
+                  {/if}
+                </div>
+              </div>
+              <button class="btn-sm btn-delete program-del" onclick={() => removeProgram(i)}>×</button>
             </div>
           {/each}
           <button type="button" class="btn-secondary btn-sm" onclick={addProgram}>+ 프로그램 추가</button>
+        </div>
+
+        <!-- 연결 아티스트 -->
+        <div class="form-section">
+          <h3>연결 아티스트</h3>
+          {#if selectedArtists.length > 0}
+            <div class="selected-artists">
+              {#each selectedArtists as artist}
+                <span class="artist-tag">
+                  {artist.name}
+                  {#if artist.name_en}<small>({artist.name_en})</small>{/if}
+                  <button type="button" class="tag-remove" onclick={() => removeArtist(artist.id)}>&times;</button>
+                </span>
+              {/each}
+            </div>
+          {/if}
+          <div class="artist-search-wrap">
+            <input
+              type="text"
+              placeholder="아티스트 이름 검색..."
+              bind:value={artistQuery}
+              onfocus={() => showArtistResults = true}
+              oninput={() => showArtistResults = true}
+            />
+            {#if showArtistResults && filteredArtistResults.length > 0}
+              <ul class="artist-dropdown">
+                {#each filteredArtistResults as artist}
+                  <li>
+                    <button type="button" onclick={() => addArtist(artist.id)}>
+                      {artist.name}
+                      {#if artist.name_en}<small>({artist.name_en})</small>{/if}
+                    </button>
+                  </li>
+                {/each}
+              </ul>
+            {/if}
+            {#if artistQuery.trim() && filteredArtistResults.length === 0 && showArtistResults}
+              <ul class="artist-dropdown"><li class="no-result">결과 없음</li></ul>
+            {/if}
+          </div>
         </div>
 
         <div class="form-actions">
@@ -622,10 +866,28 @@
 
   /* ── Program 행 ────────────────────── */
   .program-row {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr 1fr auto;
+    display: flex;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    flex-wrap: nowrap;
+
+    .program-fields {
+      display: flex; flex-direction: column; gap: 0.35rem; flex: 0 0 280px;
+    }
+    .program-players {
+      flex: 1;
+      display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: flex-start;
+    }
+    .prog-player-search {
+      position: relative; flex: 1; min-width: 140px;
+      input {
+        width: 100%; padding: 0.4rem 0.6rem;
+        border: 1px solid #d1d5db; border-radius: 4px;
+        font-size: 0.85rem; background: #fff; color: #222;
+      }
+    }
+    .program-del { align-self: flex-start; margin-top: 0.2rem; }
 
     input, select {
       padding: 0.4rem 0.6rem;
@@ -636,6 +898,7 @@
       font-size: 0.85rem;
     }
   }
+  .artist-tag.small { font-size: 0.8rem; padding: 0.15rem 0.4rem; }
 
   .form-actions {
     display: flex;
@@ -676,4 +939,102 @@
   }
 
   .empty { color: #999; text-align: center; padding: 1rem; }
+
+  /* ── 아티스트 선택 ─────────────────── */
+  .selected-artists {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    margin-bottom: 0.5rem;
+  }
+  .artist-tag {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: #e0edff; color: #1a5276;
+    padding: 0.25rem 0.5rem; border-radius: 20px;
+    font-size: 0.85rem;
+    small { color: #5b8fad; margin-left: 0.1rem; }
+  }
+  .tag-remove {
+    background: none; border: none; cursor: pointer;
+    font-size: 1rem; color: #888; padding: 0 0.15rem;
+    line-height: 1;
+    &:hover { color: #c0392b; }
+  }
+  .artist-search-wrap {
+    position: relative;
+    input { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; }
+  }
+  .artist-dropdown {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: #fff; border: 1px solid #ddd; border-top: none;
+    border-radius: 0 0 6px 6px;
+    max-height: 180px; overflow-y: auto;
+    list-style: none; margin: 0; padding: 0;
+    z-index: 20; box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    li button {
+      display: block; width: 100%; text-align: left;
+      padding: 0.5rem 0.75rem; border: none; background: none;
+      cursor: pointer; font-size: 0.9rem;
+      small { color: #888; }
+      &:hover { background: #f0f4ff; }
+    }
+    .no-result { padding: 0.5rem 0.75rem; color: #999; font-size: 0.85rem; }
+  }
+
+  /* ── 장소 검색 ─────────────────────── */
+  .place-search-wrap {
+    position: relative;
+    margin-top: 0.25rem;
+  }
+
+  .place-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    z-index: 10;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+
+  .place-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    background: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #333;
+
+    &:hover { background: #f0f4ff; }
+    &.loading, &.empty { cursor: default; color: #999; &:hover { background: none; } }
+
+    strong { display: block; font-size: 0.9rem; color: #111; margin-bottom: 0.15rem; }
+    span { display: block; font-size: 0.8rem; color: #888; }
+    .place-cat { font-size: 0.75rem; color: #aaa; margin-top: 0.1rem; }
+  }
+
+  .selected-place {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+
+    .place-info {
+      flex: 1;
+      strong { display: block; font-size: 0.95rem; color: #111; margin-bottom: 0.2rem; }
+      .place-address { display: block; font-size: 0.85rem; color: #666; }
+      .place-category { display: block; font-size: 0.75rem; color: #999; margin-top: 0.15rem; }
+    }
+  }
 </style>

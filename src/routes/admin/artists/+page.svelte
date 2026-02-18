@@ -9,8 +9,7 @@
   let concerts = $state([]);
   let loading = $state(false);
   let editing = $state(null);       // 편집 중인 아티스트 객체
-  let showForm = $state(false);
-
+  let showForm = $state(false);  let roleFilter = $state(null);    // role 필터 (null = 전체)
   // ── 폼 데이터 ──────────────────────────────
   let form = $state({
     name: '',
@@ -20,6 +19,7 @@
     description: '',
     career: '',
     videos: [],
+    image_list: [],
     notice: '',
     sort_order: 0,
     image_media_id: null,
@@ -32,6 +32,8 @@
   let selectedImageUrl = $state('');
   let imageUploading = $state(false);
   let imageDragOver = $state(false);
+  let subImageUploading = $state(false);
+  let subImageDragOver = $state(false);
 
   // ── 초기 로드 ──────────────────────────────
   $effect(() => {
@@ -83,7 +85,7 @@
   function resetForm() {
     form = {
       name: '', name_en: '', headline: '', role_id: null, description: '', career: '',
-      videos: [], notice: '', sort_order: 0, image_media_id: null, concert_ids: [],
+      videos: [], image_list: [], notice: '', sort_order: 0, image_media_id: null, concert_ids: [],
     };
     selectedImageUrl = '';
     editing = null;
@@ -105,6 +107,7 @@
       description: artist.description || '',
       career: artist.career || '',
       videos: artist.videos ? [...artist.videos] : [],
+      image_list: artist.image_list ? [...artist.image_list] : [],
       notice: artist.notice || '',
       sort_order: artist.sort_order || 0,
       image_media_id: null,
@@ -121,6 +124,60 @@
 
   function removeVideo(idx) {
     form.videos = form.videos.filter((_, i) => i !== idx);
+  }
+
+  // ── Image List 관리 ────────────────────────
+  function removeSubImage(idx) {
+    form.image_list = form.image_list.filter((_, i) => i !== idx);
+  }
+
+  async function handleSubImageDrop(e) {
+    e.preventDefault();
+    subImageDragOver = false;
+    const file = e.dataTransfer?.files?.[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    await uploadSubImage(file);
+  }
+
+  async function handleSubImageFileSelect(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadSubImage(file);
+  }
+
+  async function uploadSubImage(file) {
+    subImageUploading = true;
+    try {
+      // 중복 파일명 체크
+      const checkRes = await fetch(`${API}/api/media?limit=10000`);
+      const checkData = await checkRes.json();
+      const duplicate = (checkData.items || []).find(m => m.original_filename === file.name);
+      
+      if (duplicate) {
+        const proceed = confirm(
+          `⚠️ 동일한 파일명이 이미 존재합니다.\n\n` +
+          `파일명: ${file.name}\n` +
+          `기존 업로드: ${new Date(duplicate.created_at).toLocaleString()}\n` +
+          `카테고리: ${duplicate.category}\n\n` +
+          `그래도 업로드하시겠습니까?`
+        );
+        if (!proceed) {
+          subImageUploading = false;
+          return;
+        }
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', 'artist');
+      const res = await fetch(`${API}/api/media`, { method: 'POST', body: formData });
+      if (!res.ok) throw new Error(await res.text());
+      const media = await res.json();
+      form.image_list = [...form.image_list, { media_id: media.id, url: media.url }];
+    } catch (e) {
+      alert('이미지 업로드 실패: ' + e.message);
+    }
+    subImageUploading = false;
   }
 
   // ── Concert 토글 ───────────────────────────
@@ -205,6 +262,7 @@
     if (form.description) formData.append('description', form.description);
     if (form.career) formData.append('career', form.career);
     if (form.videos.length > 0) formData.append('videos', JSON.stringify(form.videos));
+    if (form.image_list.length > 0) formData.append('image_list', JSON.stringify(form.image_list));
     if (form.notice) formData.append('notice', form.notice);
     formData.append('sort_order', String(form.sort_order));
     if (form.image_media_id) formData.append('image_media_id', String(form.image_media_id));
@@ -240,6 +298,13 @@
     const role = roles.find(r => r.id === roleId);
     return role ? role.label || role.name : '-';
   }
+
+  // ── 필터링 ──────────────────────────────
+  let filteredArtists = $derived(
+    roleFilter === null 
+      ? artists 
+      : artists.filter(a => a.role_id === roleFilter)
+  );
 </script>
 
 <svelte:head>
@@ -252,7 +317,20 @@
       <a href="/admin" class="back-link">← Admin</a>
       <h1>아티스트 관리</h1>
     </div>
-    <button class="btn-primary" onclick={openCreate}>+ 아티스트 추가</button>
+    <div class="header-right">
+      <label class="filter-label">
+        역할 필터:
+        <select bind:value={roleFilter} class="filter-select">
+          <option value={null}>전체 ({artists.length})</option>
+          {#each roles as role}
+            <option value={role.id}>
+              {role.label || role.name} ({artists.filter(a => a.role_id === role.id).length})
+            </option>
+          {/each}
+        </select>
+      </label>
+      <button class="btn-primary" onclick={openCreate}>+ 아티스트 추가</button>
+    </div>
   </header>
 
   <!-- ── 아티스트 목록 ────────────────────── -->
@@ -273,7 +351,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each artists as artist}
+          {#each filteredArtists as artist}
             <tr>
               <td>{artist.sort_order}</td>
               <td>
@@ -404,6 +482,45 @@
           <button type="button" class="btn-secondary btn-sm" onclick={addVideo}>+ 동영상 추가</button>
         </div>
 
+        <!-- 서브 이미지 목록 -->
+        <div class="form-section">
+          <h3>서브 이미지 목록 (Image List)</h3>
+          <p style="font-size: 0.85rem; color: #666; margin-bottom: 0.75rem;">프로필 이미지 외 추가 이미지를 등록할 수 있습니다.</p>
+          
+          {#if form.image_list.length > 0}
+            <div class="sub-image-list">
+              {#each form.image_list as img, i}
+                <div class="sub-image-item">
+                  <img src={img.url} alt="서브 이미지 {i + 1}" />
+                  <button class="btn-sm btn-delete remove-btn" onclick={() => removeSubImage(i)}>×</button>
+                </div>
+              {/each}
+            </div>
+          {/if}
+
+          <div
+            class="drop-zone sub-drop"
+            class:drag-over={subImageDragOver}
+            ondrop={handleSubImageDrop}
+            ondragover={(e) => { e.preventDefault(); subImageDragOver = true; }}
+            ondragleave={() => subImageDragOver = false}
+            role="button"
+            tabindex="0"
+          >
+            {#if subImageUploading}
+              <p class="drop-text">업로드 중...</p>
+            {:else}
+              <p class="drop-text">+ 이미지 추가 (드래그 또는 클릭)</p>
+            {/if}
+            <input
+              type="file"
+              accept="image/*"
+              onchange={handleSubImageFileSelect}
+              class="file-input"
+            />
+          </div>
+        </div>
+
         <!-- 콘서트 연결 -->
         <div class="form-section">
           <h3>연결된 콘서트</h3>
@@ -477,6 +594,12 @@
       gap: 1.5rem;
     }
 
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
     .back-link {
       color: #888;
       text-decoration: none;
@@ -484,6 +607,25 @@
     }
 
     h1 { margin: 0; font-size: 1.5rem; color: #111; }
+  }
+
+  .filter-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .filter-select {
+    padding: 0.4rem 0.8rem;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    color: #222;
+    font-size: 0.9rem;
+    cursor: pointer;
+    &:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
   }
 
   .loading { text-align: center; color: #999; padding: 3rem; }
@@ -641,6 +783,12 @@
       padding: 1rem;
     }
 
+    &.sub-drop {
+      padding: 1rem;
+      border-style: dashed;
+      background: #fafbfc;
+    }
+
     .drop-text { margin: 0; color: #888; }
 
     .drop-hint {
@@ -663,6 +811,44 @@
       object-fit: cover;
       display: block;
       margin: 0 auto;
+    }
+  }
+
+  /* ── 서브 이미지 목록 ───────────────── */
+  .sub-image-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .sub-image-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #e5e7eb;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      line-height: 1;
     }
   }
 
