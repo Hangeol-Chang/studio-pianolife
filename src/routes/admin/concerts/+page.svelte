@@ -93,6 +93,8 @@
   }
 
   function openEdit(concert) {
+    console.log(concert);
+
     editing = concert;
     // date 분리: "2026-03-15 19:30" → date="2026-03-15", time="19:30"
     let dateStr = '';
@@ -246,7 +248,13 @@
     if (form.location) formData.append('location', form.location);
     if (form.location_data) formData.append('location_data', JSON.stringify(form.location_data));
     if (form.poster_media_id) formData.append('poster_media_id', String(form.poster_media_id));
-    if (form.program.length > 0) formData.append('program', JSON.stringify(form.program));
+    if (form.program.length > 0) {
+      // player_name / player_names 등 서버가 채워주는 필드는 제거하고 전송
+      const programPayload = form.program.map(({ composer, title, player_ids }) => ({
+        composer, title, player_ids: player_ids || [],
+      }));
+      formData.append('program', JSON.stringify(programPayload));
+    }
     formData.append('artist_ids', JSON.stringify(form.artist_ids));
     formData.append('is_active', String(form.is_active));
 
@@ -530,45 +538,47 @@
           <h3>프로그램 (Program)</h3>
           {#each form.program as item, i}
             <div class="program-row">
-              <div class="program-fields">
                 <input type="text" bind:value={item.composer} placeholder="작곡가" />
                 <input type="text" bind:value={item.title} placeholder="곡명" />
-              </div>
-              <div class="program-players">
-                {#each (item.player_ids || []) as pid}
-                  {@const pa = artists.find(a => a.id === pid)}
-                  {#if pa}
-                    <span class="artist-tag small">
-                      {pa.name}
-                      <button type="button" class="tag-remove" onclick={() => removeProgramPlayer(i, pid)}>&times;</button>
-                    </span>
-                  {/if}
-                {/each}
+                <button class="btn-sm btn-delete program-del" onclick={() => removeProgram(i)}>×</button>
+
                 <div class="prog-player-search">
-                  <input
-                    type="text"
-                    placeholder="연주자 검색..."
-                    value={programPlayerQuery[i] || ''}
-                    oninput={e => { programPlayerQuery[i] = e.target.value; programPlayerOpen[i] = true; }}
-                    onfocus={() => programPlayerOpen[i] = true}
-                  />
-                  {#if programPlayerOpen[i] && getProgramPlayerResults(i).length > 0}
-                    <ul class="artist-dropdown">
-                      {#each getProgramPlayerResults(i) as a}
-                        <li>
-                          <button type="button" onclick={() => addProgramPlayer(i, a.id)}>
-                            {a.name}{#if a.name_en} <small>({a.name_en})</small>{/if}
-                          </button>
-                        </li>
-                      {/each}
-                    </ul>
-                  {/if}
-                  {#if (programPlayerQuery[i] || '').trim() && getProgramPlayerResults(i).length === 0 && programPlayerOpen[i]}
-                    <ul class="artist-dropdown"><li class="no-result">결과 없음</li></ul>
-                  {/if}
+                    <input
+                        type="text"
+                        placeholder="연주자 검색..."
+                        value={programPlayerQuery[i] || ''}
+                        oninput={e => { programPlayerQuery[i] = e.target.value; programPlayerOpen[i] = true; }}
+                        onfocus={() => programPlayerOpen[i] = true}
+                    />
+                    {#if programPlayerOpen[i] && getProgramPlayerResults(i).length > 0}
+                        <ul class="artist-dropdown">
+                            {#each getProgramPlayerResults(i) as a}
+                                <li>
+                                <button type="button" onclick={() => addProgramPlayer(i, a.id)}>
+                                    {a.name}{#if a.name_en} <small>({a.name_en})</small>{/if}
+                                </button>
+                                </li>
+                            {/each}
+                        </ul>
+                    {/if}
+                    {#if (programPlayerQuery[i] || '').trim() && getProgramPlayerResults(i).length === 0 && programPlayerOpen[i]}
+                        <ul class="artist-dropdown">
+                            <li class="no-result">결과 없음</li>
+                        </ul>
+                    {/if}
                 </div>
-              </div>
-              <button class="btn-sm btn-delete program-del" onclick={() => removeProgram(i)}>×</button>
+
+                <div class="program-players">
+                    {#each (item.player_ids || []) as pid}
+                        {@const pa = artists.find(a => a.id === pid)}
+                        {#if pa}
+                            <span class="artist-tag small">
+                            {pa.name}
+                            <button type="button" class="tag-remove" onclick={() => removeProgramPlayer(i, pid)}>&times;</button>
+                            </span>
+                        {/if}
+                    {/each}
+                </div>
             </div>
           {/each}
           <button type="button" class="btn-secondary btn-sm" onclick={addProgram}>+ 프로그램 추가</button>
@@ -866,28 +876,35 @@
 
   /* ── Program 행 ────────────────────── */
   .program-row {
-    display: flex;
-    gap: 0.5rem;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr 3fr 30px;
+
+    gap: 0.3rem;
     margin-bottom: 0.75rem;
     flex-wrap: nowrap;
 
-    .program-fields {
-      display: flex; flex-direction: column; gap: 0.35rem; flex: 0 0 280px;
-    }
     .program-players {
-      flex: 1;
-      display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: flex-start;
+        grid-column: 2 / -1;
+        align-items: center;;
+        display: flex; gap: 0.4rem; flex-wrap: wrap;
     }
     .prog-player-search {
-      position: relative; flex: 1; min-width: 140px;
+      position: relative;
       input {
         width: 100%; padding: 0.4rem 0.6rem;
         border: 1px solid #d1d5db; border-radius: 4px;
         font-size: 0.85rem; background: #fff; color: #222;
       }
     }
-    .program-del { align-self: flex-start; margin-top: 0.2rem; }
+    .program-del { 
+        margin-top: 0.2rem; 
+    }
+
+    .program-players-wrap {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        width: 100%;
+    }
 
     input, select {
       padding: 0.4rem 0.6rem;
