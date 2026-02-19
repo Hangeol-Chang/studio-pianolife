@@ -34,6 +34,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>About Us - Fiore</title>
+</svelte:head>
+
 <div>
     <section class="hero-section">
         <div class="hero-image-container">

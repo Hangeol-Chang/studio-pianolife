@@ -46,6 +46,7 @@
     margin: 0;
     height: 100vh;
     max-height: var(--max-height, 1400px);
+    overflow: hidden;
 }
 
 .hero-image-container {
@@ -65,6 +66,8 @@
         max-width: var(--image-max-width, 1200px);
         object-fit: cover;
         z-index: 3;
+
+        object-position: top center;
     }
 
     .hero-image-background {

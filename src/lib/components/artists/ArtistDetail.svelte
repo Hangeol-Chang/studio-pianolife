@@ -2,6 +2,7 @@
     let { artist } = $props();
     let activeTab = $state('profile');
     let gradientStyle = $state('#000');
+    let headerTextColor = $state('#fff');
 
     // artist.image_url이 확정되는 즉시 CORS 이미지를 병렬로 요청.
     // 화면 <img> 로드와 동시에 진행되므로 gradient 딜레이가 최소화됨.
@@ -25,6 +26,8 @@
                 const left  = avgColor(ctx, Math.floor(W * 0.05), Math.floor(H * 0.92), 8);
                 const right = avgColor(ctx, Math.floor(W * 0.95), Math.floor(H * 0.92), 8);
                 gradientStyle = `linear-gradient(to right, ${left}, ${right})`;
+                const avgLum = (luminance(left) + luminance(right)) / 2;
+                headerTextColor = avgLum > 128 ? '#111' : '#fff';
             } catch (e) {
                 console.warn('Failed to extract gradient:', e);
             }
@@ -32,6 +35,12 @@
         corsImg.onerror = () => console.warn('CORS image load failed:', corsUrl);
         corsImg.src = corsUrl;
     });
+
+    function luminance(rgbStr) {
+        const m = rgbStr.match(/rgb\((\d+),(\d+),(\d+)\)/);
+        if (!m) return 128;
+        return 0.299 * +m[1] + 0.587 * +m[2] + 0.114 * +m[3];
+    }
 
     function avgColor(ctx, cx, cy, r) {
         let data;
@@ -66,7 +75,13 @@
     );
 
     const videos = $derived(artist.videos || []);
-    const concerts = $derived(artist.concerts || []);
+    // 최신순 정렬 후 4개만
+    const concerts = $derived(
+        (artist.concerts || [])
+            .slice()
+            .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
+            .slice(0, 4)
+    );
 
     function inView(node, { threshold = 0.5 } = {}) {
         const observer = new IntersectionObserver(
@@ -82,11 +97,12 @@
         return { destroy() { observer.disconnect(); } };
     }
 
+
 </script>
 
 <div class="artist-detail-page">
     <!-- 이름 헤더 -->
-    <header class="artist-header" style="--bg-gradient: {gradientStyle}">
+    <header class="artist-header" style="--bg-gradient: {gradientStyle}; --text-color: {headerTextColor}">
         <h1 class="en-name">{artist.name_en ?? ''}</h1>
         <h2 class="kr-name">{artist.name}</h2>
     </header>
@@ -166,16 +182,25 @@
             {#if concerts.length > 0}
             <section id="concert" class="detail-section">
                 <h3 class="section-header">Concert</h3>
-                <ul class="concert-list">
+                <div class="concert-grid">
                     {#each concerts as c}
-                        <li class="concert-item">
-                            <a href="/concerts/{c.id}">
-                                <span class="concert-date">{c.date ?? ''}</span>
+                        <a href="/concerts/{c.id}" class="concert-card">
+                            <div class="concert-poster">
+                                {#if c.poster_url}
+                                    <img src={c.poster_url} alt={c.title} />
+                                {:else}
+                                    <div class="concert-poster-placeholder"></div>
+                                {/if}
+                            </div>
+                            <div class="concert-card-info">
+                                {#if c.date}
+                                    <span class="concert-date">{c.date}</span>
+                                {/if}
                                 <span class="concert-title">{c.title}</span>
-                            </a>
-                        </li>
+                            </div>
+                        </a>
                     {/each}
-                </ul>
+                </div>
             </section>
             {/if}
 
@@ -222,7 +247,7 @@
             font-weight: 100;
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            color: #000;
+            color: var(--text-color, #fff);
             @media(--tablet) {
                 letter-spacing: 0.15em;
             }
@@ -230,7 +255,7 @@
         .kr-name {
             font-weight: 200;
             letter-spacing: 0.5em;
-            color: #000;
+            color: var(--text-color, #fff);
             @media(--tablet) {
                 letter-spacing: 0.25em;
             }
@@ -267,7 +292,7 @@
                 object-position: top center;
                 display: block;
                 z-index: 2;
-                max-width: 1080px;
+                max-width: 700px;
                 transform-origin: top center;
 
                 mask-image:
@@ -338,7 +363,7 @@
     .content-container {
         max-width: 1400px;
         margin: 0 auto;
-        padding: 3rem 1.5rem 8rem 0;
+        padding: 3rem 1.5rem 0 0;
         display: grid;
         grid-template-columns: 260px 1fr 120px;
         position: relative;
@@ -383,7 +408,6 @@
                 object-fit: cover; 
                 display: block;             
             }
-            .placeholder { width: 100%; height: 100%; }
         }
         
         @media (--desktop) {
@@ -395,6 +419,12 @@
     }
 
     /* ── 메인 콘텐츠 ────────────────────── */
+    .main-content {
+        /* grid 아이템은 기본 min-width: auto → 콘텐츠만큼 늘어나 overflow-x가 무효화됨.
+           min-width: 0 으로 셀이 할당된 너비 안에 갇히게 해서 가로 스크롤을 허용 */
+        min-width: 0;
+    }
+
     .detail-section {
         margin-top: 0;
         margin-bottom: 5rem;
@@ -416,26 +446,8 @@
     }
 
     /* ── Profile ────────────────────────── */
-    .sub-slogan {
-        font-size: 1.05rem;
-        font-weight: 300;
-        color: #444;
-        margin-bottom: 2rem;
-        line-height: 1.6;
-    }
-
     .career-group {
         margin-bottom: 2rem;
-
-        .label-row {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-
-            .icon-trophy { font-size: 1rem; }
-            .label { font-size: 1rem; font-weight: 500; color: #222; }
-        }
 
         .career-list {
             list-style: none;
@@ -484,24 +496,74 @@
     }
 
     /* ── Concert ────────────────────────── */
-    .concert-list {
-        list-style: none;
+    .concert-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
 
-        .concert-item a {
+        /* 태블릿: 2열 */
+        @media (--tablet) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        /* 모바일: 2열 유지, 간격 축소 */
+        @media (--mobile) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+    }
+
+    .concert-card {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        transition: opacity 0.2s;
+
+        &:hover { opacity: 0.75; }
+
+        .concert-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            overflow: hidden;
+            background: #111;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+            .concert-poster-placeholder {
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #1a1a1a, #333);
+            }
+        }
+
+        .concert-card-info {
             display: flex;
-            gap: 1rem;
-            align-items: baseline;
-            text-decoration: none;
-            color: #222;
-            padding: 0.65rem 0;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 0.92rem;
-            transition: color 0.2s;
+            flex-direction: column;
+            gap: 0.2rem;
 
-            &:hover { color: #2563eb; }
+            .concert-date {
+                font-size: 0.75rem;
+                color: #aaa;
+                font-weight: 300;
+            }
 
-            .concert-date { color: #aaa; font-size: 0.82rem; flex-shrink: 0; }
-            .concert-title { font-weight: 300; }
+            .concert-title {
+                font-size: 0.85rem;
+                font-weight: 300;
+                color: #222;
+                line-height: 1.4;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
         }
     }
 
@@ -513,15 +575,6 @@
         color: #444;
         white-space: pre-wrap;
     }
-
-    .empty-msg {
-        color: #ccc;
-        font-size: 0.88rem;
-        font-weight: 300;
-        text-align: center;
-        padding: 2.5rem 0;
-    }
-
     /* ── 우 내비게이션 (PC) ─────────────── */
     .right-nav {
         display: block;

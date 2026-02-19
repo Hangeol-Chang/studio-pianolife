@@ -22,6 +22,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>Artists - Fiore</title>
+</svelte:head>
+
 <div>
     <HeroSection image={artistImage} title="ARTISTS" alt="Artists" 
         gradientOverlay="linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 1.0) 95%)"
