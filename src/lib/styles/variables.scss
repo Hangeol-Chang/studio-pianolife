@@ -6,8 +6,8 @@
 $breakpoints: (
     'mobile': 450px,
     'tablet': 768px,
-    'desktop': 1280px,
-    'large-desktop': 1920px
+    'desktop': 1024px,
+    'large-desktop': 1440px
 );
 
 // Mixin for max-width (Desktop First / Hiding on smaller screens)

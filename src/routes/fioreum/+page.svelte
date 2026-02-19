@@ -74,6 +74,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Fioreum - Fiore</title>
+</svelte:head>
+
 
 <div>
     {#if isAutoScrolling}

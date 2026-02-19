@@ -34,8 +34,11 @@
     }
 </script>
 
+<svelte:head>
+    <title>About Us - Fiore</title>
+</svelte:head>
+
 <div>
-    <!-- 1. Hero / Intro Section -->
     <section class="hero-section">
         <div class="hero-image-container">
             <img src={heroImage} alt="Hero Background" class="hero-image-background" />
@@ -57,7 +60,6 @@
 
     <MembershipHero />
 
-    <!-- 3. History Section -->
     <section>
         <h1 class="section-title-center">History</h1>
         <h3 class="section-subtitle-center">연혁</h3>

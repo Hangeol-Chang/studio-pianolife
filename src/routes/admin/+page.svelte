@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-    <title>Admin - Studio Pianolife</title>
+    <title>Admin - Fiore</title>
 </svelte:head>
 
 <div class="admin-container">
