@@ -1,22 +1,17 @@
 <script>
-    import { ChevronLeft, ChevronRight } from 'lucide-svelte';
-    import profile1 from '$lib/assets/images/artists/artist_1.png';
-    import profile2 from '$lib/assets/images/artists/profile_2.png';
-    import profile3 from '$lib/assets/images/artists/profile_3.png';
+    import { PIANOLIFE_BACKEND_URL } from '$env/static/public';
     import MoreButton from '@/components/common/moreButton.svelte';
 
-    const artists = [
-        { nameKo: '고정우 (공피라)', nameEn: 'Ko Jeong Woo', image: profile1 },
-        { nameKo: '포뮤직스', nameEn: 'Four Musics', image: profile2 },
-        { nameKo: '김준한', nameEn: 'JunHan', image: profile3 },
-        { nameKo: '밤하늘', nameEn: 'Night Sky', image: profile1 },
-        { nameKo: '포뮤직스', nameEn: 'Four Musics', image: profile2 },
-        { nameKo: '김준한', nameEn: 'JunHan', image: profile3 },
-        { nameKo: '밤하늘', nameEn: 'Night Sky', image: profile1 },
-        { nameKo: '포뮤직스', nameEn: 'Four Musics', image: profile2 },
-        { nameKo: '김준한', nameEn: 'JunHan', image: profile3 },
-    ];
+    const API = PIANOLIFE_BACKEND_URL || 'http://localhost:8000';
 
+    let artists = $state([]);
+
+    $effect(() => {
+        fetch(`${API}/api/artists?active_only=true&role_id=1&limit=10`)
+            .then(res => res.json())
+            .then(data => { artists = data; })
+            .catch(e => console.error('Failed to load artists:', e));
+    });
 </script>
 
 <section>
@@ -26,16 +21,18 @@
         
         <div class="artists-grid">
             {#each artists as artist}
-                <div class="artist-card">
-                    <div class="profile-image">
-                        <!-- 이미지 로드 실패 시 회색 박스 표시 -->
-                        <img src={artist.image} alt={artist.nameEn} onerror={(e) => { e.currentTarget.style.display='none'; e.currentTarget.parentNode.classList.add('no-image'); }}/>
+                <a class="artist-card" href="/artists/{artist.id}">
+                    <div class="profile-image" class:no-image={!artist.image_url}>
+                        {#if artist.image_url}
+                            <img src={artist.image_url} alt={artist.name_en ?? artist.name}
+                                onerror={(e) => { e.currentTarget.style.display='none'; e.currentTarget.parentNode.classList.add('no-image'); }}/>
+                        {/if}
                     </div>
                     <div class="artist-info">
-                        <div class="name-en">{artist.nameEn}</div>
-                        <div class="name-ko">{artist.nameKo}</div>
+                        <div class="name-en">{artist.name_en ?? ''}</div>
+                        <div class="name-ko">{artist.name}</div>
                     </div>
-                </div>
+                </a>
             {/each}
         </div>
     </div>
@@ -87,6 +84,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        text-decoration: none;
+        color: inherit;
         
         @media (min-width: 769px) { 
             align-items: flex-start; 

@@ -1,419 +1,559 @@
 <script>
-    import { onMount } from 'svelte';
-    
-    export let artist;
+    let { artist } = $props();
+    let activeTab = $state('profile');
+    let gradientStyle = $state('#000');
 
-    let activeTab = 'profile'; // profile, video, concert, notice
+    // artist.image_url이 확정되는 즉시 CORS 이미지를 병렬로 요청.
+    // 화면 <img> 로드와 동시에 진행되므로 gradient 딜레이가 최소화됨.
+    $effect(() => {
+        const src = artist.image_url;
+        if (!src) return;
 
+        const corsUrl = src.includes('?') ? src + '&cors=1' : src + '?cors=1';
+        const corsImg = new Image();
+        corsImg.crossOrigin = 'anonymous';
+        corsImg.onload = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                const W = corsImg.naturalWidth;
+                const H = corsImg.naturalHeight;
+                canvas.width = W;
+                canvas.height = H;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(corsImg, 0, 0, W, H);
+
+                const left  = avgColor(ctx, Math.floor(W * 0.05), Math.floor(H * 0.92), 8);
+                const right = avgColor(ctx, Math.floor(W * 0.95), Math.floor(H * 0.92), 8);
+                gradientStyle = `linear-gradient(to right, ${left}, ${right})`;
+            } catch (e) {
+                console.warn('Failed to extract gradient:', e);
+            }
+        };
+        corsImg.onerror = () => console.warn('CORS image load failed:', corsUrl);
+        corsImg.src = corsUrl;
+    });
+
+    function avgColor(ctx, cx, cy, r) {
+        let data;
+        try {
+            data = ctx.getImageData(Math.max(0, cx - r), Math.max(0, cy - r), r * 2, r * 2).data;
+        } catch (e) {
+            console.warn('Failed to extract image data:', e);
+            return 'rgba(0,0,0,0.8)';
+        }
+        let rSum = 0, gSum = 0, bSum = 0, count = 0;
+        for (let i = 0; i < data.length; i += 4) {
+            rSum += data[i]; gSum += data[i + 1]; bSum += data[i + 2]; count++;
+        }
+        return `rgb(${Math.round(rSum/count)},${Math.round(gSum/count)},${Math.round(bSum/count)})`;
+    }
+
+    // ── 섹션 스크롤 ────────────────────────────
     const scrollToSection = (id) => {
         const el = document.getElementById(id);
         if (el) {
-            // Adjust for header height if needed
-            const offset = 100; 
-            const bodyRect = document.body.getBoundingClientRect().top;
-            const elementRect = el.getBoundingClientRect().top;
-            const elementPosition = elementRect - bodyRect;
-            const offsetPosition = elementPosition - offset;
-
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
-            });
+            const top = el.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({ top, behavior: 'smooth' });
             activeTab = id;
         }
     };
 
-    // Simple scroll spy or manual tab switching could be added here
+    // career: 줄바꿈 구분 텍스트를 배열로 변환
+    const careerLines = $derived(
+        artist.career
+            ? artist.career.split('\n').map(l => l.trim()).filter(Boolean)
+            : []
+    );
+
+    const videos = $derived(artist.videos || []);
+    const concerts = $derived(artist.concerts || []);
+
+    function inView(node, { threshold = 0.5 } = {}) {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    node.classList.add('visible');
+                    observer.disconnect(); // 한 번 표시되면 해제
+                }
+            },
+            { threshold }
+        );
+        observer.observe(node);
+        return { destroy() { observer.disconnect(); } };
+    }
+
 </script>
 
 <div class="artist-detail-page">
-    <!-- Header Section (Name) -->
-     <header class="artist-header">
-        <h1 class="en-name">{artist.en}</h1>
+    <!-- 이름 헤더 -->
+    <header class="artist-header" style="--bg-gradient: {gradientStyle}">
+        <h1 class="en-name">{artist.name_en ?? ''}</h1>
         <h2 class="kr-name">{artist.name}</h2>
-     </header>
+    </header>
 
-     <!-- Hero Image & Slogan -->
-     <section class="hero-section">
+    <section class="hero-section">
         <div class="artist-hero-image">
-            {#if artist.image}
-                <img src={artist.image} alt={artist.name} />
-            {:else}
-                <div class="placeholder"></div>
-            {/if}
+            <div class="hero-background-gradient" style="--bg-gradient: {gradientStyle}"></div>
+            <img
+                src={artist.image_url}
+                alt={artist.name}
+            />
+            <div class="hero-image-overlay"></div>
         </div>
         
-        <div class="slogan-bar">
-            <p class="slogan-text">{artist.slogan}</p>
+        <div class="headline-bar">
+            <h1 class="headline-text">{@html artist.headline}</h1>
         </div>
-     </section>
-
-     <!-- Content Layout -->
-     <div class="content-container container">
-        
-        <!-- Left: Image (Sticky in PC) -->
-        <aside class="left-sidebar">
-             <div class="sidebar-image">
-                {#if artist.image}
-                    <img src={artist.image} alt={artist.name} />
-                {:else}
-                    <div class="placeholder"></div>
-                {/if}
-             </div>
+    </section>
+    <!-- 본문 레이아웃 -->
+    <div class="content-container">
+        <!-- 좌: 이미지 (PC 고정) -->
+        <aside class="left-sidebar" style="--bg-gradient: {gradientStyle}">
+            <div class="sidebar-image" use:inView={{ threshold: 1.0 }}>
+                <img
+                    src={artist.image_url}
+                    alt={artist.name}
+                />
+                <div class="hero-image-overlay"></div>
+            </div>
         </aside>
 
-        <!-- Center: Main Content -->
         <main class="main-content">
-            
-            <!-- Profile Section -->
+            <!-- Profile -->
             <section id="profile" class="detail-section">
-                <h3 class="mobile-section-title">Profile</h3>
-                
-                {#if artist.subSlogan}
-                    <h4 class="sub-slogan">{artist.subSlogan}</h4>
+                {#if careerLines.length > 0}
+                    <div class="career-group">
+                        <h3 class="section-header">Career</h3>
+                        <ul class="career-list">
+                            {#each careerLines as item}
+                                <li class="career-item">• {item}</li>
+                            {/each}
+                        </ul>
+                    </div>
                 {/if}
 
-                <div class="career-group">
-                    <div class="label-row">
-                        <div class="icon-trophy"></div> <!-- Trophy Icon Placeholder -->
-                        <span class="label">Career</span>
+                {#if artist.description}
+                    <div class="description-text">
+                        <p>{artist.description}</p>
                     </div>
-                    <div class="career-list">
-                        {#each artist.career as item}
-                            <p class="career-item">{item}</p>
-                        {/each}
-                    </div>
-                </div>
-
-                <div class="description-text">
-                    <p>{artist.description}</p>
-                </div>
+                {/if}
             </section>
 
-            <!-- Video Section -->
+            <!-- Video -->
+            {#if videos.length > 0}
             <section id="video" class="detail-section">
                 <h3 class="section-header">Video</h3>
-                 <div class="video-grid">
-                    <div class="video-placeholder">Video Content 1</div>
-                    <div class="video-placeholder">Video Content 2</div>
-                 </div>
-            </section>
-
-            <!-- Concert Section -->
-            <section id="concert" class="detail-section">
-                <h3 class="section-header">Concert</h3>
-                <div class="concert-link-box">
-                    <p>관련 공연 정보가 없습니다.</p>
+                <div class="video-grid">
+                    {#each videos as v}
+                        <div class="video-wrap">
+                            <iframe
+                                src="https://www.youtube.com/embed/{v.id}"
+                                title={v.description ?? v.id}
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen
+                            ></iframe>
+                            {#if v.description}
+                                <p class="video-desc">{v.description}</p>
+                            {/if}
+                        </div>
+                    {/each}
                 </div>
             </section>
+            {/if}
 
-            <!-- Notice Section -->
-            <section id="notice" class="detail-section">
-                 <h3 class="section-header">Notice</h3>
-                 <div class="notice-box">
-                     <p>등록된 공지사항이 없습니다.</p>
-                 </div>
+            <!-- Concert -->
+            {#if concerts.length > 0}
+            <section id="concert" class="detail-section">
+                <h3 class="section-header">Concert</h3>
+                <ul class="concert-list">
+                    {#each concerts as c}
+                        <li class="concert-item">
+                            <a href="/concerts/{c.id}">
+                                <span class="concert-date">{c.date ?? ''}</span>
+                                <span class="concert-title">{c.title}</span>
+                            </a>
+                        </li>
+                    {/each}
+                </ul>
             </section>
+            {/if}
 
+            <!-- Notice -->
+            {#if artist.notice}
+            <section id="notice" class="detail-section">
+                <h3 class="section-header">Notice</h3>
+                <div class="notice-text">
+                    <p>{artist.notice}</p>
+                </div>
+            </section>
+            {/if}
         </main>
 
-        <!-- Right: Navigation (Sticky) -->
+        <!-- 우: 섹션 내비게이션 (PC) -->
         <nav class="right-nav">
             <ul class="nav-list">
-                <li class:active={activeTab === 'profile'}>
-                    <button on:click={() => scrollToSection('profile')}>Profile</button>
-                </li>
-                <li class:active={activeTab === 'video'}>
-                    <button on:click={() => scrollToSection('video')}>Video</button>
-                </li>
-                <li class:active={activeTab === 'concert'}>
-                    <button on:click={() => scrollToSection('concert')}>Concert</button>
-                </li>
-                 <li class:active={activeTab === 'notice'}>
-                    <button on:click={() => scrollToSection('notice')}>Notice</button>
-                </li>
+                {#each ['profile', 'video', 'concert', 'notice'] as tab}
+                    <li class:active={activeTab === tab}>
+                        <button onclick={() => scrollToSection(tab)}>
+                            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        </button>
+                    </li>
+                {/each}
             </ul>
         </nav>
-     </div>
+
+    </div>
 </div>
 
 <style lang="scss">
-    @use '../../styles/common.scss' as *;
-
     .artist-detail-page {
         width: 100%;
-        background-color: $color-white;
-        padding-top: 4rem; /* Header Space */
+        padding-top: 4rem;
     }
 
-    /* Header */
     .artist-header {
         text-align: center;
-        margin-bottom: 2rem;
-        
+        background: var(--bg-gradient, linear-gradient(to right, #000, #000));
+        padding: 2rem 1.5rem;
+        margin: 0;
+
         .en-name {
-            font-size: 1.5rem;
-            font-weight: 200;
-            letter-spacing: 0.1rem;
-            margin-bottom: 0.5rem;
-            color: #000;
+            font-weight: 100;
+            letter-spacing: 0.3em;
             text-transform: uppercase;
-            
-            @include min-width(1024px) {
-                font-size: 2.5rem;
-                letter-spacing: 0.2rem;
+            color: #000;
+            @media(--tablet) {
+                letter-spacing: 0.15em;
             }
         }
-
         .kr-name {
-            font-size: 1.2rem;
             font-weight: 200;
-            letter-spacing: 0.5rem;
+            letter-spacing: 0.5em;
             color: #000;
-
-             @include min-width(1024px) {
-                font-size: 1.5rem;
-                letter-spacing: 1rem;
+            @media(--tablet) {
+                letter-spacing: 0.25em;
             }
         }
     }
 
-    /* Hero Section */
     .hero-section {
-        position: relative;
-        margin-bottom: 4rem;
+        padding: 0;
+        margin-top: 0;
 
         .artist-hero-image {
-            width: 80%; /* Mobile: somewhat smaller */
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            max-height: 1400px;
             aspect-ratio: 3/4;
-            max-width: 400px;
-            margin: 0 auto 2rem auto;
-            background-color: #f0f0f0;
-            
-            /* In PC, this main hero image might be hidden or different */
-            @include min-width(1024px) {
-                display: none; /* We use the sidebar image in PC */
+
+            .hero-background-gradient {
+                position: absolute;
+                top: 0; left: 0;
+                width: 100%; height: 100%;
+                background: var(--bg-gradient, linear-gradient(to right, #000, #000));
+                z-index: 1;
             }
 
-            .placeholder { width: 100%; height: 100%; }
-            img { width: 100%; height: 100%; object-fit: cover; }
+            img { 
+                position: absolute;
+                top: 0; left: 50%;
+                transform: translateX(-50%);
+
+                width: 100%; 
+                height: 100%; 
+                object-fit: cover;
+                object-position: top center;
+                display: block;
+                z-index: 2;
+                max-width: 1080px;
+                transform-origin: top center;
+
+                mask-image:
+                    linear-gradient(to right,  transparent 0%, black 15%, black 85%, transparent 100%),
+                    linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+                mask-composite: intersect;
+                -webkit-mask-image:
+                    linear-gradient(to right,  transparent 0%, black 15%, black 85%, transparent 100%),
+                    linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+                -webkit-mask-composite: destination-in;
+
+                @media (--tablet) {
+                mask-image:
+                    linear-gradient(to right,  transparent 0%, black 8%, black 92%, transparent 100%),
+                    linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+                -webkit-mask-image:
+                    linear-gradient(to right,  transparent 0%, black 8%, black 92%, transparent 100%),
+                    linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+                }
+            }
+
+            .hero-image-overlay {
+                position: absolute;
+                top: 0; left: 0;
+                width: 100%; height: 100%;
+                background: linear-gradient(
+                    to bottom, 
+                    rgba(0, 0, 0, 0.0) 20%,
+                    rgba(0, 0, 0, 0.3) 60%, 
+                    rgba(0, 0, 0, 0.7) 80%,
+                    rgba(0, 0, 0, 0.99) 95%
+                );
+                z-index: 3;
+            }
         }
 
-        .slogan-bar {
+        .headline-bar {
             width: 100%;
-            background-color: #000;
-            color: #fff;
-            padding: 2rem 1rem;
+            background-color: black;
             text-align: center;
-            
-            .slogan-text {
-                font-size: 1rem;
+            margin-top: 0;
+            padding: 2.5rem 5vw;
+
+            @media(--tablet) {
+                padding: 1.75rem 5vw;
+            }
+            .headline-text {
+                font-family: 'MuseumCulturalFoundationClassic', serif;
+                color: white;
                 font-weight: 300;
-                line-height: 1.4;
-                letter-spacing: 0.05rem;
-                white-space: pre-wrap;
-
-                @include min-width(1024px) {
-                    font-size: 1.5rem;
-                    padding: 3rem 0;
-                }
-            }
-        }
-    }
-
-    /* Layout Container */
-    .content-container {
-        display: flex;
-        flex-direction: column;
-        padding-bottom: 8rem;
-        position: relative;
-
-        @include min-width(1024px) {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-    }
-
-    /* Left Sidebar (Image) - PC Only */
-    .left-sidebar {
-        display: none;
-        
-        @include min-width(1024px) {
-            display: block;
-            width: 300px;
-            position: sticky;
-            top: 150px;
-            
-            .sidebar-image {
-                width: 100%;
-                aspect-ratio: 3/4;
-                background-color: #f0f0f0;
-                .placeholder { width: 100%; height: 100%; }
-                img { width: 100%; height: 100%; object-fit: cover; }
-            }
-        }
-    }
-
-    /* Main Content */
-    .main-content {
-        flex: 1;
-        padding: 0 1.5rem;
-        
-        @include min-width(1024px) {
-            max-width: 600px; /* Constrain width for readability */
-            margin: 0 auto;
-            padding: 0 4rem;
-        }
-    }
-
-    .detail-section {
-        margin-bottom: 6rem;
-        scroll-margin-top: 150px;
-
-        .section-header {
-            font-size: 1.5rem;
-            font-weight: 300;
-            text-align: center;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 1rem;
-            
-            @include min-width(1024px) {
-                 display: none; /* Hidden in PC if using Side Nav active state, or kept as divider */
-                 /* Actually raw code shows distinct section headers in mobile, but not strictly in PC text block */
-                 display: block; 
-                 text-align: left;
-                 border-bottom: none;
-                 padding-bottom: 0;
-                 margin-bottom: 1rem;
-                 font-size: 1.25rem;
-                 color: #999;
-            }
-        }
-        
-        .mobile-section-title {
-             /* Only for Mobile 'Profile' text in black bar... wait, we have a black bar slogan */
-             /* Raw code mobile has 'Profile' text below slogan bar */
-             font-size: 1.25rem;
-             font-weight: 300;
-             text-align: center;
-             margin-bottom: 1.5rem;
-             color: #fff; /* If inside black bar? No, sticking to raw code 'node-Profile-45589' which is black text on white bg */
-             color: #000;
-
-             @include min-width(1024px) {
-                 display: none;
-             }
-        }
-    }
-
-    /* Profile Content */
-    #profile {
-        .sub-slogan {
-            font-size: 1.2rem;
-            font-weight: 300;
-            margin-bottom: 2rem;
-            color: #333;
-        }
-
-        .career-group {
-            margin-bottom: 2rem;
-            
-            .label-row {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                margin-bottom: 1rem;
                 
-                .icon-trophy {
-                    width: 20px; height: 20px;
-                    background-color: #ccc; /* Placeholder for Trophy Icon */
-                    border-radius: 50%;
+                font-size: 1.5rem;
+                letter-spacing: 1rem;
+                
+                @media(--tablet) {
+                    font-size: 1.25rem;
+                    letter-spacing: 0.4rem;
                 }
-                .label {
-                    font-size: 1.2rem;
-                    font-weight: 400;
-                }
-            }
-
-            .career-list {
-                padding-left: 0.5rem;
-                .career-item {
-                    font-size: 0.95rem;
-                    font-weight: 300;
-                    line-height: 1.6;
-                    margin-bottom: 0.3rem;
-                    color: #333;
+                @media(--mobile) {
+                    font-size: 0.8rem;
+                    letter-spacing: 0.2rem;
                 }
             }
-        }
-
-        .description-text {
-            font-size: 0.95rem;
-            line-height: 1.8;
-            font-weight: 300;
-            color: $color-text-secondary;
         }
     }
 
-    /* Placeholders */
-    .video-grid {
+    /* ── 본문 컨테이너 ──────────────────── */
+    .content-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 8rem 0;
         display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        
-        .video-placeholder {
+        grid-template-columns: 260px 1fr 120px;
+        position: relative;
+        gap: 2rem;
+
+        @media (--desktop) {
+            grid-template-columns: 220px 1fr;
+            gap: 1.5rem;
+        }
+        @media (--tablet) {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+    }
+
+    /* ── 좌 사이드바 ────────────────────── */
+    .left-sidebar {
+        display: block;
+        width: 260px;
+        align-self: stretch;
+
+        background: var(--bg-gradient, linear-gradient(to right, #000, #000));
+
+        .sidebar-image {
             width: 100%;
-            aspect-ratio: 16/9;
-            background-color: #eee;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            position: sticky;
+            top: 130px;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            
+            &:global(.visible) {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            img { 
+                width: 100%; 
+                height: 100%; 
+                object-fit: cover; 
+                display: block;             
+            }
+            .placeholder { width: 100%; height: 100%; }
+        }
+        
+        @media (--desktop) {
+            width: 220px;
+        }
+        @media (--tablet) {
+            display: none;
+        }
+    }
+
+    /* ── 메인 콘텐츠 ────────────────────── */
+    .detail-section {
+        margin-top: 0;
+        margin-bottom: 5rem;
+        scroll-margin-top: 120px;
+
+        @media(--tablet) {
+            margin-left: 1rem;
+            margin-right: 1rem;
+        }
+    }
+
+    .section-header {
+        font-size: 1.1rem;
+        font-weight: 300;
+        color: #999;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* ── Profile ────────────────────────── */
+    .sub-slogan {
+        font-size: 1.05rem;
+        font-weight: 300;
+        color: #444;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .career-group {
+        margin-bottom: 2rem;
+
+        .label-row {
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: #999;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+
+            .icon-trophy { font-size: 1rem; }
+            .label { font-size: 1rem; font-weight: 500; color: #222; }
+        }
+
+        .career-list {
+            list-style: none;
+
+            .career-item {
+                font-size: 0.9rem;
+                font-weight: 300;
+                line-height: 1.9;
+                color: #333;
+            }
         }
     }
 
-    .concert-link-box, .notice-box {
-        padding: 2rem;
-        background-color: #f9f9f9;
-        text-align: center;
-        color: #999;
+    .description-text {
+        font-size: 0.92rem;
+        line-height: 1.9;
         font-weight: 300;
+        color: #555;
     }
 
+    /* ── Video ──────────────────────────── */
+    .video-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
 
-    /* Right Nav (PC Only) */
-    .right-nav {
-         display: none;
+        @media (--tablet) {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+    }
 
-        @include min-width(1024px) {
+    .video-wrap {
+        iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border: none;
+            border-radius: 6px;
             display: block;
-            width: 150px;
-            position: sticky;
-            top: 250px;
-            text-align: right;
+        }
+        .video-desc {
+            font-size: 0.82rem;
+            color: #888;
+            margin-top: 0.4rem;
+        }
+    }
+
+    /* ── Concert ────────────────────────── */
+    .concert-list {
+        list-style: none;
+
+        .concert-item a {
+            display: flex;
+            gap: 1rem;
+            align-items: baseline;
+            text-decoration: none;
+            color: #222;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.92rem;
+            transition: color 0.2s;
+
+            &:hover { color: #2563eb; }
+
+            .concert-date { color: #aaa; font-size: 0.82rem; flex-shrink: 0; }
+            .concert-title { font-weight: 300; }
+        }
+    }
+
+    /* ── Notice ─────────────────────────── */
+    .notice-text {
+        font-size: 0.92rem;
+        line-height: 1.9;
+        font-weight: 300;
+        color: #444;
+        white-space: pre-wrap;
+    }
+
+    .empty-msg {
+        color: #ccc;
+        font-size: 0.88rem;
+        font-weight: 300;
+        text-align: center;
+        padding: 2.5rem 0;
+    }
+
+    /* ── 우 내비게이션 (PC) ─────────────── */
+    .right-nav {
+        display: block;
+        width: 120px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 250px;
+        text-align: right;
+
+        @media (--desktop) {
+            display: none;
         }
 
         .nav-list {
             list-style: none;
-            
+            padding: 0;
+            margin: 0;
+
             li {
                 margin-bottom: 1.5rem;
-                
+
                 button {
                     background: none;
                     border: none;
-                    font-size: 1.1rem;
+                    font-size: 1rem;
                     font-weight: 300;
-                    color: #999;
+                    color: #bbb;
                     cursor: pointer;
-                    transition: color 0.3s;
+                    transition: color 0.2s;
                     text-transform: capitalize;
 
-                    &:hover {
-                        color: #000;
-                    }
+                    &:hover { color: #222; }
                 }
 
                 &.active button {
@@ -423,5 +563,5 @@
             }
         }
     }
-
 </style>
+
