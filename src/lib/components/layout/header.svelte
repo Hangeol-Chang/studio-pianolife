@@ -27,7 +27,7 @@
             href: '/concerts',
             subItems: [
                 { name: 'now on', href: '/concerts' },
-                { name: 'schedule', href: '/concerts/schedule' }
+                // { name: 'schedule', href: '/concerts/schedule' }
             ]
         },
         { 

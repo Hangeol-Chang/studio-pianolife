@@ -37,10 +37,12 @@
 
     onMount(() => {
         // Auto scroll
-        const image_height = document.querySelector('.hero-image').height;
-
         setTimeout(() => {
-            smoothScrollTo(800 + image_height, 2000); 
+            const flower = document.querySelector('.flower');
+            if (flower) {
+                const target = flower.getBoundingClientRect().top + window.scrollY;
+                smoothScrollTo(target, 2000);
+            }
         }, 100);
 
         if (!canvas) return;
@@ -102,7 +104,9 @@
             <path d="M50 0 L50 1200" stroke="url(#gradient)" stroke-width="2" fill="none"/>
         </svg>
         <div class="flower">
-            <FlowerLine width="min(500px, calc(100vw - 60px))"/>
+            <div class="flower-inner">
+                <FlowerLine width="min(500px, calc(100vw - 60px))"/>
+            </div>
         </div>
     </div>
 
@@ -189,9 +193,22 @@
     .flower {
         position: absolute;
         top: calc(1200px - 20vw);
-        left: calc(55%);
-        transform: translate(-50%, -50%) rotateZ(-175deg);
+        left: 52%;
+        transform: translate(-50%, -50%);
         z-index: 12;
+
+        @media(--desktop) {
+            left: 54%;
+        }
+        @media(--tablet) {
+            left: 57%;
+        }
+        @media(--mobile) {
+        }
+    }
+
+    .flower-inner {
+        transform: rotateZ(-175deg);
     }
 
     .scroll-blocker {

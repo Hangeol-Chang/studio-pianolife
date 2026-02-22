@@ -16,18 +16,27 @@
 
     /** @type {string} - 그라데이션 오버레이 CSS (선택, 기본값: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.9) 70%)) */
     export let gradientOverlay = "linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.9) 70%)";
+
+    /** @type {string} bg imge anchor*/
+    export let bgAnchor = "top center";
+
+    let scrollY = 0;
 </script>
+
+<svelte:window bind:scrollY={scrollY} />
 
 <section class="hero-section" 
     style="
         --max-height: {maxHeight}; 
         --image-max-width: {imageMaxWidth}; 
-        --gradient-overlay: {gradientOverlay};"
+        --gradient-overlay: {gradientOverlay};
+        --bg-anchor: {bgAnchor};    
+    "
 >
     <div class="hero-image-container">
         <img src={image} alt="{alt} Background" class="hero-image-background" />
         <div class="hero-image-background-overlay"></div>
-        <img src={image} alt={alt} class="hero-image" />
+        <img src={image} alt={alt} class="hero-image" style="--scroll-y: {scrollY}"/>
         <div class="hero-image-overlay"></div>
     </div>
 
@@ -67,7 +76,8 @@
         object-fit: cover;
         z-index: 3;
 
-        object-position: top center;
+        object-position: var(--bg-anchor, top center);
+        transform: translateY(calc(var(--scroll-y) * 0.7px));
     }
 
     .hero-image-background {
