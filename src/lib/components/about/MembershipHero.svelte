@@ -1,10 +1,14 @@
 <script>
     import membershipWallpaper from '$lib/assets/images/about/membership_wallpaper.jpg'
     import { MoveRight } from 'lucide-svelte';
+
+    export let canClick = true;
 </script>
 
 <section style="padding:0;">
-    <div role="none" class="membership-hero-section" on:click={() => window.open('/about/membership', '_blank')}>
+    <div role="none" class="membership-hero-section {canClick ? 'clickable' : ''}" 
+        on:click={() => canClick && (window.location.href = '/about/membership')}
+    >
         <div class="content">
             <p>
                 음악을 통해 관객에게 열정과 삼동을 전하고자 하는
@@ -12,11 +16,13 @@
                 Fiore에게 여러분의 후원은 큰 힘이 됩니다.
             </p>
 
-            <h6 class="sponsor-btn">
-                sponsor <MoveRight />
-            </h6>
+            {#if canClick}
+                <h6 class="sponsor-btn">
+                    sponsor <MoveRight />
+                </h6>
+            {/if}
         </div>
-    
+        
         <img src={membershipWallpaper} alt="Membership bg" class="hero-image" />
         <div class="overlay"></div>
     </div>
@@ -28,7 +34,10 @@
         width: 100%;
         height: 400px;
         overflow: hidden;
-        cursor: pointer;
+
+        &.clickable {
+            cursor: pointer;
+        }
 
         .hero-image {
             padding: 0;

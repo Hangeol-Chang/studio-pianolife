@@ -45,8 +45,8 @@ export async function GET({ url }) {
       title: item.title.replace(/<[^>]*>/g, ''), // HTML 태그 제거
       address: item.address,
       roadAddress: item.roadAddress,
-      mapx: item.mapx,  // 경도 (KATECH → 네이버 지도 좌표)
-      mapy: item.mapy,  // 위도
+      mapx: item.mapx,  // 경도 × 10^7 (KATECH)
+      mapy: item.mapy,  // 위도  × 10^7 (KATECH)
       link: item.link,
       category: item.category,
     }));

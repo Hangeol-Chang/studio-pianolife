@@ -4,37 +4,28 @@
     let gradientStyle = $state('#000');
     let headerTextColor = $state('#fff');
 
-    // artist.image_url이 확정되는 즉시 CORS 이미지를 병렬로 요청.
-    // 화면 <img> 로드와 동시에 진행되므로 gradient 딜레이가 최소화됨.
-    $effect(() => {
-        const src = artist.image_url;
-        if (!src) return;
+    // hero <img onload> 에서 직접 호출 — 이미지 다운로드가 한 번만 일어남.
+    // crossorigin="anonymous"를 img에 붙이면 브라우저가 CORS 헤더 포함하여 요청하고
+    // 그 캐시를 canvas에서도 그대로 재사용할 수 있어 딜레이가 없어짐.
+    function extractGradientFromImg(img) {
+        try {
+            const canvas = document.createElement('canvas');
+            const W = img.naturalWidth;
+            const H = img.naturalHeight;
+            canvas.width = W;
+            canvas.height = H;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, W, H);
 
-        const corsUrl = src.includes('?') ? src + '&cors=1' : src + '?cors=1';
-        const corsImg = new Image();
-        corsImg.crossOrigin = 'anonymous';
-        corsImg.onload = () => {
-            try {
-                const canvas = document.createElement('canvas');
-                const W = corsImg.naturalWidth;
-                const H = corsImg.naturalHeight;
-                canvas.width = W;
-                canvas.height = H;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(corsImg, 0, 0, W, H);
-
-                const left  = avgColor(ctx, Math.floor(W * 0.05), Math.floor(H * 0.92), 8);
-                const right = avgColor(ctx, Math.floor(W * 0.95), Math.floor(H * 0.92), 8);
-                gradientStyle = `linear-gradient(to right, ${left}, ${right})`;
-                const avgLum = (luminance(left) + luminance(right)) / 2;
-                headerTextColor = avgLum > 128 ? '#111' : '#fff';
-            } catch (e) {
-                console.warn('Failed to extract gradient:', e);
-            }
-        };
-        corsImg.onerror = () => console.warn('CORS image load failed:', corsUrl);
-        corsImg.src = corsUrl;
-    });
+            const left  = avgColor(ctx, Math.floor(W * 0.05), Math.floor(H * 0.92), 8);
+            const right = avgColor(ctx, Math.floor(W * 0.95), Math.floor(H * 0.92), 8);
+            gradientStyle = `linear-gradient(to right, ${left}, ${right})`;
+            const avgLum = (luminance(left) + luminance(right)) / 2;
+            headerTextColor = avgLum > 128 ? '#111' : '#fff';
+        } catch (e) {
+            console.warn('Failed to extract gradient:', e);
+        }
+    }
 
     function luminance(rgbStr) {
         const m = rgbStr.match(/rgb\((\d+),(\d+),(\d+)\)/);
@@ -113,6 +104,8 @@
             <img
                 src={artist.image_url}
                 alt={artist.name}
+                crossorigin="anonymous"
+                onload={(e) => extractGradientFromImg(e.currentTarget)}
             />
             <div class="hero-image-overlay"></div>
         </div>

@@ -29,21 +29,24 @@
 <div>
     <HeroSection image={artistImage} title="ARTISTS" alt="Artists" 
         gradientOverlay="linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 1.0) 95%)"
+        bgAnchor="center center"
     />
 
     <section class="artists-section">
-        <div class="description-wrapper">
-            <h2 class="section-title-left">오늘의 신예, 내일의 거장</h2>
-            <p>
-                순수한 열정으로 빚어낸 깊이 있는 해석과 과감한 도전.
-                <br />
-                우리가 주목해야 할 새로운 재능을 가장 먼저 확인하세요.
-            </p>
-            <p>
-                Experience profound interpretations and bold challenges crafted with pure passion. 
-                <br />
-                Be the first to discover the new talents that deserve your attention.
-            </p>
+        <div>
+            <div class="description-wrapper">
+                <h2 class="section-title-left">오늘의 신예, 내일의 거장</h2>
+                <p>
+                    순수한 열정으로 빚어낸 깊이 있는 해석과 과감한 도전.
+                    <br />
+                    우리가 주목해야 할 새로운 재능을 가장 먼저 확인하세요.
+                </p>
+                <p>
+                    Experience profound interpretations and bold challenges crafted with pure passion. 
+                    <br />
+                    Be the first to discover the new talents that deserve your attention.
+                </p>
+            </div>
         </div>
 
         <div class="artists-card-wrapper">
@@ -85,6 +88,9 @@
     }
 
     .description-wrapper {
+        position: sticky;
+        top: 100px;
+
         h2 {
             font-size: 1.8rem;
             font-weight: 300;

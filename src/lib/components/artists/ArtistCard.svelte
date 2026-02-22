@@ -1,7 +1,9 @@
 <script>
     let { artist } = $props();
+    console.log(artist);
 </script>
 
+{#if artist.role_name === "artist"}
 <a href="/artists/{artist.id}" class="artist-card">
     <div class="card-image-wrapper">
         {#if artist.image_url}
@@ -17,6 +19,23 @@
         <h4 class="name-kr">{artist.name}</h4>
     </div>
 </a>
+{:else}
+<div class="artist-card no-link">
+    <div class="card-image-wrapper">
+        {#if artist.image_url}
+            <img src={artist.image_url} alt={artist.name} class="card-image" />
+        {:else}
+            <div class="card-image-placeholder"></div>
+        {/if}
+        <div class="card-overlay"></div>
+    </div>
+
+    <div class="card-info">
+        <h3 class="name-en">{artist.name_en ?? ''}</h3>
+        <h4 class="name-kr">{artist.name}</h4>
+    </div>
+</div>
+{/if}
 
 <style lang="scss">
 .artist-card {
@@ -27,7 +46,11 @@
     aspect-ratio: 3 / 4;
     cursor: pointer;
 
-    &:hover {
+    &.no-link {
+        cursor: default;
+    }
+
+    &:not(.no-link):hover {
         .card-image {
             transform: scale(1.05);
         }

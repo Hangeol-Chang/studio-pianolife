@@ -18,9 +18,18 @@
     }
 
     function naverMapUrl(concert) {
-        const query = concert.location_data?.title || concert.location;
-        if (!query) return null;
-        return `https://map.naver.com/v5/search/${encodeURIComponent(query)}`;
+        const mapx = concert.location_data?.mapx;
+        const mapy = concert.location_data?.mapy;
+        const title = concert.location_data?.title || concert.location;
+        if (!title) return null;
+        // mapx/mapy는 네이버 KATECH 좌표 × 10^7 → 소수점 변환 후 좌표 기반 URL
+        if (mapx && mapy) {
+            const lng = (Number(mapx) / 10000000).toFixed(7);
+            const lat = (Number(mapy) / 10000000).toFixed(7);
+            return `https://map.naver.com/v5/search/${encodeURIComponent(title)}?c=${lng},${lat},15,0,0,0,dh`;
+        }
+        // 좌표 없으면 이름 검색 fallback
+        return `https://map.naver.com/v5/search/${encodeURIComponent(title)}`;
     }
 </script>
 

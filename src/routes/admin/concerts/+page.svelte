@@ -245,8 +245,9 @@
     formData.append('title', form.title);
     if (combinedDate) formData.append('date', combinedDate);
     if (form.brief_description) formData.append('brief_description', form.brief_description);
-    if (form.location) formData.append('location', form.location);
-    if (form.location_data) formData.append('location_data', JSON.stringify(form.location_data));
+    // 빈 값도 항상 전송 — 지운 경우 DB에서도 지워지도록
+    formData.append('location', form.location || '');
+    formData.append('location_data', form.location_data ? JSON.stringify(form.location_data) : '');
     if (form.poster_media_id) formData.append('poster_media_id', String(form.poster_media_id));
     if (form.program.length > 0) {
       // player_name / player_names 등 서버가 채워주는 필드는 제거하고 전송
