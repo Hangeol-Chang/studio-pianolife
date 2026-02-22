@@ -1,5 +1,5 @@
 <script>
-    import { Calendar, Clock, MapPin, Watch } from "lucide-svelte";
+    import { Calendar, Clock, DollarSign, MapPin, Watch } from "lucide-svelte";
     import HeroSection from "../common/HeroSection.svelte";
     import ArtistCard from "../artists/ArtistCard.svelte";
 
@@ -105,6 +105,13 @@
                             <span class="value">{concert.location}</span>
                         {/if}
                     </div>
+                    <div class="info-item">
+                        <div class="label-container">
+                            <DollarSign size={16} />
+                            <span class="label">Cost</span>
+                        </div>
+                        <span class="value">{concert.cost}</span>
+                    </div>
                 </div>
                 
                 <h3 class="subtitle">Overview</h3>
@@ -112,7 +119,11 @@
             </div>
 
             <div class="action-area">
-                <button class="btn-reserve">예매하기</button>
+                {#if concert.reserve_link}
+                    <a class="btn-reserve" href={concert.reserve_link} target="_blank" rel="noopener noreferrer">예매하기</a>
+                {:else}
+                    <button class="btn-reserve" disabled>예매하기</button>
+                {/if}
             </div>
         </div>
 
@@ -288,6 +299,9 @@
 
 
         .btn-reserve {
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
             background-color: transparent;
             color: black;
             padding: 0.6rem 2rem;
@@ -297,7 +311,12 @@
             transition: opacity 0.2s;
             border: 1px solid #333;
 
-            &:hover {
+            &:disabled {
+                opacity: 0.35;
+                cursor: default;
+            }
+
+            &:not(:disabled):hover {
                 opacity: 0.8;
             }
         }

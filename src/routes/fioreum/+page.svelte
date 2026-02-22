@@ -37,10 +37,12 @@
 
     onMount(() => {
         // Auto scroll
-        const image_height = document.querySelector('.hero-image').height;
-
         setTimeout(() => {
-            smoothScrollTo(800 + image_height, 2000); 
+            const flower = document.querySelector('.flower');
+            if (flower) {
+                const target = flower.getBoundingClientRect().top + window.scrollY;
+                smoothScrollTo(target, 2000);
+            }
         }, 100);
 
         if (!canvas) return;
