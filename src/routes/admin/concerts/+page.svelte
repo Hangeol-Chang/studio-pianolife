@@ -20,6 +20,7 @@
     location_data: null,
     poster_media_id: null,
     program: [],
+    image_list: [],
     artist_ids: [],
     is_active: true,
   });
@@ -27,11 +28,15 @@
   // ── 미디어 선택 ────────────────────────────
   let mediaList = $state([]);
   let showMediaPicker = $state(false);
+  let showSubMediaPicker = $state(false);
   let selectedPosterUrl = $state('');
 
   // ── 드래그 앤 드롭 ────────────────────────────
   let imageUploading = $state(false);
   let imageDragOver = $state(false);
+  // ── 서브 이미지 ────────────────────────────
+  let subImageUploading = $state(false);
+  let subImageDragOver = $state(false);
   // ── 장소 검색 ────────────────────────────
   let placeQuery = $state('');
   let placeResults = $state([]);
@@ -77,7 +82,7 @@
   function resetForm() {
     form = {
       title: '', date: '', time: '', brief_description: '', reserve_link: '', cost: '',
-      location: '', location_data: null, poster_media_id: null, program: [], artist_ids: [], is_active: true,
+      location: '', location_data: null, poster_media_id: null, program: [], image_list: [], artist_ids: [], is_active: true,
     };
     selectedPosterUrl = '';
     placeQuery = '';
@@ -118,6 +123,7 @@
         ...p,
         player_ids: p.player_ids || (p.player_id ? [p.player_id] : []),
       })) : [],
+      image_list: concert.image_list ? [...concert.image_list] : [],
       artist_ids: (concert.artists || []).map(a => a.id),
       is_active: concert.is_active ?? true,
     };
@@ -186,6 +192,64 @@
     form.poster_media_id = media.id;
     selectedPosterUrl = media.url;
     showMediaPicker = false;
+  }
+
+  async function openSubMediaPicker() {
+    await loadMedia();
+    showSubMediaPicker = true;
+  }
+
+  function selectSubMedia(media) {
+    if (!form.image_list.find(img => img.media_id === media.id)) {
+      form.image_list = [...form.image_list, { media_id: media.id, url: media.url }];
+    }
+    showSubMediaPicker = false;
+  }
+
+  // ── 서브 이미지 관리 ───────────────────────
+  function removeSubImage(idx) {
+    form.image_list = form.image_list.filter((_, i) => i !== idx);
+  }
+
+  function handleSubImageDrop(e) {
+    e.preventDefault();
+    subImageDragOver = false;
+    const file = e.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith('image/')) uploadSubImage(file);
+  }
+
+  function handleSubImageFileSelect(e) {
+    const file = e.target.files?.[0];
+    if (file) uploadSubImage(file);
+  }
+
+  async function uploadSubImage(file) {
+    subImageUploading = true;
+    try {
+      const checkRes = await fetch(`${API}/api/media?limit=10000`);
+      const checkData = await checkRes.json();
+      const duplicate = (checkData.items || []).find(m => m.original_filename === file.name);
+      if (duplicate) {
+        const proceed = confirm(
+          `⚠️ 동일한 파일명이 이미 존재합니다.\n\n` +
+          `파일명: ${file.name}\n` +
+          `기존 업로드: ${new Date(duplicate.created_at).toLocaleString()}\n` +
+          `카테고리: ${duplicate.category}\n\n` +
+          `그래도 업로드하시겠습니까?`
+        );
+        if (!proceed) { subImageUploading = false; return; }
+      }
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('category', 'concert');
+      const res = await fetch(`${API}/api/media`, { method: 'POST', body: fd });
+      if (!res.ok) throw new Error(await res.text());
+      const media = await res.json();
+      form.image_list = [...form.image_list, { media_id: media.id, url: media.url }];
+    } catch (e) {
+      alert('이미지 업로드 실패: ' + e.message);
+    }
+    subImageUploading = false;
   }
 
   // ── 드래그 앤 드롭 업로드 ──────────────────────
@@ -260,6 +324,7 @@
       }));
       formData.append('program', JSON.stringify(programPayload));
     }
+    formData.append('image_list', JSON.stringify(form.image_list));
     formData.append('artist_ids', JSON.stringify(form.artist_ids));
     formData.append('is_active', String(form.is_active));
 
@@ -532,6 +597,42 @@
           </button>
         </div>
 
+        <!-- 서브 이미지 목록 -->
+        <div class="form-section">
+          <h3>서브 이미지 목록 (Image List)</h3>
+          <p style="font-size: 0.85rem; color: #666; margin-bottom: 0.75rem;">포스터 외 추가 이미지를 등록할 수 있습니다.</p>
+
+          {#if form.image_list.length > 0}
+            <div class="sub-image-list">
+              {#each form.image_list as img, i}
+                <div class="sub-image-item">
+                  <img src={img.url} alt="서브 이미지 {i + 1}" />
+                  <button class="btn-sm btn-delete remove-sub-btn" onclick={() => removeSubImage(i)}>×</button>
+                </div>
+              {/each}
+            </div>
+          {/if}
+
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div
+            class="drop-zone sub-drop"
+            class:drag-over={subImageDragOver}
+            ondrop={handleSubImageDrop}
+            ondragover={(e) => { e.preventDefault(); subImageDragOver = true; }}
+            ondragleave={() => subImageDragOver = false}
+          >
+            <input type="file" accept="image/*" class="file-input" onchange={handleSubImageFileSelect} />
+            {#if subImageUploading}
+              <p class="drop-text">업로드 중...</p>
+            {:else}
+              <p class="drop-text">+ 이미지 추가 (드래그 또는 클릭)</p>
+            {/if}
+          </div>
+          <button type="button" class="btn-secondary" style="margin-top:0.5rem" onclick={openSubMediaPicker}>
+            미디어에서 선택
+          </button>
+        </div>
+
         <!-- 간단한 설명 -->
         <div class="form-section">
           <h3>간단한 설명</h3>
@@ -669,6 +770,34 @@
           {/if}
         </div>
         <button class="btn-secondary" onclick={() => (showMediaPicker = false)}>닫기</button>
+      </div>
+    </div>
+  {/if}
+
+  <!-- ── 서브 이미지 미디어 피커 모달 ───────── -->
+  {#if showSubMediaPicker}
+    <div class="modal-overlay">
+      <div class="modal media-picker" role="none" onclick={(e) => e.stopPropagation()}>
+        <button class="modal-close" onclick={() => (showSubMediaPicker = false)}>✕</button>
+        <h2>서브 이미지 선택</h2>
+        <div class="media-grid">
+          {#each mediaList as media}
+            {@const already = form.image_list.some(img => img.media_id === media.id)}
+            <button
+              class="media-item"
+              class:already-selected={already}
+              onclick={() => selectSubMedia(media)}
+              disabled={already}
+            >
+              <img src={media.url} alt={media.alt_text || media.original_filename} />
+              <span class="media-name">{already ? '✓ 추가됨' : media.original_filename}</span>
+            </button>
+          {/each}
+          {#if mediaList.length === 0}
+            <p class="empty">업로드된 콘서트 이미지가 없습니다.</p>
+          {/if}
+        </div>
+        <button class="btn-secondary" onclick={() => (showSubMediaPicker = false)}>닫기</button>
       </div>
     </div>
   {/if}
@@ -891,6 +1020,40 @@
     }
   }
 
+  /* ── 서브 이미지 목록 ───────────────── */
+  .sub-image-list {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .sub-image-item {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    border-radius: 6px;
+    overflow: visible;
+    img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      display: block;
+    }
+    .remove-sub-btn {
+      position: absolute;
+      top: -6px; right: -6px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      padding: 0;
+      font-size: 0.85rem;
+      line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+  }
+  .drop-zone.sub-drop {
+    padding: 1rem;
+    border-style: dashed;
+  }
+
   /* ── Program 행 ────────────────────── */
   .program-row {
     display: grid;
@@ -960,6 +1123,12 @@
     overflow: hidden;
     transition: border-color 0.2s;
     &:hover { border-color: #2563eb; }
+    &.already-selected {
+      border-color: #2563eb;
+      opacity: 0.6;
+      cursor: default;
+      .media-name { color: #2563eb; font-weight: 600; }
+    }
     img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
     .media-name {
       display: block;
