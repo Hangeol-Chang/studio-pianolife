@@ -3,9 +3,9 @@
     import { fade } from 'svelte/transition';
     
     // Import gallery images
-    import artist1 from '$lib/assets/images/artists/artist_1.png';
-    import profile2 from '$lib/assets/images/artists/profile_2.png';
-    import profile3 from '$lib/assets/images/artists/profile_3.png';
+    import artist1 from '$lib/assets/images/artists/artists_wallpaper.png';
+    import profile2 from '$lib/assets/images/artists/artists_wallpaper.png';
+    import profile3 from '$lib/assets/images/artists/artists_wallpaper.png';
     import about1 from '$lib/assets/images/about/about_1.jpg';
     import about2 from '$lib/assets/images/about/about_2.jpg';
 
