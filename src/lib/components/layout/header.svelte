@@ -19,7 +19,8 @@
             href: '/about',
             subItems: [
                 { name: 'about', href: '/about' },
-                { name: 'membership', href: '/about/membership' }
+                { name: 'membership', href: '/about/membership' },
+                { name: 'Fioreum', href: '/about/fioreum' }
             ]
         },
         { 
@@ -54,8 +55,8 @@
             ]
         },
         { 
-            name: 'Fioreum', 
-            href: '/fioreum',
+            name: 'Application', 
+            href: '/application',
             subItems: null
         }
     ];

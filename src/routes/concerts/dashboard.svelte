@@ -1,57 +1,89 @@
 <script>
     import { flip } from 'svelte/animate';
     import { onMount, onDestroy } from 'svelte';
-    import concertShuman from '$lib/assets/images/concerts/250224_shuman.jpg';
-    import concertShopinRavel from '$lib/assets/images/concerts/250215_shopinRavel.jpg';
-    import concertAmatuer from '$lib/assets/images/concerts/250829_amatuer.png';
+    import { PIANOLIFE_BACKEND_URL } from '$env/static/public';
     import MoreButton from '@/components/common/moreButton.svelte';
 
-    const rawConcerts = [
-        { id: 1, title: '슈만 | 시인은, 말한다', image: concertShuman },
-        { id: 2, title: '쇼팽과 라벨', image: concertShopinRavel },
-        { id: 3, title: '아마추어를 만나다', image: concertAmatuer },
-        { id: 4, title: '슈만 | 시인은, 말한다', image: concertShuman },
-        { id: 5, title: '쇼팽과 라벨', image: concertShopinRavel },
-        { id: 6, title: '아마추어를 만나다', image: concertAmatuer }
+    const API = PIANOLIFE_BACKEND_URL || 'http://localhost:8000';
 
-    ];
+    // ── 날짜 파싱 / 기간 판별 ──────────────────────────────
+    const todayDateOnly = new Date();
+    todayDateOnly.setHours(0, 0, 0, 0);
 
-    // 한장 왼쪽에 채우기 위해서 마지막 아이템을 앞으로 이동
-    let concerts = [rawConcerts[rawConcerts.length - 1], ...rawConcerts.slice(0, rawConcerts.length -1)];
+    function parseConcertDate(dateStr) {
+        if (!dateStr) return null;
+        const iso = dateStr.match(/(\d{4})-(\d{2})-(\d{2})(?:[\sT](\d{2}:\d{2}))?/);
+        if (iso) return { year: +iso[1], month: +iso[2] - 1, day: +iso[3] };
+        const kr = dateStr.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+        if (kr) return { year: +kr[1], month: +kr[2] - 1, day: +kr[3] };
+        return null;
+    }
+
+    function isConcertPast(dateStr) {
+        const d = parseConcertDate(dateStr);
+        if (!d) return false;
+        return new Date(d.year, d.month, d.day) < todayDateOnly;
+    }
+
+    // ── 캐러셀 상태 ──────────────────────────────────────
+    let rawConcerts = $state([]);
+    let loading = $state(true);
+
+    // 아직 기간이 안 지난 공연만 + 날짜 오름차순
+    const upcomingConcerts = $derived(
+        rawConcerts
+            .filter(c => !isConcertPast(c.date))
+            .sort((a, b) => {
+                const da = parseConcertDate(a.date);
+                const db = parseConcertDate(b.date);
+                if (!da || !db) return 0;
+                return new Date(da.year, da.month, da.day) - new Date(db.year, db.month, db.day);
+            })
+    );
+
+    // 캐러셀용: 마지막 아이템을 앞에 배치 (왼쪽 버퍼)
+    let concerts = $state([]);
+    $effect(() => {
+        const list = upcomingConcerts;
+        if (list.length === 0) { concerts = []; return; }
+
+        // 5개 미만이면 반복해서 최소 5개 확보 (flip key 충돌 방지를 위해 _key 부여)
+        let padded = list.map((c, i) => ({ ...c, _key: `${c.id}_0_${i}` }));
+        let cycle = 1;
+        while (padded.length < 5) {
+            padded = [...padded, ...list.map((c, i) => ({ ...c, _key: `${c.id}_${cycle}_${i}` }))];
+            cycle++;
+        }
+
+        concerts = [padded[padded.length - 1], ...padded.slice(0, padded.length - 1)];
+    });
+
     let intervalId;
     let progressIntervalId;
-    let progress = 0;
+    let progress = $state(0);
     const SCROLL_DURATION = 5000;
 
-    // Move first item to the end
     function rotateNext() {
         if (!concerts.length) return;
         concerts = [...concerts.slice(1), concerts[0]];
     }
-
-    // Move last item to the start
     function rotatePrev() {
         if (!concerts.length) return;
         concerts = [concerts[concerts.length - 1], ...concerts.slice(0, -1)];
     }
 
-    // Auto rotate every 5 seconds
     function startAutoRotation() {
         clearInterval(intervalId);
         clearInterval(progressIntervalId);
-        
         let startTime = Date.now();
         progress = 0;
-
         intervalId = setInterval(() => {
             rotateNext();
             startTime = Date.now();
             progress = 0;
         }, SCROLL_DURATION);
-
         progressIntervalId = setInterval(() => {
-            const elapsed = Date.now() - startTime;
-            progress = Math.min((elapsed / SCROLL_DURATION) * 100, 100);
+            progress = Math.min(((Date.now() - startTime) / SCROLL_DURATION) * 100, 100);
         }, 20);
     }
 
@@ -61,7 +93,18 @@
         progress = 0;
     }
 
-    onMount(() => { startAutoRotation(); });
+    onMount(async () => {
+        try {
+            const res = await fetch(`${API}/api/concerts/?active_only=false`);
+            if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
+            rawConcerts = await res.json();
+        } catch (e) {
+            console.error('콘서트 로딩 실패:', e);
+        } finally {
+            loading = false;
+        }
+        startAutoRotation();
+    });
     onDestroy(() => { stopAutoRotation(); });
 </script>
 
@@ -71,27 +114,43 @@
 
     <!-- Desktop Grid View -->
     <div class="grid-wrapper">
+        {#if loading}
+            <div class="skeleton-row">
+                {#each { length: 3 } as _}
+                    <div class="card-skeleton"></div>
+                {/each}
+            </div>
+        {:else if concerts.length === 0}
+            <p class="empty-message">예정된 공연이 없습니다.</p>
+        {:else}
         <div class="concerts-grid-container" 
             role="region" aria-label="Concert Carousel"
         >
-            {#each concerts.slice(0, 5) as concert, i (concert.id)} 
+            {#each concerts.slice(0, 5) as concert, i (concert._key)} 
                 <div 
                     class="concert-item-grid" 
                     class:main-poster={i === 1}
                     class:buffer-item={i === 0 || i === 4}
                     animate:flip={{duration: 500}}
                 >
-                    <a href="/concerts" class="concert-link">
+                    <a href="/concerts/{concert.id}" class="concert-link">
                         <div class="concert-image">
-                            <img src={concert.image} alt={concert.title} />
+                            {#if concert.poster_url}
+                                <img src={concert.poster_url} alt={concert.title} />
+                            {:else}
+                                <div class="poster-placeholder"></div>
+                            {/if}
                             <!-- Overlay for non-active items -->
                             {#if i !== 1}
-                            <!-- svelte-ignore a11y-click-events-have-key-events -->
-                            <!-- svelte-ignore a11y-no-static-element-interactions -->
-                            <div class="inactive-overlay" on:click|preventDefault={() => {
-                                rotateNext();
-                                startAutoRotation();
-                            }}></div>
+                            <button
+                                class="inactive-overlay"
+                                aria-label="다음 공연 보기"
+                                onclick={(e) => {
+                                    e.preventDefault();
+                                    rotateNext();
+                                    startAutoRotation();
+                                }}
+                            ></button>
                             {/if}
                         </div>
                     </a>
@@ -108,6 +167,7 @@
                 </div>
             {/each}
         </div>
+        {/if}
     </div>
 
 </section>
@@ -201,6 +261,44 @@
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
         z-index: 10;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .poster-placeholder {
+        width: 100%;
+        aspect-ratio: 2/3;
+        background: linear-gradient(135deg, #e0e0e0, #c8c8c8);
+    }
+
+    .skeleton-row {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .card-skeleton {
+        flex: 0 0 220px;
+        aspect-ratio: 2/3;
+        background: linear-gradient(90deg, #f0f0f0 25%, #e4e4e4 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite;
+    }
+
+    @keyframes shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    .empty-message {
+        text-align: center;
+        color: #aaa;
+        font-size: 0.9rem;
+        font-weight: 300;
+        padding: 4rem 0;
     }
 
     .concert-link {
