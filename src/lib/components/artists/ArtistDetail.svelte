@@ -66,6 +66,62 @@
     );
 
     const videos = $derived(artist.videos || []);
+
+    // ── 비디오 캐러셀 ───────────────────────
+    let currentVideoIndex = $state(0);
+    let dragOffset = $state(0);
+    let isDragging = $state(false);
+    let dragStartX = 0;
+    let viewportEl = $state(null);
+
+    // artist가 바뀌면 인덱스 초기화
+    $effect(() => {
+        const _ = artist.id ?? artist.name;
+        currentVideoIndex = 0;
+    });
+
+    function prevVideo() {
+        if (currentVideoIndex > 0) currentVideoIndex--;
+    }
+    function nextVideo() {
+        if (currentVideoIndex < videos.length - 1) currentVideoIndex++;
+    }
+    function handlePointerDown(e) {
+        isDragging = true;
+        dragStartX = e.clientX;
+        dragOffset = 0;
+        e.currentTarget.setPointerCapture(e.pointerId);
+    }
+    function handlePointerMove(e) {
+        if (!isDragging) return;
+        dragOffset = e.clientX - dragStartX;
+    }
+    // 슬라이드 1칸 이동 px (슬라이드 너비 + 좌우 margin 합)
+    function getSlidePx() {
+        if (!viewportEl) return 0;
+        const slide = viewportEl.querySelector('.carousel-slide');
+        if (!slide) return viewportEl.offsetWidth;
+        const style = getComputedStyle(slide);
+        return slide.offsetWidth
+            + (parseFloat(style.marginLeft) || 0)
+            + (parseFloat(style.marginRight) || 0);
+    }
+
+    function handlePointerUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        const step = getSlidePx();
+        if (step > 0) {
+            const threshold = step * 0.25;
+            if (dragOffset < -threshold && currentVideoIndex < videos.length - 1) {
+                currentVideoIndex++;
+            } else if (dragOffset > threshold && currentVideoIndex > 0) {
+                currentVideoIndex--;
+            }
+        }
+        dragOffset = 0;
+    }
+
     // 최신순 정렬 후 4개만
     const concerts = $derived(
         (artist.concerts || [])
@@ -150,24 +206,72 @@
 
             <!-- Video -->
             {#if videos.length > 0}
-            <section id="video" class="detail-section">
+            <section id="video" class="detail-section video-section">
                 <h3 class="section-header">Video</h3>
-                <div class="video-grid">
-                    {#each videos as v}
-                        <div class="video-wrap">
-                            <iframe
-                                src="https://www.youtube.com/embed/{v.id}"
-                                title={v.description ?? v.id}
-                                frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen
-                            ></iframe>
-                            {#if v.description}
-                                <p class="video-desc">{v.description}</p>
-                            {/if}
+                <div class="video-carousel">
+                    <button
+                        class="carousel-btn carousel-prev"
+                        onclick={prevVideo}
+                        disabled={currentVideoIndex === 0}
+                        aria-label="이전 영상"
+                    >&#8249;</button>
+
+                    <div class="carousel-outer">
+                    <div
+                        class="carousel-viewport"
+                        class:dragging={isDragging}
+                        role="region"
+                        aria-label="비디오 캐러셀"
+                        bind:this={viewportEl}
+                        onpointerdown={handlePointerDown}
+                        onpointermove={handlePointerMove}
+                        onpointerup={handlePointerUp}
+                        onpointercancel={handlePointerUp}
+                    >
+                        <div
+                            class="carousel-track"
+                            style="transform: translateX(calc({-currentVideoIndex * getSlidePx()}px + {dragOffset}px)); transition: {isDragging ? 'none' : 'transform 0.35s ease'};"
+                        >
+                            {#each videos as v}
+                                <div class="carousel-slide">
+                                    <div class="video-wrap">
+                                        <iframe
+                                            src="https://www.youtube.com/embed/{v.id}"
+                                            title={v.description ?? v.id}
+                                            frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen
+                                        ></iframe>
+                                        {#if v.description}
+                                            <p class="video-desc">{v.description}</p>
+                                        {/if}
+                                    </div>
+                                </div>
+                            {/each}
                         </div>
+                    </div>
+                    </div><!-- /carousel-outer -->
+
+                    <button
+                        class="carousel-btn carousel-next"
+                        onclick={nextVideo}
+                        disabled={currentVideoIndex === videos.length - 1}
+                        aria-label="다음 영상"
+                    >&#8250;</button>
+                </div>
+
+                {#if videos.length > 1}
+                <div class="carousel-dots">
+                    {#each videos as _, i}
+                        <button
+                            class="dot"
+                            class:active={i === currentVideoIndex}
+                            onclick={() => currentVideoIndex = i}
+                            aria-label="영상 {i + 1}"
+                        ></button>
                     {/each}
                 </div>
+                {/if}
             </section>
             {/if}
 
@@ -289,12 +393,12 @@
                 transform-origin: top center;
 
                 mask-image:
-                    linear-gradient(to right,  transparent 0%, black 15%, black 85%, transparent 100%),
-                    linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+                    linear-gradient(to right,  transparent 0%, black 10%, black 90%, transparent 100%),
+                    linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
                 mask-composite: intersect;
                 -webkit-mask-image:
-                    linear-gradient(to right,  transparent 0%, black 15%, black 85%, transparent 100%),
-                    linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+                    linear-gradient(to right,  transparent 0%, black 10%, black 90%, transparent 100%),
+                    linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
                 -webkit-mask-composite: destination-in;
 
                 @media (--tablet) {
@@ -461,16 +565,55 @@
         color: #555;
     }
 
-    /* ── Video ──────────────────────────── */
-    .video-grid {
+    /* ── Video Carousel ─────────────────── */
+    .video-section {
+        padding-bottom: 1.5rem;
+    }
+
+    .video-carousel {
+        --peek: 48px;
+        --slide-gap: 14px;
         display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
+        align-items: center;
+        gap: 1rem;
 
         @media (--tablet) {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            --peek: 28px;
+            --slide-gap: 10px;
+            gap: 0;
         }
+    }
+
+    // 오버플로우 클리핑
+    .carousel-outer {
+        flex: 1;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .carousel-viewport {
+        overflow: visible;
+        touch-action: pan-y;
+        cursor: grab;
+        user-select: none;
+
+        &:active {
+            cursor: grabbing;
+        }
+    }
+
+    .carousel-track {
+        display: flex;
+        will-change: transform;
+        // 첫 슬라이드가 가운데 오도록 초기 오프셋
+        padding-left: calc(var(--peek) - var(--slide-gap) / 2);
+    }
+
+    .carousel-slide {
+        // 슬라이드 너비: 양쪽 peek 만큼 줄임
+        flex: 0 0 calc(100% - 2 * var(--peek));
+        margin: 0 calc(var(--slide-gap) / 2);
+        box-sizing: border-box;
     }
 
     .video-wrap {
@@ -478,13 +621,87 @@
             width: 100%;
             aspect-ratio: 16/9;
             border: none;
-            border-radius: 6px;
             display: block;
         }
         .video-desc {
             font-size: 0.82rem;
             color: #888;
             margin-top: 0.4rem;
+            margin-left: 0;
+            text-wrap: none;
+        }
+    }
+
+    // 드래그 중 iframe이 포인터 이벤트 휘치지 않도록
+    .carousel-viewport.dragging .video-wrap iframe {
+        pointer-events: none;
+    }
+
+    .carousel-btn {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #ddd;
+        background: white;
+        font-size: 1.75rem;
+        cursor: pointer;
+        display: flex;
+        height: 40px;
+
+        text-align: center;
+        justify-content: center;
+        transition: background 0.2s, opacity 0.2s;
+        color: #444;
+        padding: 0;
+
+        &:hover:not(:disabled) {
+            background: #f0f0f0;
+        }
+
+        &:disabled {
+            opacity: 0.25;
+            cursor: default;
+        }
+
+        @media (--tablet) {
+            display: none;
+        }
+        
+        &.carousel-prev {
+            border-radius: 0 20px 20px 0;
+            border-left: none;
+        }
+        &.carousel-next {
+            border-radius: 20px 0 0 20px;
+            border-right: none;
+        }
+    }
+
+    .video-desc {
+        font-size: 0.82rem;
+        color: #888;
+        margin-top: 0.5rem;
+    }
+
+    .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            border: none;
+            background: #ccc;
+            padding: 0;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+
+            &.active {
+                background: #333;
+                transform: scale(1.4);
+            }
         }
     }
 
@@ -575,6 +792,7 @@
         flex-shrink: 0;
         position: sticky;
         top: 250px;
+        align-self: start;   // stretch(기본값)이면 행 전체 높이로 늘어나 sticky가 동작 안 함
         text-align: right;
 
         @media (--desktop) {
@@ -583,6 +801,7 @@
 
         .nav-list {
             list-style: none;
+            
             padding: 0;
             margin: 0;
 
