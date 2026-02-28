@@ -196,7 +196,7 @@
     <!-- ── 지난 공연 (달력 없음, full width) ──────────── -->
     {#if !loading && prevConcerts.length > 0}
         <section class="section-heading section-heading--prev">
-            <h2 class="heading-title">Prev Concerts</h2>
+            <h2 class="heading-title">Prev.</h2>
         </section>
 
         <section class="prev-concerts-section">

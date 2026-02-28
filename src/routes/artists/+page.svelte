@@ -2,7 +2,7 @@
     import { PIANOLIFE_BACKEND_URL } from "$env/static/public";
     import HeroSection from "@/components/common/HeroSection.svelte";
     import ArtistCard from "@/components/artists/ArtistCard.svelte";
-    import artistImage from "@/assets/images/artists/artists_wallpaper.png";
+    import artistImage from "@/assets/images/white.png";
 
     const API = PIANOLIFE_BACKEND_URL || "http://localhost:8000";
 
