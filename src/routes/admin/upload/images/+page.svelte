@@ -314,7 +314,7 @@
               <input type="checkbox" checked={selectedIds.has(media.id)} />
             </div>
             <div class="card-image">
-              <img src={media.url} alt={media.alt_text || media.original_filename} loading="lazy" />
+              <img src={media.thumb_url || media.url} alt={media.alt_text || media.original_filename} loading="lazy" />
             </div>
             <div class="card-info">
               <span class="card-name" title={media.original_filename}>
@@ -349,7 +349,7 @@
 
         <div class="modal-content">
           <div class="modal-image">
-            <img src={selectedMedia.url} alt={selectedMedia.alt_text || ''} />
+            <img src={selectedMedia.thumb_url || selectedMedia.url} alt={selectedMedia.alt_text || ''} />
           </div>
 
           <div class="modal-details">

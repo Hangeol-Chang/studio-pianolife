@@ -209,7 +209,7 @@ async function loadConcerts() {
 
   function selectMedia(media) {
     form.poster_media_id = media.id;
-    selectedPosterUrl = media.url;
+    selectedPosterUrl = media.thumb_url || media.url;
     showMediaPicker = false;
   }
 
@@ -220,7 +220,7 @@ async function loadConcerts() {
 
   function selectSubMedia(media) {
     if (!form.image_list.find(img => img.media_id === media.id)) {
-      form.image_list = [...form.image_list, { media_id: media.id, url: media.url }];
+      form.image_list = [...form.image_list, { media_id: media.id, url: media.thumb_url || media.url }];
     }
     showSubMediaPicker = false;
   }
@@ -347,7 +347,7 @@ async function loadConcerts() {
 
   function selectBannerMedia(media) {
     form.banner_image_media_id = media.id;
-    selectedBannerUrl = media.url;
+    selectedBannerUrl = media.thumb_url || media.url;
     showBannerMediaPicker = false;
   }
 
@@ -545,8 +545,8 @@ async function loadConcerts() {
           {#each concerts as concert}
             <tr>
               <td>
-                {#if concert.poster_url}
-                  <img src={concert.poster_url} alt={concert.title} class="thumb" />
+                {#if concert.poster_thumb_url || concert.poster_url}
+                  <img src={concert.poster_thumb_url || concert.poster_url} alt={concert.title} class="thumb" />
                 {:else}
                   <div class="thumb-placeholder"></div>
                 {/if}
@@ -720,7 +720,7 @@ async function loadConcerts() {
             <div class="sub-image-list">
               {#each form.image_list as img, i}
                 <div class="sub-image-item">
-                  <img src={img.url} alt="서브 이미지 {i + 1}" />
+                  <img src={img.thumb_url || img.url} alt="서브 이미지 {i + 1}" />
                   <button class="btn-sm btn-delete remove-sub-btn" onclick={() => removeSubImage(i)}>×</button>
                 </div>
               {/each}
@@ -876,7 +876,7 @@ async function loadConcerts() {
         <div class="media-grid">
           {#each mediaList as media}
             <button class="media-item" onclick={() => selectMedia(media)}>
-              <img src={media.url} alt={media.alt_text || media.original_filename} />
+              <img src={media.thumb_url || media.url} alt={media.alt_text || media.original_filename} />
               <span class="media-name">{media.original_filename}</span>
             </button>
           {/each}
@@ -904,7 +904,7 @@ async function loadConcerts() {
               onclick={() => selectSubMedia(media)}
               disabled={already}
             >
-              <img src={media.url} alt={media.alt_text || media.original_filename} />
+              <img src={media.thumb_url || media.url} alt={media.alt_text || media.original_filename} />
               <span class="media-name">{already ? '✓ 추가됨' : media.original_filename}</span>
             </button>
           {/each}
@@ -931,7 +931,7 @@ async function loadConcerts() {
               class:already-selected={form.banner_image_media_id === media.id}
               onclick={() => selectBannerMedia(media)}
             >
-              <img src={media.url} alt={media.original_filename} />
+              <img src={media.thumb_url || media.url} alt={media.original_filename} />
               <span class="media-name">{media.original_filename}</span>
             </button>
           {/each}

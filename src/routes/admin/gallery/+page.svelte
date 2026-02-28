@@ -207,7 +207,7 @@
           {#each gallery as item}
             <div class="gallery-card">
               <div class="card-img-wrap">
-                <img src={item.image_url} alt={item.title || ''} loading="lazy" />
+                <img src={item.image_thumb_url || item.image_url} alt={item.title || ''} loading="lazy" />
                 <button
                   class="card-delete"
                   onclick={() => deleteGalleryItem(item.id)}
@@ -284,7 +284,7 @@
           <!-- 선택된 미디어 미리보기 -->
           {#if pickedMedia}
             <div class="picked-preview">
-              <img src={pickedMedia.url} alt="" />
+              <img src={pickedMedia.thumb_url || pickedMedia.url} alt="" />
               <div class="picked-info">
                 <span class="picked-name">{pickedMedia.original_filename}</span>
                 <span class="picked-cat">{pickedMedia.category} · {formatSize(pickedMedia.file_size)}</span>
@@ -308,7 +308,7 @@
                   role="button"
                   tabindex="0"
                 >
-                  <img src={media.url} alt={media.alt_text || media.original_filename} loading="lazy" />
+                  <img src={media.thumb_url || media.url} alt={media.alt_text || media.original_filename} loading="lazy" />
                   {#if pickedMedia?.id === media.id}
                     <div class="picker-check">✓</div>
                   {/if}

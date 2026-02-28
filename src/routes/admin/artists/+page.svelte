@@ -199,7 +199,7 @@
 
   function selectMedia(media) {
     form.image_media_id = media.id;
-    selectedImageUrl = media.url;
+    selectedImageUrl = media.thumb_url || media.url;
     showMediaPicker = false;
   }
 
@@ -355,8 +355,8 @@
             <tr>
               <td>{artist.sort_order}</td>
               <td>
-                {#if artist.image_url}
-                  <img src={artist.image_url} alt={artist.name} class="thumb" />
+                {#if artist.image_thumb_url || artist.image_url}
+                  <img src={artist.image_thumb_url || artist.image_url} alt={artist.name} class="thumb" />
                 {:else}
                   <div class="thumb-placeholder"></div>
                 {/if}

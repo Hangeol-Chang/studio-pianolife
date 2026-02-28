@@ -130,7 +130,7 @@
   }
   function selectMedia(media) {
     form.poster_media_id = media.id;
-    selectedPosterUrl = media.url;
+    selectedPosterUrl = media.thumb_url || media.url;
     showMediaPicker = false;
   }
 
@@ -171,7 +171,7 @@
   }
   function selectBannerMedia(media) {
     form.banner_image_media_id = media.id;
-    selectedBannerUrl = media.url;
+    selectedBannerUrl = media.thumb_url || media.url;
     showBannerMediaPicker = false;
   }
 
@@ -251,8 +251,8 @@
           {#each items as item}
             <tr>
               <td>
-                {#if item.poster_url}
-                  <img src={item.poster_url} alt={item.title} class="thumb" />
+                {#if item.poster_thumb_url || item.poster_url}
+                  <img src={item.poster_thumb_url || item.poster_url} alt={item.title} class="thumb" />
                 {:else}
                   <div class="thumb-placeholder"></div>
                 {/if}
