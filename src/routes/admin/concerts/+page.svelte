@@ -16,9 +16,12 @@
     date: '',
     time: '',
     brief_description: '',
+    reserve_link: '',
+    cost: '',
     location: '',
     location_data: null,
     poster_media_id: null,
+    banner_image_media_id: null,
     program: [],
     image_list: [],
     artist_ids: [],
@@ -29,14 +32,24 @@
   let mediaList = $state([]);
   let showMediaPicker = $state(false);
   let showSubMediaPicker = $state(false);
+  let showBannerMediaPicker = $state(false);
   let selectedPosterUrl = $state('');
+  let selectedBannerUrl = $state('');
 
   // ── 드래그 앤 드롭 ────────────────────────────
   let imageUploading = $state(false);
   let imageDragOver = $state(false);
+  /** 아직 업로드 안 된 포스터 File 객체 (저장 시 업로드) */
+  let pendingPosterFile = $state(null);
+  // ── 배너 이미지 ────────────────────────────
+  let bannerDragOver = $state(false);
+  /** 아직 업로드 안 된 배너 File 객체 (저장 시 업로드) */
+  let pendingBannerFile = $state(null);
   // ── 서브 이미지 ────────────────────────────
   let subImageUploading = $state(false);
   let subImageDragOver = $state(false);
+  /** 아직 업로드 안 된 서브 이미지 File 객체 목록 (저장 시 업로드) */
+  let pendingSubImageFiles = $state([]);
   // ── 장소 검색 ────────────────────────────
   let placeQuery = $state('');
   let placeResults = $state([]);
@@ -48,7 +61,7 @@
     loadArtists();
   });
 
-  async function loadConcerts() {
+async function loadConcerts() {
     loading = true;
     try {
       const res = await fetch(`${API}/api/concerts?active_only=false`);
@@ -82,9 +95,13 @@
   function resetForm() {
     form = {
       title: '', date: '', time: '', brief_description: '', reserve_link: '', cost: '',
-      location: '', location_data: null, poster_media_id: null, program: [], image_list: [], artist_ids: [], is_active: true,
+      location: '', location_data: null, poster_media_id: null, banner_image_media_id: null, program: [], image_list: [], artist_ids: [], is_active: true,
     };
     selectedPosterUrl = '';
+    selectedBannerUrl = '';
+    pendingPosterFile = null;
+    pendingBannerFile = null;
+    pendingSubImageFiles = [];
     placeQuery = '';
     placeResults = [];
     showPlaceResults = false;
@@ -119,6 +136,7 @@
       location: concert.location || '',
       location_data: concert.location_data || null,
       poster_media_id: null,
+      banner_image_media_id: null,
       program: concert.program ? concert.program.map(p => ({
         ...p,
         player_ids: p.player_ids || (p.player_id ? [p.player_id] : []),
@@ -128,6 +146,7 @@
       is_active: concert.is_active ?? true,
     };
     selectedPosterUrl = concert.poster_url || '';
+    selectedBannerUrl = concert.banner_image_url || '';
     placeQuery = '';
     placeResults = [];
     showPlaceResults = false;
@@ -190,7 +209,7 @@
 
   function selectMedia(media) {
     form.poster_media_id = media.id;
-    selectedPosterUrl = media.url;
+    selectedPosterUrl = media.thumb_url || media.url;
     showMediaPicker = false;
   }
 
@@ -201,13 +220,20 @@
 
   function selectSubMedia(media) {
     if (!form.image_list.find(img => img.media_id === media.id)) {
-      form.image_list = [...form.image_list, { media_id: media.id, url: media.url }];
+      form.image_list = [...form.image_list, { media_id: media.id, url: media.thumb_url || media.url }];
     }
     showSubMediaPicker = false;
   }
 
   // ── 서브 이미지 관리 ───────────────────────
   function removeSubImage(idx) {
+    // pending 이미지인 경우 (media_id가 없고 pending 배열에 있는 경우)
+    const img = form.image_list[idx];
+    if (!img.media_id) {
+      // pendingSubImageFiles에서도 제거 (url로 매칭)
+      pendingSubImageFiles = pendingSubImageFiles.filter(f => f._previewUrl !== img.url);
+      URL.revokeObjectURL(img.url);
+    }
     form.image_list = form.image_list.filter((_, i) => i !== idx);
   }
 
@@ -215,41 +241,40 @@
     e.preventDefault();
     subImageDragOver = false;
     const file = e.dataTransfer?.files?.[0];
-    if (file && file.type.startsWith('image/')) uploadSubImage(file);
+    if (file && file.type.startsWith('image/')) addSubImageLocally(file);
   }
 
   function handleSubImageFileSelect(e) {
     const file = e.target.files?.[0];
-    if (file) uploadSubImage(file);
+    if (file) addSubImageLocally(file);
+    e.target.value = '';
   }
 
-  async function uploadSubImage(file) {
-    subImageUploading = true;
-    try {
-      const checkRes = await fetch(`${API}/api/media?limit=10000`);
-      const checkData = await checkRes.json();
-      const duplicate = (checkData.items || []).find(m => m.original_filename === file.name);
-      if (duplicate) {
-        const proceed = confirm(
-          `⚠️ 동일한 파일명이 이미 존재합니다.\n\n` +
-          `파일명: ${file.name}\n` +
-          `기존 업로드: ${new Date(duplicate.created_at).toLocaleString()}\n` +
-          `카테고리: ${duplicate.category}\n\n` +
-          `그래도 업로드하시겠습니까?`
-        );
-        if (!proceed) { subImageUploading = false; return; }
-      }
+  function addSubImageLocally(file) {
+    const previewUrl = URL.createObjectURL(file);
+    file._previewUrl = previewUrl;
+    pendingSubImageFiles = [...pendingSubImageFiles, file];
+    // image_list에 미리보기 항목 추가 (media_id 없음 → 저장 시 업로드)
+    form.image_list = [...form.image_list, { media_id: null, url: previewUrl }];
+  }
+
+  /** 저장 시 호출: pending 서브 이미지를 실제 업로드하고 image_list 갱신 */
+  async function flushPendingSubImages() {
+    if (pendingSubImageFiles.length === 0) return;
+    for (const file of pendingSubImageFiles) {
       const fd = new FormData();
       fd.append('file', file);
       fd.append('category', 'concert');
       const res = await fetch(`${API}/api/media`, { method: 'POST', body: fd });
       if (!res.ok) throw new Error(await res.text());
       const media = await res.json();
-      form.image_list = [...form.image_list, { media_id: media.id, url: media.url }];
-    } catch (e) {
-      alert('이미지 업로드 실패: ' + e.message);
+      // previewUrl → 실제 url + media_id 교체
+      form.image_list = form.image_list.map(img =>
+        img.url === file._previewUrl ? { media_id: media.id, url: media.url } : img
+      );
+      URL.revokeObjectURL(file._previewUrl);
     }
-    subImageUploading = false;
+    pendingSubImageFiles = [];
   }
 
   // ── 드래그 앤 드롭 업로드 ──────────────────────
@@ -257,52 +282,102 @@
     e.preventDefault();
     imageDragOver = false;
     const file = e.dataTransfer?.files?.[0];
-    if (file && file.type.startsWith('image/')) uploadAndSelectImage(file);
+    if (file && file.type.startsWith('image/')) setPosterLocally(file);
   }
 
   function handleImageFileSelect(e) {
     const file = e.target.files?.[0];
-    if (file) uploadAndSelectImage(file);
+    if (file) setPosterLocally(file);
+    e.target.value = '';
   }
 
-  async function uploadAndSelectImage(file) {
-    imageUploading = true;
-    try {
-      // 중복 파일명 체크
-      const checkRes = await fetch(`${API}/api/media?limit=10000`);
-      const checkData = await checkRes.json();
-      const duplicate = (checkData.items || []).find(m => m.original_filename === file.name);
-      
-      if (duplicate) {
-        const proceed = confirm(
-          `⚠️ 동일한 파일명이 이미 존재합니다.\n\n` +
-          `파일명: ${file.name}\n` +
-          `기존 업로드: ${new Date(duplicate.created_at).toLocaleString()}\n` +
-          `카테고리: ${duplicate.category}\n\n` +
-          `그래도 업로드하시겠습니까?`
-        );
-        if (!proceed) {
-          imageUploading = false;
-          return;
-        }
-      }
+  function setPosterLocally(file) {
+    // 기존 pending 파일이 있으면 해제
+    if (pendingPosterFile?._previewUrl) URL.revokeObjectURL(pendingPosterFile._previewUrl);
+    const previewUrl = URL.createObjectURL(file);
+    file._previewUrl = previewUrl;
+    pendingPosterFile = file;
+    // form.poster_media_id는 저장 시 채워짐
+    form.poster_media_id = null;
+    selectedPosterUrl = previewUrl;
+  }
 
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('category', 'concert');
-      const res = await fetch(`${API}/api/media`, { method: 'POST', body: fd });
-      if (!res.ok) throw new Error(await res.text());
-      const media = await res.json();
-      form.poster_media_id = media.id;
-      selectedPosterUrl = media.url;
-    } catch (e) {
-      alert('이미지 업로드 실패: ' + e.message);
-    }
-    imageUploading = false;
+  /** 저장 시 호출: pending 포스터를 실제 업로드 */
+  async function flushPendingPoster() {
+    if (!pendingPosterFile) return;
+    const fd = new FormData();
+    fd.append('file', pendingPosterFile);
+    fd.append('category', 'concert');
+    const res = await fetch(`${API}/api/media`, { method: 'POST', body: fd });
+    if (!res.ok) throw new Error(await res.text());
+    const media = await res.json();
+    form.poster_media_id = media.id;
+    selectedPosterUrl = media.url;
+    URL.revokeObjectURL(pendingPosterFile._previewUrl);
+    pendingPosterFile = null;
+  }
+
+  // ── 배너 이미지 드래그 앤 드롭 ─────────────────
+  function handleBannerDrop(e) {
+    e.preventDefault();
+    bannerDragOver = false;
+    const file = e.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith('image/')) setBannerLocally(file);
+  }
+
+  function handleBannerFileSelect(e) {
+    const file = e.target.files?.[0];
+    if (file) setBannerLocally(file);
+    e.target.value = '';
+  }
+
+  function setBannerLocally(file) {
+    if (pendingBannerFile?._previewUrl) URL.revokeObjectURL(pendingBannerFile._previewUrl);
+    const previewUrl = URL.createObjectURL(file);
+    file._previewUrl = previewUrl;
+    pendingBannerFile = file;
+    form.banner_image_media_id = null;
+    selectedBannerUrl = previewUrl;
+  }
+
+  async function openBannerMediaPicker() {
+    await loadMedia();
+    showBannerMediaPicker = true;
+  }
+
+  function selectBannerMedia(media) {
+    form.banner_image_media_id = media.id;
+    selectedBannerUrl = media.thumb_url || media.url;
+    showBannerMediaPicker = false;
+  }
+
+  /** 저장 시 호출: pending 배너 이미지를 실제 업로드 */
+  async function flushPendingBanner() {
+    if (!pendingBannerFile) return;
+    const fd = new FormData();
+    fd.append('file', pendingBannerFile);
+    fd.append('category', 'concert');
+    const res = await fetch(`${API}/api/media`, { method: 'POST', body: fd });
+    if (!res.ok) throw new Error(await res.text());
+    const media = await res.json();
+    form.banner_image_media_id = media.id;
+    selectedBannerUrl = media.url;
+    URL.revokeObjectURL(pendingBannerFile._previewUrl);
+    pendingBannerFile = null;
   }
 
   // ── 저장 ───────────────────────────────────
   async function saveConcert() {
+    try {
+      // 1. pending 이미지 먼저 업로드
+      await flushPendingPoster();
+      await flushPendingBanner();
+      await flushPendingSubImages();
+    } catch (e) {
+      alert('이미지 업로드 실패: ' + e.message);
+      return;
+    }
+
     const combinedDate = form.time
       ? `${form.date} ${form.time}`
       : form.date;
@@ -317,6 +392,7 @@
     formData.append('location', form.location || '');
     formData.append('location_data', form.location_data ? JSON.stringify(form.location_data) : '');
     if (form.poster_media_id) formData.append('poster_media_id', String(form.poster_media_id));
+    if (form.banner_image_media_id) formData.append('banner_image_media_id', String(form.banner_image_media_id));
     if (form.program.length > 0) {
       // player_name / player_names 등 서버가 채워주는 필드는 제거하고 전송
       const programPayload = form.program.map(({ composer, title, player_ids }) => ({
@@ -469,8 +545,8 @@
           {#each concerts as concert}
             <tr>
               <td>
-                {#if concert.poster_url}
-                  <img src={concert.poster_url} alt={concert.title} class="thumb" />
+                {#if concert.poster_thumb_url || concert.poster_url}
+                  <img src={concert.poster_thumb_url || concert.poster_url} alt={concert.title} class="thumb" />
                 {:else}
                   <div class="thumb-placeholder"></div>
                 {/if}
@@ -587,14 +663,52 @@
               <p class="drop-text">업로드 중...</p>
             {:else if selectedPosterUrl}
               <img src={selectedPosterUrl} alt="poster preview" class="preview-img poster-preview" />
+              {#if pendingPosterFile}
+                <p class="drop-hint pending-hint">💾 저장 시 업로드됩니다</p>
+              {/if}
             {:else}
-              <p class="drop-text">이미지를 드래그하거나 클릭하여 업로드</p>
-              <p class="drop-hint">자동으로 업로드 후 포스터로 등록됩니다</p>
+              <p class="drop-text">이미지를 드래그하거나 클릭하여 선택</p>
+              <p class="drop-hint">저장 버튼을 누를 때 업로드됩니다</p>
             {/if}
           </div>
           <button type="button" class="btn-secondary" style="margin-top:0.5rem" onclick={openMediaPicker}>
             미디어에서 선택
           </button>
+        </div>
+
+        <!-- 배너 이미지 (Banner Image) -->
+        <div class="form-section">
+          <h3>배너 이미지 (Banner Image)</h3>
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div
+            class="drop-zone banner-drop"
+            class:drag-over={bannerDragOver}
+            class:has-image={!!selectedBannerUrl}
+            ondragover={(e) => { e.preventDefault(); bannerDragOver = true; }}
+            ondragleave={() => (bannerDragOver = false)}
+            ondrop={handleBannerDrop}
+          >
+            <input type="file" accept="image/*" class="file-input" onchange={handleBannerFileSelect} />
+            {#if selectedBannerUrl}
+              <img src={selectedBannerUrl} alt="banner preview" class="preview-img banner-preview" />
+              {#if pendingBannerFile}
+                <p class="drop-hint pending-hint">💾 저장 시 업로드됩니다</p>
+              {/if}
+            {:else}
+              <p class="drop-text">이미지를 드래그하거나 클릭하여 선택</p>
+              <p class="drop-hint">저장 버튼을 누를 때 업로드됩니다</p>
+            {/if}
+          </div>
+          <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+            <button type="button" class="btn-secondary" onclick={openBannerMediaPicker}>
+              미디어에서 선택
+            </button>
+            {#if selectedBannerUrl}
+              <button type="button" class="btn-secondary" onclick={() => { selectedBannerUrl = ''; form.banner_image_media_id = null; pendingBannerFile = null; }}>
+                제거
+              </button>
+            {/if}
+          </div>
         </div>
 
         <!-- 서브 이미지 목록 -->
@@ -606,7 +720,7 @@
             <div class="sub-image-list">
               {#each form.image_list as img, i}
                 <div class="sub-image-item">
-                  <img src={img.url} alt="서브 이미지 {i + 1}" />
+                  <img src={img.thumb_url || img.url} alt="서브 이미지 {i + 1}" />
                   <button class="btn-sm btn-delete remove-sub-btn" onclick={() => removeSubImage(i)}>×</button>
                 </div>
               {/each}
@@ -626,6 +740,7 @@
               <p class="drop-text">업로드 중...</p>
             {:else}
               <p class="drop-text">+ 이미지 추가 (드래그 또는 클릭)</p>
+              <p class="drop-hint">저장 버튼을 누를 때 업로드됩니다</p>
             {/if}
           </div>
           <button type="button" class="btn-secondary" style="margin-top:0.5rem" onclick={openSubMediaPicker}>
@@ -761,7 +876,7 @@
         <div class="media-grid">
           {#each mediaList as media}
             <button class="media-item" onclick={() => selectMedia(media)}>
-              <img src={media.url} alt={media.alt_text || media.original_filename} />
+              <img src={media.thumb_url || media.url} alt={media.alt_text || media.original_filename} />
               <span class="media-name">{media.original_filename}</span>
             </button>
           {/each}
@@ -789,7 +904,7 @@
               onclick={() => selectSubMedia(media)}
               disabled={already}
             >
-              <img src={media.url} alt={media.alt_text || media.original_filename} />
+              <img src={media.thumb_url || media.url} alt={media.alt_text || media.original_filename} />
               <span class="media-name">{already ? '✓ 추가됨' : media.original_filename}</span>
             </button>
           {/each}
@@ -798,6 +913,33 @@
           {/if}
         </div>
         <button class="btn-secondary" onclick={() => (showSubMediaPicker = false)}>닫기</button>
+      </div>
+    </div>
+  {/if}
+
+  <!-- ── 배너 이미지 미디어 피커 모달 ──────── -->
+  {#if showBannerMediaPicker}
+    <div class="modal-overlay">
+      <div class="modal media-picker" role="none" onclick={(e) => e.stopPropagation()}>
+        <button class="modal-close" onclick={() => (showBannerMediaPicker = false)}>✕</button>
+        <h2>배너 이미지 선택</h2>
+        <div class="media-grid">
+          {#each mediaList as media}
+            <button
+              type="button"
+              class="media-item"
+              class:already-selected={form.banner_image_media_id === media.id}
+              onclick={() => selectBannerMedia(media)}
+            >
+              <img src={media.thumb_url || media.url} alt={media.original_filename} />
+              <span class="media-name">{media.original_filename}</span>
+            </button>
+          {/each}
+          {#if mediaList.length === 0}
+            <p class="empty">업로드된 콘서트 이미지가 없습니다.</p>
+          {/if}
+        </div>
+        <button class="btn-secondary" onclick={() => (showBannerMediaPicker = false)}>닫기</button>
       </div>
     </div>
   {/if}
@@ -1002,6 +1144,7 @@
 
     .drop-text { margin: 0; color: #888; }
     .drop-hint { margin: 0.5rem 0 0; font-size: 0.8rem; color: #aaa; }
+    .pending-hint { color: #f59e0b; font-weight: 500; }
 
     .file-input {
       position: absolute;
@@ -1052,6 +1195,24 @@
   .drop-zone.sub-drop {
     padding: 1rem;
     border-style: dashed;
+  }
+  .drop-zone.banner-drop {
+    padding: 1rem;
+    border-style: dashed;
+    aspect-ratio: 16 / 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    &.has-image { padding: 0.5rem; }
+  }
+  .banner-preview {
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 6px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
   }
 
   /* ── Program 행 ────────────────────── */

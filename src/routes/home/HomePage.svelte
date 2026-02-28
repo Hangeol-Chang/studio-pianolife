@@ -3,26 +3,22 @@
     import { onMount } from 'svelte';
 
     // Asset Imports
-    import bgImage from '$lib/assets/images/home/home_wallpaper.png';
+    // import bgImage from '$lib/assets/images/home/home_wallpaper.png';
+    import bgImage from '$lib/assets/images/about/membership_wallpaper.jpg';
     import Vision from '@/components/about/Vision.svelte';
     import ArtistsDashboard from '$routes/artists/dashboard.svelte';
     import ConcertsDashboard from '$routes/concerts/dashboard.svelte';
     import GalleryDashboard from '$routes/gallery/dashboard.svelte';
     
-    import concertShuman from '$lib/assets/images/concerts/250224_shuman.jpg';
-    import concertShopinRavel from '$lib/assets/images/concerts/250215_shopinRavel.jpg';
-    import concertAmatuer from '$lib/assets/images/concerts/250829_amatuer.png';
+    import { PIANOLIFE_BACKEND_URL } from '$env/static/public';
 
-    // Banner Slides Data
-    const slides = [
-        { type: 'main' },
-        { type: 'link', image: concertShuman, link: '/concerts/shuman', title: '슈만 | 시인은, 말한다' },
-        { type: 'link', image: concertShopinRavel, link: '/concerts/chopin', title: '쇼팽과 라벨' },
-        { type: 'link', image: concertAmatuer, link: '/concerts/amatuer', title: '아마추어를 만나다' }
-    ];
+    const API = PIANOLIFE_BACKEND_URL || 'http://localhost:8000';
 
-    let scrollY = 0;
-    let currentSlide = 0;
+    // Banner Slides Data (dynamically fetched)
+    let slides = $state([{ type: 'main' }]);
+
+    let scrollY = $state(0);
+    let currentSlide = $state(0);
 
     function nextSlide() {
         currentSlide = (currentSlide + 1) % slides.length;
@@ -35,6 +31,56 @@
     function goToSlide(index) {
         currentSlide = index;
     }
+
+    onMount(async () => {
+        const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+
+        const [concertsRes, auditionsRes, concoursRes] = await Promise.allSettled([
+            fetch(`${API}/api/concerts?active_only=true`).then(r => r.json()),
+            fetch(`${API}/api/auditions?active_only=false`).then(r => r.json()),
+            fetch(`${API}/api/concours?active_only=false`).then(r => r.json()),
+        ]);
+
+        const newSlides = [{ type: 'main' }];
+
+        // 가장 가까운 예정 공연 (date >= today)
+        if (concertsRes.status === 'fulfilled' && Array.isArray(concertsRes.value)) {
+            const upcoming = concertsRes.value
+                .filter(c => c.date && c.date >= today)
+                .sort((a, b) => a.date.localeCompare(b.date));
+            if (upcoming.length > 0) {
+                const c = upcoming[0];
+                const image = c.banner_image_url || c.poster_url;
+                if (image) newSlides.push({ type: 'link', image, link: `/concerts/${c.id}` });
+            }
+        }
+
+        // 가장 가까운 오디션 (end_date >= today)
+        if (auditionsRes.status === 'fulfilled' && Array.isArray(auditionsRes.value)) {
+            const upcoming = auditionsRes.value
+                .filter(a => a.end_date && a.end_date >= today)
+                .sort((a, b) => a.end_date.localeCompare(b.end_date));
+            if (upcoming.length > 0) {
+                const a = upcoming[0];
+                const image = a.banner_image_url || a.poster_url;
+                if (image) newSlides.push({ type: 'link', image, link: `/auditions/${a.id}` });
+            }
+        }
+
+        // 가장 가까운 콩쿠르 (end_date >= today)
+        if (concoursRes.status === 'fulfilled' && Array.isArray(concoursRes.value)) {
+            const upcoming = concoursRes.value
+                .filter(c => c.end_date && c.end_date >= today)
+                .sort((a, b) => a.end_date.localeCompare(b.end_date));
+            if (upcoming.length > 0) {
+                const c = upcoming[0];
+                const image = c.banner_image_url || c.poster_url;
+                if (image) newSlides.push({ type: 'link', image, link: `/concours/${c.id}` });
+            }
+        }
+
+        slides = newSlides;
+    });
 </script>
 
 <svelte:window bind:scrollY={scrollY} />
@@ -46,7 +92,6 @@
             {#each slides as slide, index}
                 <div class="slide-item">
                     {#if slide.type === 'main'}
-                        <!-- Main Banner (Original Content) -->
                         <div class="main-banner">
                             <div class="main-banner-bg" style="--scroll-y: {scrollY}">
                                 <img src={bgImage} alt="Hero Background" />
@@ -61,10 +106,7 @@
                     {:else}
                         <!-- Link Banner -->
                         <a href={slide.link} class="link-banner main-banner-bg" style="--scroll-y: {scrollY}">
-                            <img src={slide.image} alt={slide.title} />
-                            <div class="link-overlay">
-                                <h2 class="link-title">{slide.title}</h2>
-                            </div>
+                            <img src={slide.image} alt="" />
                         </a>
                     {/if}
                 </div>

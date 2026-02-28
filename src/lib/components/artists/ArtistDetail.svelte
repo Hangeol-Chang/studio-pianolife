@@ -149,6 +149,12 @@
 
 <div class="artist-detail-page">
     <!-- 이름 헤더 -->
+    <img
+        class="hero-background-blured"
+        src={artist.image_url}
+        alt={artist.name}
+    />
+
     <header class="artist-header" style="--bg-gradient: {gradientStyle}; --text-color: {headerTextColor}">
         <h1 class="en-name">{artist.name_en ?? ''}</h1>
         <h2 class="kr-name">{artist.name}</h2>
@@ -156,12 +162,10 @@
 
     <section class="hero-section">
         <div class="artist-hero-image">
-            <div class="hero-background-gradient" style="--bg-gradient: {gradientStyle}"></div>
             <img
+                class="hero-image"
                 src={artist.image_url}
                 alt={artist.name}
-                crossorigin="anonymous"
-                onload={(e) => extractGradientFromImg(e.currentTarget)}
             />
             <div class="hero-image-overlay"></div>
         </div>
@@ -334,9 +338,27 @@
         padding-top: 4rem;
     }
 
+
+    .hero-background-blured {
+        position: absolute;
+        top: 0; left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        height: 120vh;
+        max-height: 1600px;
+        object-fit: cover;
+        filter: blur(12px) brightness(0.9);
+        z-index: -1;
+
+        object-position: top center;
+        transform-origin: top center;
+        aspect-ratio: 3/4;
+        object-fit: cover;
+    }
+
     .artist-header {
         text-align: center;
-        background: var(--bg-gradient, linear-gradient(to right, #000, #000));
+        // background: var(--bg-gradient, linear-gradient(to right, #000, #000));
         padding: 2rem 1.5rem;
         margin: 0;
 
@@ -362,6 +384,8 @@
     .hero-section {
         padding: 0;
         margin-top: 0;
+        position: relative;
+        background-color: transparent;
 
         .artist-hero-image {
             position: relative;
@@ -370,15 +394,7 @@
             max-height: 1400px;
             aspect-ratio: 3/4;
 
-            .hero-background-gradient {
-                position: absolute;
-                top: 0; left: 0;
-                width: 100%; height: 100%;
-                background: var(--bg-gradient, linear-gradient(to right, #000, #000));
-                z-index: 1;
-            }
-
-            img { 
+            .hero-image { 
                 position: absolute;
                 top: 0; left: 50%;
                 transform: translateX(-50%);
@@ -386,29 +402,20 @@
                 width: 100%; 
                 height: 100%; 
                 object-fit: cover;
-                object-position: top center;
                 display: block;
                 z-index: 2;
                 max-width: 700px;
+                object-position: top center;
                 transform-origin: top center;
 
-                mask-image:
-                    linear-gradient(to right,  transparent 0%, black 10%, black 90%, transparent 100%),
-                    linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
-                mask-composite: intersect;
-                -webkit-mask-image:
-                    linear-gradient(to right,  transparent 0%, black 10%, black 90%, transparent 100%),
-                    linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
-                -webkit-mask-composite: destination-in;
-
-                @media (--tablet) {
-                mask-image:
-                    linear-gradient(to right,  transparent 0%, black 8%, black 92%, transparent 100%),
-                    linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
-                -webkit-mask-image:
-                    linear-gradient(to right,  transparent 0%, black 8%, black 92%, transparent 100%),
-                    linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
-                }
+                // mask-image:
+                //     linear-gradient(to right,  transparent 0%, black 5%, black 95%, transparent 100%),
+                //     linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+                // mask-composite: intersect;
+                // -webkit-mask-image:
+                //     linear-gradient(to right,  transparent 0%, black 5%, black 95%, transparent 100%),
+                //     linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+                // -webkit-mask-composite: destination-in;
             }
 
             .hero-image-overlay {
