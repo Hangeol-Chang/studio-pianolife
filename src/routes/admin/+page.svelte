@@ -33,9 +33,13 @@
                     <h3>🎹 아티스트 관리</h3>
                     <p>아티스트 정보 추가/수정/삭제</p>
                 </a>
-                <a href="/admin/gallery" class="admin-card">
-                    <h3>🖼️ 갤러리 관리</h3>
-                    <p>갤러리 이미지 업로드/삭제</p>
+                <a href="/admin/concours" class="admin-card">
+                    <h3>🏆 콩쿠르 관리</h3>
+                    <p>콩쿠르 정보 추가/수정/삭제</p>
+                </a>
+                <a href="/admin/auditions" class="admin-card">
+                    <h3>🎤 오디션 관리</h3>
+                    <p>오디션 정보 추가/수정/삭제</p>
                 </a>
             </div>
         </section>
@@ -46,6 +50,10 @@
                 <a href="/admin/upload/images" class="admin-card">
                     <h3>📤 이미지 업로드</h3>
                     <p>이미지 파일 업로드</p>
+                </a>
+                <a href="/admin/gallery" class="admin-card">
+                    <h3>🖼️ 갤러리 관리</h3>
+                    <p>갤러리 이미지 업로드/삭제</p>
                 </a>
             </div>
         </section>

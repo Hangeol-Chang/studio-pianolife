@@ -50,8 +50,8 @@
         <div class="hero-content">
             <h1 class="main-title">FIORE</h1>
             <div class="hero-description">
-                <h3>Where Musicians’ Music Blooms</h3>
-                <h4>연주자의 음악을 피어나게 하는 곳</h4>
+                <h3>Where Music Blooms</h3>
+                <h4>음악이 피어나는 곳</h4>
             </div>
         </div>
     </section>

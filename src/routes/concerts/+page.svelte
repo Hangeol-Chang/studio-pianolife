@@ -1,7 +1,7 @@
 <script>
     import { PIANOLIFE_BACKEND_URL } from "$env/static/public";
     import HeroSection from "@/components/common/HeroSection.svelte";
-    import concertHeroImage from "@/assets/images/concerts/250224_shuman.jpg";
+    import concertHeroFallback from "@/assets/images/white.png";
     import ConcertCard from "@/components/concerts/ConcertCard.svelte";
 
     const API = PIANOLIFE_BACKEND_URL || "http://localhost:8000";
@@ -43,6 +43,16 @@
         if (kr) return { year: +kr[1], month: +kr[2] - 1, day: +kr[3], timeStr: kr[4] ?? '' };
         return null;
     }
+
+    /** 예정 공연 중 가장 가까운 것의 배너 or 포스터 이미지 */
+    const heroImage = $derived.by(() => {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const upcoming = concerts
+            .filter(c => c.date && c.date >= todayStr)
+            .sort((a, b) => a.date.localeCompare(b.date));
+        const c = upcoming[0];
+        return c ? (c.banner_image_url || c.poster_url || concertHeroFallback) : concertHeroFallback;
+    });
 
     /** 날짜가 오늘 이전이면 true */
     function isConcertPast(dateStr) {
@@ -102,9 +112,12 @@
 </svelte:head>
 
 <div>
-    <HeroSection image={concertHeroImage} title="CONCERTS"
-        maxHeight="500px"
+    <HeroSection image={heroImage} title="CONCERTS"
+        maxHeight="800px"
+        imageMaxWidth="100%"
         gradientOverlay="linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 1.0) 95%)"
+        bgAnchor="center center"
+        aspectRatio="16/9"
     />
 
     <section class="description-section">

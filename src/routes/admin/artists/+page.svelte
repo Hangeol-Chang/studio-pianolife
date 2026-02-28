@@ -34,6 +34,10 @@
   let imageDragOver = $state(false);
   let subImageUploading = $state(false);
   let subImageDragOver = $state(false);
+  /** 아직 업로드 안 된 프로필 이미지 File 객체 (저장 시 업로드) */
+  let pendingProfileFile = $state(null);
+  /** 아직 업로드 안 된 서브 이미지 File 객체 목록 (저장 시 업로드) */
+  let pendingSubImageFiles = $state([]);
 
   // ── 초기 로드 ──────────────────────────────
   $effect(() => {
@@ -88,6 +92,8 @@
       videos: [], image_list: [], notice: '', sort_order: 0, image_media_id: null, concert_ids: [],
     };
     selectedImageUrl = '';
+    pendingProfileFile = null;
+    pendingSubImageFiles = [];
     editing = null;
     showForm = false;
   }
@@ -128,6 +134,11 @@
 
   // ── Image List 관리 ────────────────────────
   function removeSubImage(idx) {
+    const img = form.image_list[idx];
+    if (!img.media_id) {
+      pendingSubImageFiles = pendingSubImageFiles.filter(f => f._previewUrl !== img.url);
+      URL.revokeObjectURL(img.url);
+    }
     form.image_list = form.image_list.filter((_, i) => i !== idx);
   }
 
@@ -136,48 +147,39 @@
     subImageDragOver = false;
     const file = e.dataTransfer?.files?.[0];
     if (!file || !file.type.startsWith('image/')) return;
-    await uploadSubImage(file);
+    addSubImageLocally(file);
   }
 
   async function handleSubImageFileSelect(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    await uploadSubImage(file);
+    addSubImageLocally(file);
+    e.target.value = '';
   }
 
-  async function uploadSubImage(file) {
-    subImageUploading = true;
-    try {
-      // 중복 파일명 체크
-      const checkRes = await fetch(`${API}/api/media?limit=10000`);
-      const checkData = await checkRes.json();
-      const duplicate = (checkData.items || []).find(m => m.original_filename === file.name);
-      
-      if (duplicate) {
-        const proceed = confirm(
-          `⚠️ 동일한 파일명이 이미 존재합니다.\n\n` +
-          `파일명: ${file.name}\n` +
-          `기존 업로드: ${new Date(duplicate.created_at).toLocaleString()}\n` +
-          `카테고리: ${duplicate.category}\n\n` +
-          `그래도 업로드하시겠습니까?`
-        );
-        if (!proceed) {
-          subImageUploading = false;
-          return;
-        }
-      }
+  function addSubImageLocally(file) {
+    const previewUrl = URL.createObjectURL(file);
+    file._previewUrl = previewUrl;
+    pendingSubImageFiles = [...pendingSubImageFiles, file];
+    form.image_list = [...form.image_list, { media_id: null, url: previewUrl }];
+  }
 
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('category', 'artist');
-      const res = await fetch(`${API}/api/media`, { method: 'POST', body: formData });
+  /** 저장 시 호출: pending 서브 이미지를 실제 업로드하고 image_list 갱신 */
+  async function flushPendingSubImages() {
+    if (pendingSubImageFiles.length === 0) return;
+    for (const file of pendingSubImageFiles) {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('category', 'artist');
+      const res = await fetch(`${API}/api/media`, { method: 'POST', body: fd });
       if (!res.ok) throw new Error(await res.text());
       const media = await res.json();
-      form.image_list = [...form.image_list, { media_id: media.id, url: media.url }];
-    } catch (e) {
-      alert('이미지 업로드 실패: ' + e.message);
+      form.image_list = form.image_list.map(img =>
+        img.url === file._previewUrl ? { media_id: media.id, url: media.url } : img
+      );
+      URL.revokeObjectURL(file._previewUrl);
     }
-    subImageUploading = false;
+    pendingSubImageFiles = [];
   }
 
   // ── Concert 토글 ───────────────────────────
@@ -207,53 +209,51 @@
     imageDragOver = false;
     const file = e.dataTransfer?.files?.[0];
     if (!file || !file.type.startsWith('image/')) return;
-    await uploadAndSelectImage(file);
+    setProfileImageLocally(file);
   }
 
   async function handleImageFileSelect(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    await uploadAndSelectImage(file);
+    setProfileImageLocally(file);
+    e.target.value = '';
   }
 
-  async function uploadAndSelectImage(file) {
-    imageUploading = true;
-    try {
-      // 중복 파일명 체크
-      const checkRes = await fetch(`${API}/api/media?limit=10000`);
-      const checkData = await checkRes.json();
-      const duplicate = (checkData.items || []).find(m => m.original_filename === file.name);
-      
-      if (duplicate) {
-        const proceed = confirm(
-          `⚠️ 동일한 파일명이 이미 존재합니다.\n\n` +
-          `파일명: ${file.name}\n` +
-          `기존 업로드: ${new Date(duplicate.created_at).toLocaleString()}\n` +
-          `카테고리: ${duplicate.category}\n\n` +
-          `그래도 업로드하시겠습니까?`
-        );
-        if (!proceed) {
-          imageUploading = false;
-          return;
-        }
-      }
+  function setProfileImageLocally(file) {
+    if (pendingProfileFile?._previewUrl) URL.revokeObjectURL(pendingProfileFile._previewUrl);
+    const previewUrl = URL.createObjectURL(file);
+    file._previewUrl = previewUrl;
+    pendingProfileFile = file;
+    form.image_media_id = null;
+    selectedImageUrl = previewUrl;
+  }
 
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('category', 'artist');
-      const res = await fetch(`${API}/api/media`, { method: 'POST', body: formData });
-      if (!res.ok) throw new Error(await res.text());
-      const media = await res.json();
-      form.image_media_id = media.id;
-      selectedImageUrl = media.url;
-    } catch (e) {
-      alert('이미지 업로드 실패: ' + e.message);
-    }
-    imageUploading = false;
+  /** 저장 시 호출: pending 프로필 이미지를 실제 업로드 */
+  async function flushPendingProfileImage() {
+    if (!pendingProfileFile) return;
+    const fd = new FormData();
+    fd.append('file', pendingProfileFile);
+    fd.append('category', 'artist');
+    const res = await fetch(`${API}/api/media`, { method: 'POST', body: fd });
+    if (!res.ok) throw new Error(await res.text());
+    const media = await res.json();
+    form.image_media_id = media.id;
+    selectedImageUrl = media.url;
+    URL.revokeObjectURL(pendingProfileFile._previewUrl);
+    pendingProfileFile = null;
   }
 
   // ── 저장 ───────────────────────────────────
   async function saveArtist() {
+    try {
+      // 1. pending 이미지 먼저 업로드
+      await flushPendingProfileImage();
+      await flushPendingSubImages();
+    } catch (e) {
+      alert('이미지 업로드 실패: ' + e.message);
+      return;
+    }
+
     const formData = new FormData();
     formData.append('name', form.name);
     if (form.name_en) formData.append('name_en', form.name_en);
@@ -435,9 +435,14 @@
               <p class="drop-text">업로드 중...</p>
             {:else if selectedImageUrl}
               <img src={selectedImageUrl} alt="preview" class="preview-img" />
-              <p class="drop-hint">다른 이미지를 드래그하여 교체</p>
+              {#if pendingProfileFile}
+                <p class="drop-hint pending-hint">💾 저장 시 업로드됩니다</p>
+              {:else}
+                <p class="drop-hint">다른 이미지를 드래그하여 교체</p>
+              {/if}
             {:else}
               <p class="drop-text">이미지를 드래그하거나 클릭하여 선택</p>
+              <p class="drop-hint">저장 버튼을 누를 때 업로드됩니다</p>
             {/if}
             <input
               type="file"
@@ -511,6 +516,7 @@
               <p class="drop-text">업로드 중...</p>
             {:else}
               <p class="drop-text">+ 이미지 추가 (드래그 또는 클릭)</p>
+              <p class="drop-hint">저장 버튼을 누를 때 업로드됩니다</p>
             {/if}
             <input
               type="file"

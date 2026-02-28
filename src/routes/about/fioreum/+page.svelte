@@ -8,6 +8,8 @@
     let canvas;
     let points = [];
     let isAutoScrolling = true;
+    let mapSectionRef;
+    let visible = $state(false);
 
     function easeInOutQuad(t, b, c, d) {
         t /= d / 2;
@@ -57,6 +59,24 @@
              canvas.height = h;
              
              ctx.drawImage(img, 0, 0, w, h);
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    visible = true;
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+
+        if (mapSectionRef) {
+            observer.observe(mapSectionRef);
+        }
+        return () => {
+            if (mapSectionRef) observer.unobserve(mapSectionRef);
         };
     });
 
@@ -118,12 +138,68 @@
             연주자의 음악을 피어나게 하는 곳
         </h3>
     </div>
+
+
+
     <div style="height: 10px;"></div>
+
     <FioreumTitle />
+
+    <div class="address-row"  bind:this={mapSectionRef}>
+        {#if visible}
+            <span class="address-text">서울특별시 서초구 효령로 52길 16 지하 1층</span>
+            <a
+                href="https://map.naver.com/v5/search/피오레아트앤엔터"
+                target="_blank"
+                rel="noreferrer"
+                class="map-link"
+                aria-label="네이버 지도에서 보기"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                지도 보기
+            </a>
+        {/if}
+    </div>
     <div style="height: 500px;"></div>
 </div>
 
 <style lang="scss">
+    .address-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        margin: 1rem 0 0;
+    }
+
+    .address-text {
+        font-size: 0.95rem;
+        color: #555;
+        letter-spacing: 0.02em;
+    }
+
+    .map-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.85rem;
+        color: #03c75a;
+        text-decoration: none;
+        border: 1px solid #03c75a;
+        border-radius: 20px;
+        padding: 0.25rem 0.75rem;
+        transition: background 0.2s, color 0.2s;
+
+        &:hover {
+            background: #03c75a;
+            color: #fff;
+        }
+    }
+
     .hero-container {
         position: relative;
         width: 100%;

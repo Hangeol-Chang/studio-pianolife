@@ -14,6 +14,20 @@
     /** @type {string} - 중앙 이미지 최대 너비 (선택, 기본값: 1200px) */
     export let imageMaxWidth = "1200px";
 
+    /** @type {string} - 예: "16/9" 또는 "4/3" */
+    export let aspectRatio = "3/4";
+
+    // aspectRatio와 maxHeight로 계산한 maxWidth(px)
+    $: maxWidthByAspect = (() => {
+        // aspectRatio: "16/9" → 16/9
+        const [w, h] = aspectRatio.split('/').map(Number);
+        if (!w || !h) return imageMaxWidth;
+        // maxHeight: "800px" → 800
+        const mh = typeof maxHeight === 'string' ? parseFloat(maxHeight) : maxHeight;
+        if (!mh) return imageMaxWidth;
+        return (mh * w / h) + 'px';
+    })();
+
     /** @type {string} - 그라데이션 오버레이 CSS (선택, 기본값: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.9) 70%)) */
     export let gradientOverlay = "linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.9) 70%)";
 
@@ -29,6 +43,7 @@
     style="
         --max-height: {maxHeight}; 
         --image-max-width: {imageMaxWidth}; 
+        --aspect-ratio: {aspectRatio};
         --gradient-overlay: {gradientOverlay};
         --bg-anchor: {bgAnchor};    
     "
@@ -36,7 +51,7 @@
     <div class="hero-image-container">
         <img src={image} alt="{alt} Background" class="hero-image-background" />
         <div class="hero-image-background-overlay"></div>
-        <img src={image} alt={alt} class="hero-image" style="--scroll-y: {scrollY}"/>
+        <img src={image} alt={alt} class="hero-image" style="--scroll-y: {scrollY};"/>
         <div class="hero-image-overlay"></div>
     </div>
 
@@ -64,17 +79,20 @@
     justify-content: center;
 
     * {
-        min-height: 100vh;
         height: 100vh;
         max-height: var(--max-height, 1400px);
     }
 
     .hero-image {
         position: absolute;
+        
         width: 100vw;
+        height: 100%;
+        max-height: var(--max-height, 1400px);
         max-width: var(--image-max-width, 1200px);
         object-fit: cover;
         z-index: 3;
+        aspect-ratio: var(--aspect-ratio, "3/4");
 
         object-position: var(--bg-anchor, top center);
         transform: translateY(calc(var(--scroll-y) * 0.7px));
