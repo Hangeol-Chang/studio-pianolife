@@ -1,5 +1,5 @@
 <script>
-    import fioreLogoText from '$lib/assets/icons/fiore_logo_text.png';
+    import fioreLogoText from '$lib/assets/icons/fiore_logo_text_full.png';
 </script>
 
 <footer class="footer">
@@ -77,7 +77,7 @@
     }
 
     .footer-logo-img {
-        height: 80px;
+        height: 120px;
         width: auto;
         filter: brightness(0) invert(1);
     }
