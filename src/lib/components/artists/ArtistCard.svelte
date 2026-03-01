@@ -6,8 +6,8 @@
 {#if artist.role_name === "artist"}
 <a href="/artists/{artist.id}" class="artist-card">
     <div class="card-image-wrapper">
-        {#if artist.image_url}
-            <img src={artist.image_url} alt={artist.name} class="card-image" />
+        {#if artist.thumb_url || artist.image_url}
+            <img src={artist.thumb_url || artist.image_url} alt={artist.name} class="card-image" />
         {:else}
             <div class="card-image-placeholder"></div>
         {/if}
@@ -17,13 +17,14 @@
     <div class="card-info">
         <h3 class="name-en">{artist.name_en ?? ''}</h3>
         <h4 class="name-kr">{artist.name}</h4>
+        <span class="view-detail">view detail +</span>
     </div>
 </a>
 {:else}
 <div class="artist-card no-link">
     <div class="card-image-wrapper">
-        {#if artist.image_url}
-            <img src={artist.image_url} alt={artist.name} class="card-image" />
+        {#if artist.thumb_url}
+            <img src={artist.thumb_url} alt={artist.name} class="card-image" />
         {:else}
             <div class="card-image-placeholder"></div>
         {/if}
@@ -120,6 +121,14 @@
         font-weight: 300;
         color: rgba(255, 255, 255, 0.4);
         margin: 0 0 0.5rem;
+    }
+
+    .view-detail {
+        font-size: 0.85rem;
+        font-weight: 300;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: lowercase;
     }
 }
 </style>

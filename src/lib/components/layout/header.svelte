@@ -6,7 +6,8 @@
     // 로고 이미지 import
     import fioreLogo from '$lib/assets/icons/fiore_logo.png';
     import fioreText from '$lib/assets/icons/fiore_text.png';
-    import fioreLogoText from '$lib/assets/icons/fiore_logo_text.png';
+    import fioreLogoText from '$lib/assets/icons/fiore_logo_text_full.png';
+    import artnentText from '$lib/assets/icons/artnent_text.png';
 
     let isMenuOpen = false;
     let scrollProgress = 0;
@@ -104,8 +105,8 @@
                     <img src={fioreLogoText} alt="Fiore" class="logo-combined" />
                 </div>
                 <div class="logo-desktop">
-                    <img src={fioreLogo} alt="Fiore Logo" class="logo-icon" />
                     <img src={fioreText} alt="Fiore" class="logo-text" />
+                    <img src={artnentText} alt="Fiore Logo" class="logo-text-small" />
                 </div>
             </a>
         </div>
@@ -279,7 +280,7 @@
 
     .logo-desktop {
         display: none;
-        align-items: center;
+        align-items: baseline;
         gap: 8px;
         min-width: 120px;
     }
@@ -306,8 +307,14 @@
         transition: filter 0.3s ease;
     }
 
+    .logo-text-small {
+        height: 12px;
+        width: auto;
+        transition: filter 0.3s ease;
+    }
+
     .logo-combined {
-        height: 36px;
+        height: 44px;
         width: auto;
         transition: filter 0.3s ease;
     }

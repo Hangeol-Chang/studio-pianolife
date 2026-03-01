@@ -180,7 +180,7 @@
         <aside class="left-sidebar" style="--bg-gradient: {gradientStyle}">
             <div class="sidebar-image" use:inView={{ threshold: 1.0 }}>
                 <img
-                    src={artist.image_url}
+                    src={artist.mid_url}
                     alt={artist.name}
                 />
                 <div class="hero-image-overlay"></div>
@@ -444,20 +444,24 @@
                 padding: 1.75rem 5vw;
             }
             .headline-text {
-                font-family: 'MuseumCulturalFoundationClassic', serif;
+                // font-family: 'MuseumCulturalFoundationClassic', serif;
+                font-family: 'GounBatang', serif;
                 color: white;
                 font-weight: 300;
                 
                 font-size: 1.5rem;
+                line-height: 2.5;
                 letter-spacing: 1rem;
                 
                 @media(--tablet) {
                     font-size: 1.25rem;
                     letter-spacing: 0.4rem;
+                    line-height: 2;
                 }
                 @media(--mobile) {
                     font-size: 0.8rem;
                     letter-spacing: 0.2rem;
+                    line-height: 1.5;
                 }
             }
         }
