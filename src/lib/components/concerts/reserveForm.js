@@ -139,7 +139,6 @@ export default function ReserveForm({ concertInfo }) {
 
         formElement.addEventListener('submit', async (e) => {
             e.preventDefault();
-            console.log('Form submitted');
 
             const formData = new FormData(formElement);
             // concertInfo의 title을 form에 추가

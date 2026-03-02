@@ -1,8 +1,8 @@
 <script>
     import { PIANOLIFE_BACKEND_URL } from "$env/static/public";
-    import HeroSection from "@/components/common/HeroSection.svelte";
     import ArtistCard from "@/components/artists/ArtistCard.svelte";
     import artistImage from "@/assets/images/white.png";
+    import NavSection from "@/components/common/NavSection.svelte";
 
     const API = PIANOLIFE_BACKEND_URL || "http://localhost:8000";
 
@@ -27,9 +27,11 @@
 </svelte:head>
 
 <div>
-    <HeroSection image={artistImage} title="ARTISTS" alt="Artists" 
-        gradientOverlay="linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 1.0) 95%)"
-        bgAnchor="center center"
+    <NavSection
+        title="Artists"
+        subtitle="오늘의 신예, 내일의 거장"
+        image={artistImage}
+        gradientOverlay='linear-gradient(to bottom, rgba(0, 0, 0, 1.0) 20%, rgba(255, 255, 255, 0.3) 70%)'
     />
 
     <section class="artists-section">

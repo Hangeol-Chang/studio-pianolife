@@ -35,9 +35,9 @@
 
 <div class="concert-card">
     <div class="card-poster">
-        {#if concert.poster_url}
+        {#if concert.poster_mid_url || concert.poster_url}
             <a href="/concerts/{concert.id}">
-                <img src={concert.poster_url} alt={concert.title} />
+                <img src={concert.poster_mid_url || concert.poster_url} alt={concert.title} />
             </a>
         {:else}
             <div class="poster-placeholder"></div>

@@ -115,8 +115,6 @@ async function loadConcerts() {
   }
 
   function openEdit(concert) {
-    console.log(concert);
-
     editing = concert;
     // date 분리: "2026-03-15 19:30" → date="2026-03-15", time="19:30"
     let dateStr = '';
@@ -312,7 +310,7 @@ async function loadConcerts() {
     if (!res.ok) throw new Error(await res.text());
     const media = await res.json();
     form.poster_media_id = media.id;
-    selectedPosterUrl = media.url;
+    selectedPosterUrl = media.thumb_url || media.url;
     URL.revokeObjectURL(pendingPosterFile._previewUrl);
     pendingPosterFile = null;
   }
@@ -361,7 +359,7 @@ async function loadConcerts() {
     if (!res.ok) throw new Error(await res.text());
     const media = await res.json();
     form.banner_image_media_id = media.id;
-    selectedBannerUrl = media.url;
+    selectedBannerUrl = media.thumb_url || media.url;
     URL.revokeObjectURL(pendingBannerFile._previewUrl);
     pendingBannerFile = null;
   }

@@ -279,7 +279,6 @@ export default function PlayDescription({ videoIds }) {
         parseDuration(data.items[0].contentDetails.duration);
         parseTag(data.items[0].snippet.description);
 
-        // console.log(data);
         return data.items[0];
     }
 
@@ -304,7 +303,6 @@ export default function PlayDescription({ videoIds }) {
     const getPlayInfo = (player) => {
         // const duration = player.getDuration();
         setCurrentTime(player.getCurrentTime());
-        // console.log(`Current Time: ${player.getCurrentTime()}, Duration: ${duration.toFixed(2)}초`);
     }
 
     // const title = video.snippet.title;

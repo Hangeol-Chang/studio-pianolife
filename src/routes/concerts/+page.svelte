@@ -1,8 +1,8 @@
 <script>
     import { PIANOLIFE_BACKEND_URL } from "$env/static/public";
-    import HeroSection from "@/components/common/HeroSection.svelte";
     import concertHeroFallback from "@/assets/images/white.png";
     import ConcertCard from "@/components/concerts/ConcertCard.svelte";
+    import NavSection from "@/components/common/NavSection.svelte";
 
     const API = PIANOLIFE_BACKEND_URL || "http://localhost:8000";
 
@@ -111,13 +111,14 @@
     <title>Concerts - Fiore</title>
 </svelte:head>
 
-<div>
-    <HeroSection image={heroImage} title="CONCERTS"
-        maxHeight="800px"
-        imageMaxWidth="100%"
-        gradientOverlay="linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 1.0) 95%)"
+<div>   
+    <NavSection
+        title="Concerts"
+        image={heroImage}
+        gradientOverlay='linear-gradient(to bottom, rgba(0, 0, 0, 1) 20%, rgba(100, 100, 100, 0) 90%)'
         bgAnchor="center center"
         aspectRatio="16/9"
+        scrollAction={true}
     />
 
     <section class="description-section">

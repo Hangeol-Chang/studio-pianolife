@@ -135,8 +135,8 @@
                 >
                     <a href="/concerts/{concert.id}" class="concert-link">
                         <div class="concert-image">
-                            {#if concert.poster_url}
-                                <img src={concert.poster_url} alt={concert.title} />
+                            {#if concert.poster_mid_url || concert.poster_url}
+                                <img src={concert.poster_mid_url || concert.poster_url} alt={concert.title} />
                             {:else}
                                 <div class="poster-placeholder"></div>
                             {/if}

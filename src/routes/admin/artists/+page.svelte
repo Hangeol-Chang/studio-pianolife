@@ -34,6 +34,7 @@
   let imageDragOver = $state(false);
   let subImageUploading = $state(false);
   let subImageDragOver = $state(false);
+  let showSubMediaPicker = $state(false);
   /** 아직 업로드 안 된 프로필 이미지 File 객체 (저장 시 업로드) */
   let pendingProfileFile = $state(null);
   /** 아직 업로드 안 된 서브 이미지 File 객체 목록 (저장 시 업로드) */
@@ -162,6 +163,18 @@
     file._previewUrl = previewUrl;
     pendingSubImageFiles = [...pendingSubImageFiles, file];
     form.image_list = [...form.image_list, { media_id: null, url: previewUrl }];
+  }
+
+  async function openSubMediaPicker() {
+    await loadMedia();
+    showSubMediaPicker = true;
+  }
+
+  function selectSubMedia(media) {
+    if (!form.image_list.find(img => img.media_id === media.id)) {
+      form.image_list = [...form.image_list, { media_id: media.id, url: media.thumb_url || media.url }];
+    }
+    showSubMediaPicker = false;
   }
 
   /** 저장 시 호출: pending 서브 이미지를 실제 업로드하고 image_list 갱신 */
@@ -355,8 +368,8 @@
             <tr>
               <td>{artist.sort_order}</td>
               <td>
-                {#if artist.image_thumb_url || artist.image_url}
-                  <img src={artist.image_thumb_url || artist.image_url} alt={artist.name} class="thumb" />
+                {#if artist.thumb_url || artist.image_url}
+                  <img src={artist.thumb_url || artist.image_url} alt={artist.name} class="thumb" />
                 {:else}
                   <div class="thumb-placeholder"></div>
                 {/if}
@@ -525,6 +538,9 @@
               class="file-input"
             />
           </div>
+          <button type="button" class="btn-secondary btn-sm" style="margin-top:0.5rem" onclick={openSubMediaPicker}>
+            📁 미디어에서 선택
+          </button>
         </div>
 
         <!-- 콘서트 연결 -->
@@ -557,6 +573,28 @@
     </div>
   {/if}
 
+  <!-- ── 서브 이미지 미디어 피커 모달 ──────── -->
+  {#if showSubMediaPicker}
+    <div class="modal-overlay">
+      <div class="modal media-picker" role="dialog" onclick={(e) => e.stopPropagation()}>
+        <button class="modal-close" onclick={() => (showSubMediaPicker = false)}>✕</button>
+        <h2>서브 이미지 선택</h2>
+        <div class="media-grid">
+          {#each mediaList as media}
+            <button class="media-item" onclick={() => selectSubMedia(media)}>
+              <img src={media.thumb_url || media.url} alt={media.alt_text || media.original_filename} />
+              <span class="media-name">{media.original_filename}</span>
+            </button>
+          {/each}
+          {#if mediaList.length === 0}
+            <p class="empty">업로드된 아티스트 이미지가 없습니다.</p>
+          {/if}
+        </div>
+        <button class="btn-secondary" onclick={() => (showSubMediaPicker = false)}>닫기</button>
+      </div>
+    </div>
+  {/if}
+
   <!-- ── 미디어 피커 모달 ──────────────────── -->
   {#if showMediaPicker}
     <div class="modal-overlay">
@@ -566,7 +604,7 @@
         <div class="media-grid">
           {#each mediaList as media}
             <button class="media-item" onclick={() => selectMedia(media)}>
-              <img src={media.url} alt={media.alt_text || media.original_filename} />
+              <img src={media.thumb_url || media.url} alt={media.alt_text || media.original_filename} />
               <span class="media-name">{media.original_filename}</span>
             </button>
           {/each}
