@@ -7,7 +7,7 @@
 
     let canvas;
     let points = [];
-    let isAutoScrolling = true;
+    let isAutoScrolling = $state(true);
     let mapSectionRef;
     let visible = $state(false);
 
@@ -47,19 +47,18 @@
             }
         }, 100);
 
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        img.src = flower_ref_image;
-        img.onload = () => {
-             const w = 500;
-             const h = (img.height / img.width) * w;
-             
-             canvas.width = w;
-             canvas.height = h;
-             
-             ctx.drawImage(img, 0, 0, w, h);
-        };
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.src = flower_ref_image;
+            img.onload = () => {
+                const w = 500;
+                const h = (img.height / img.width) * w;
+                canvas.width = w;
+                canvas.height = h;
+                ctx.drawImage(img, 0, 0, w, h);
+            };
+        }
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -138,7 +137,6 @@
             연주자의 음악을 피어나게 하는 곳
         </h3>
     </div>
-
 
 
     <div style="height: 10px;"></div>

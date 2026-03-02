@@ -355,8 +355,8 @@
             <tr>
               <td>{artist.sort_order}</td>
               <td>
-                {#if artist.image_thumb_url || artist.image_url}
-                  <img src={artist.image_thumb_url || artist.image_url} alt={artist.name} class="thumb" />
+                {#if artist.thumb_url || artist.image_url}
+                  <img src={artist.thumb_url || artist.image_url} alt={artist.name} class="thumb" />
                 {:else}
                   <div class="thumb-placeholder"></div>
                 {/if}
@@ -566,7 +566,7 @@
         <div class="media-grid">
           {#each mediaList as media}
             <button class="media-item" onclick={() => selectMedia(media)}>
-              <img src={media.url} alt={media.alt_text || media.original_filename} />
+              <img src={media.thumb_url || media.url} alt={media.alt_text || media.original_filename} />
               <span class="media-name">{media.original_filename}</span>
             </button>
           {/each}

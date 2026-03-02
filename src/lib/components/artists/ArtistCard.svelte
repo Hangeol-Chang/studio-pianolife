@@ -6,8 +6,8 @@
 {#if artist.role_name === "artist"}
 <a href="/artists/{artist.id}" class="artist-card">
     <div class="card-image-wrapper">
-        {#if artist.thumb_url || artist.image_url}
-            <img src={artist.thumb_url || artist.image_url} alt={artist.name} class="card-image" />
+        {#if artist.mid_url || artist.image_url}
+            <img src={artist.mid_url || artist.image_url} alt={artist.name} class="card-image" />
         {:else}
             <div class="card-image-placeholder"></div>
         {/if}
@@ -23,8 +23,8 @@
 {:else}
 <div class="artist-card no-link">
     <div class="card-image-wrapper">
-        {#if artist.thumb_url}
-            <img src={artist.thumb_url} alt={artist.name} class="card-image" />
+        {#if artist.mid_url}
+            <img src={artist.mid_url} alt={artist.name} class="card-image" />
         {:else}
             <div class="card-image-placeholder"></div>
         {/if}

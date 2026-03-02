@@ -15,7 +15,13 @@
     const API = PIANOLIFE_BACKEND_URL || 'http://localhost:8000';
 
     // Banner Slides Data (dynamically fetched)
-    let slides = $state([{ type: 'main' }]);
+    // Start with loading placeholders so the slider is usable immediately
+    let slides = $state([
+        { type: 'main' },
+        { type: 'loading', id: 'concert' },
+        { type: 'loading', id: 'audition' },
+        { type: 'loading', id: 'concours' },
+    ]);
 
     let scrollY = $state(0);
     let currentSlide = $state(0);
@@ -80,6 +86,8 @@
         }
 
         slides = newSlides;
+        // Clamp active index in case placeholders were removed
+        if (currentSlide >= slides.length) currentSlide = slides.length - 1;
     });
 </script>
 
@@ -103,10 +111,17 @@
                                 <h1 class="main-title">Fiore에서 만나는 클래식의 감동</h1>
                             </div>
                         </div>
+                    {:else if slide.type === 'loading'}
+                        <!-- Loading Skeleton -->
+                        <div class="loading-slide">
+                            <div class="shimmer"></div>
+                            <div class="loading-label">불러오는 중…</div>
+                        </div>
                     {:else}
                         <!-- Link Banner -->
                         <a href={slide.link} class="link-banner main-banner-bg" style="--scroll-y: {scrollY}">
-                            <img src={slide.image} alt="" />
+                            <img src={slide.image} class="background-blur-img" alt="" />
+                            <img src={slide.image} class="banner-img" alt="" />
                         </a>
                     {/if}
                 </div>
@@ -151,9 +166,9 @@
     .banner-slider-container {
         position: relative;
         width: 100vw;
-        height: 100vh;
+        height: 9/16 * 100vw; // 16:9 비율 유지
         max-height: 700px;
-        margin-left: calc(50% - 50vw);
+        margin-left: 0;
         background-color: black;
         overflow: hidden;
     }
@@ -180,30 +195,68 @@
         position: relative;
         text-decoration: none;
         
-        img {
+        
+        .background-blur-img {
+            position: absolute;
+            left: 50%;
+            width: 100%; height: 100%;
+
+            object-fit: cover;
+            filter: blur(20px) brightness(0.5);
+            transform: translateX(-50%) scaleY(1.2);
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .banner-img {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, 0);
+
             width: 100%;
+            max-width: 16/9 * 700px; // 16:9 비율로 최대 높이 700px
             height: 100%;
             object-fit: cover;
             z-index: -1;
         }
+    }
 
-        .link-overlay {
+    /* Loading skeleton slide */
+    .loading-slide {
+        width: 100%;
+        height: 100%;
+        background: #111;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .shimmer {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 4rem 2rem;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            color: white;
-            text-align: center;
+            inset: 0;
+            background: linear-gradient(
+                105deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.07) 50%,
+                transparent 60%
+            );
+            background-size: 200% 100%;
+            animation: shimmerMove 1.6s ease-in-out infinite;
         }
 
-        .link-title {
-            font-size: 2rem;
-            font-weight: 300;
-            letter-spacing: 0.1em;
-            color: white;
+        .loading-label {
+            position: relative;
+            z-index: 1;
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
         }
+    }
+
+    @keyframes shimmerMove {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
     }
 
     /* Navigation */
@@ -284,12 +337,14 @@
         top: 0;
         left: 0;
         width: 100%; 
-        height: 100%;
+        // height: 100%;
         
         img {
             width: 100%;
             height: 100%; 
             object-fit: cover;
+            max-height: 700px;
+            aspect-ratio: 16/9;
         }
         .overlay {
             position: absolute;
