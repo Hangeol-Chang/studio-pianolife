@@ -41,18 +41,17 @@
             name: 'Gallery', 
             href: '/gallery',
             subItems: [
-                { name: 'artists', href: '/gallery/artists' },
-                { name: 'concerts', href: '/gallery/concerts' },
-                { name: 'concours', href: '/gallery/concours' }
+                { name: 'artists', href: '/gallery' },
+                { name: 'concerts', href: '/gallery' },
+                { name: 'concours', href: '/gallery' }
             ]
         },
         { 
             name: 'Contents', 
             href: '/contents',
             subItems: [
-                { name: 'interview', href: '/contents/interview' },
-                { name: 'podcast', href: '/contents/podcast' },
-                { name: 'audition', href: '/contents/audition' }
+                { name: 'interview', href: '/contents' },
+                { name: 'podcast', href: '/contents' }
             ]
         },
         { 

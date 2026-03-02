@@ -1,6 +1,5 @@
 <script>
     let { artist } = $props();
-    console.log(artist);
 </script>
 
 {#if artist.role_name === "artist"}

@@ -4,9 +4,6 @@
     let gradientStyle = $state('#000');
     let headerTextColor = $state('#fff');
 
-    // hero <img onload> 에서 직접 호출 — 이미지 다운로드가 한 번만 일어남.
-    // crossorigin="anonymous"를 img에 붙이면 브라우저가 CORS 헤더 포함하여 요청하고
-    // 그 캐시를 canvas에서도 그대로 재사용할 수 있어 딜레이가 없어짐.
     function extractGradientFromImg(img) {
         try {
             const canvas = document.createElement('canvas');
@@ -21,7 +18,7 @@
             const right = avgColor(ctx, Math.floor(W * 0.95), Math.floor(H * 0.92), 8);
             gradientStyle = `linear-gradient(to right, ${left}, ${right})`;
             const avgLum = (luminance(left) + luminance(right)) / 2;
-            headerTextColor = avgLum > 128 ? '#111' : '#fff';
+            // headerTextColor = avgLum > 128 ? '#111' : '#fff';
         } catch (e) {
             console.warn('Failed to extract gradient:', e);
         }
@@ -144,8 +141,10 @@
         return { destroy() { observer.disconnect(); } };
     }
 
-
+    let scrollY = $state(0) ;
 </script>
+
+<svelte:window bind:scrollY={scrollY} />
 
 <div class="artist-detail-page">
     <!-- 이름 헤더 -->
@@ -155,7 +154,7 @@
         alt={artist.name}
     />
 
-    <header class="artist-header" style="--bg-gradient: {gradientStyle}; --text-color: {headerTextColor}">
+    <header class="artist-header" style="--text-color: {headerTextColor}">
         <h1 class="en-name">{artist.name_en ?? ''}</h1>
         <h2 class="kr-name">{artist.name}</h2>
     </header>
@@ -166,6 +165,9 @@
                 class="hero-image"
                 src={artist.image_url}
                 alt={artist.name}
+                crossorigin="anonymous"
+                onload={(e) => extractGradientFromImg(e.currentTarget)}
+                style="--scroll-y: {scrollY};"
             />
             <div class="hero-image-overlay"></div>
         </div>
@@ -174,6 +176,7 @@
             <h1 class="headline-text">{@html artist.headline}</h1>
         </div>
     </section>
+
     <!-- 본문 레이아웃 -->
     <div class="content-container">
         <!-- 좌: 이미지 (PC 고정) -->
@@ -335,19 +338,18 @@
 <style lang="scss">
     .artist-detail-page {
         width: 100%;
-        padding-top: 4rem;
+        padding-top: 0;
     }
-
 
     .hero-background-blured {
         position: absolute;
         top: 0; left: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-50%) scale(1.2);
         width: 100%;
         height: 120vh;
         max-height: 1600px;
         object-fit: cover;
-        filter: blur(12px) brightness(0.9);
+        filter: blur(20px) brightness(0.95);
         z-index: -1;
 
         object-position: top center;
@@ -358,8 +360,8 @@
 
     .artist-header {
         text-align: center;
-        // background: var(--bg-gradient, linear-gradient(to right, #000, #000));
-        padding: 2rem 1.5rem;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.9) 100%);
+        padding: 2rem 1.5rem 0.1rem;
         margin: 0;
 
         .en-name {
@@ -386,6 +388,7 @@
         margin-top: 0;
         position: relative;
         background-color: transparent;
+        overflow: hidden;
 
         .artist-hero-image {
             position: relative;
@@ -396,8 +399,8 @@
 
             .hero-image { 
                 position: absolute;
-                top: 0; left: 50%;
-                transform: translateX(-50%);
+                top: 50px; left: 50%;
+                transform: translateX(-50%) translateY(calc(var(--scroll-y) * 0.5px));
 
                 width: 100%; 
                 height: 100%; 
@@ -408,43 +411,48 @@
                 object-position: top center;
                 transform-origin: top center;
 
-                // mask-image:
-                //     linear-gradient(to right,  transparent 0%, black 5%, black 95%, transparent 100%),
-                //     linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
-                // mask-composite: intersect;
-                // -webkit-mask-image:
-                //     linear-gradient(to right,  transparent 0%, black 5%, black 95%, transparent 100%),
-                //     linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
-                // -webkit-mask-composite: destination-in;
-            }
+                mask-image: 
+                    linear-gradient(to right, transparent 3%, black 15%, black 85%, transparent 97%),
+                    linear-gradient(to bottom, transparent 0%, black 7%, black 100%);
+                -webkit-mask-image: 
+                    linear-gradient(to right, transparent 3%, black 15%, black 85%, transparent 97%),
+                    linear-gradient(to bottom, transparent 0%, black 7%, black 100%);
+                mask-composite: intersect;
+                -webkit-mask-composite: source-in;
+            }   
 
             .hero-image-overlay {
                 position: absolute;
                 top: 0; left: 0;
                 width: 100%; height: 100%;
                 background: linear-gradient(
-                    to bottom, 
-                    rgba(0, 0, 0, 0.0) 20%,
-                    rgba(0, 0, 0, 0.3) 60%, 
-                    rgba(0, 0, 0, 0.7) 80%,
-                    rgba(0, 0, 0, 0.99) 95%
+                    to bottom,
+                    rgba(0, 0, 0, 0.90)  0%,
+                    rgba(0, 0, 0, 0.3)  8%,
+                    rgba(0, 0, 0, 0.2) 12%,
+                    rgba(0, 0, 0, 0.15) 20%,
+                    rgba(0, 0, 0, 0.08) 25%,
+                    rgba(0, 0, 0, 0.01) 84%,
+                    rgba(0, 0, 0, 0.00) 95%
                 );
                 z-index: 3;
             }
         }
 
         .headline-bar {
+            position: relative;
             width: 100%;
             background-color: black;
             text-align: center;
             margin-top: 0;
             padding: 2.5rem 5vw;
+            z-index: 4;
 
             @media(--tablet) {
                 padding: 1.75rem 5vw;
             }
             .headline-text {
-                // font-family: 'MuseumCulturalFoundationClassic', serif;
+                z-index:5;
                 font-family: 'GounBatang', serif;
                 color: white;
                 font-weight: 300;

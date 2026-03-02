@@ -114,10 +114,12 @@
             fetch(`${API}/api/concours/?active_only=true`).then(r => r.json()),
         ])
             .then(([artists, concerts, concoursList]) => {
+                const hasImages = item => !!(item.mainImage || item.thumbnails.length > 0);
+                const hadSubImages = item => item.thumbnails.length > 0;
                 galleryItems = [
-                    ...artists.map(toArtistItem),
-                    ...concerts.map(toConcertItem),
-                    ...concoursList.map(toConcoursItem),
+                    ...artists.map(toArtistItem).filter(hasImages),
+                    ...concerts.map(toConcertItem).filter(hadSubImages),
+                    ...concoursList.map(toConcoursItem).filter(hadSubImages),
                 ];
             })
             .catch(err => { error = err.message; })

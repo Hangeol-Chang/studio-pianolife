@@ -115,8 +115,6 @@ async function loadConcerts() {
   }
 
   function openEdit(concert) {
-    console.log(concert);
-
     editing = concert;
     // date 분리: "2026-03-15 19:30" → date="2026-03-15", time="19:30"
     let dateStr = '';

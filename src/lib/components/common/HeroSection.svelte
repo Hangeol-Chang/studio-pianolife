@@ -5,6 +5,9 @@
     /** @type {string} - 메인 타이틀 텍스트 */
     export let title = "";
 
+    /** @type {string} - 서브 타이틀 텍스트 (선택) */
+    export let subtitle = "";
+
     /** @type {string} - 이미지 alt 텍스트 (선택) */
     export let alt = title;
 
@@ -34,6 +37,12 @@
     /** @type {string} bg imge anchor*/
     export let bgAnchor = "top center";
 
+    /** @type {boolean} 스크롤 시 배경 이미지 위치 조정 여부 */
+    export let scrollAction = true;
+
+    /** @type {boolean} */
+    export let blurImageOutline = false;
+
     let scrollY = 0;
 </script>
 
@@ -49,17 +58,40 @@
     "
 >
     <div class="hero-image-container">
-        <img src={image} alt="{alt} Background" class="hero-image-background" />
-        <div class="hero-image-background-overlay"></div>
-        <img src={image} alt={alt} class="hero-image" style="--scroll-y: {scrollY};"/>
-        <div class="hero-image-overlay"></div>
+        <img src={image} alt="{alt} Background" class="hero-image-background"
+            style="transform: translateY(calc({scrollAction ? scrollY : 0} * 0.7px));
+                {blurImageOutline
+                    ? `mask-image:
+                            linear-gradient(to bottom, transparent 5%, black 10%, black 100%);
+                       -webkit-mask-image: 
+                            linear-gradient(to bottom, transparent 5%, black 10%, black 100%);
+                       mask-composite: intersect;
+                       -webkit-mask-composite: source-in;`
+                    : ''}
+            "
+        />
+        <!-- <div class="hero-image-background-overlay"></div> -->
+        <img src={image} alt={alt} class="hero-image"
+            style="
+                --scroll-y: {scrollAction ? scrollY : 0};
+                {blurImageOutline
+                    ? `mask-image:
+                            linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%), 
+                            linear-gradient(to bottom, transparent 10%, black 20%, black 100%);
+                       -webkit-mask-image: 
+                            linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%), 
+                            linear-gradient(to bottom, transparent 10%, black 20%, black 100%);
+                       mask-composite: intersect;
+                       -webkit-mask-composite: source-in;`
+                    : ''}
+            "
+        />
+        <!-- <div class="hero-image-overlay"></div> -->
     </div>
 
     <div class="hero-content">
-        {#if title}
-            <h1 class="main-title">{title}</h1>
-        {/if}
-        <slot />
+        <h1>{title}</h1>
+        <h2>{subtitle}</h2>
     </div>
 </section>
 
@@ -77,6 +109,7 @@
     position: absolute;
     display: flex;
     justify-content: center;
+    background-color: black;
 
     * {
         height: 100vh;
@@ -89,7 +122,7 @@
         width: 100vw;
         height: 100%;
         max-height: var(--max-height, 1400px);
-        max-width: var(--image-max-width, 1200px);
+        max-width: var(--image-max-width, 1400px);
         object-fit: cover;
         z-index: 3;
         aspect-ratio: var(--aspect-ratio, "3/4");
@@ -103,7 +136,7 @@
         object-fit: cover;
         z-index: 1;
         width: 100vw;
-        filter: blur(8px);
+        filter: blur(24px);
     }
 
     .hero-image-background-overlay {
@@ -125,32 +158,35 @@
 
 .hero-content {
     position: absolute;
-    top: 0;
+    top: 50%;
     left: 0;
+    transform: translateY(-20%);
     height: 100%;
     text-align: center;
     z-index: 5;
     width: 100%;
 
-    .main-title {
+    h1 {
         color: white;
         font-weight: 100;
-        font-size: 5rem;
         margin-top: 10rem;
-        letter-spacing: 0.5em;
+        letter-spacing: 0.3em;
         padding-left: 0.5em;
         margin-bottom: 1rem;
 
         @media (--tablet) {
-            font-size: 3rem;
             letter-spacing: 0.3em;
             padding-left: 0.3em;
         }
         @media (--mobile) {
-            font-size: 2rem;
             letter-spacing: 0.2em;
             padding-left: 0.2em;
         }
+    }
+    h2 {
+        color: white;
+        font-weight: 100;
+        letter-spacing: 0.1em;
     }
 }
 </style>
