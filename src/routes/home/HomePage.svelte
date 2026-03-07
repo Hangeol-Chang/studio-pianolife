@@ -41,12 +41,16 @@
     onMount(async () => {
         const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
 
-        const [concertsRes, auditionsRes, concoursRes] = await Promise.allSettled([
+        // const [concertsRes, auditionsRes, concoursRes] = await Promise.allSettled([
+        //     fetch(`${API}/api/concerts?active_only=true`).then(r => r.json()),
+        //     fetch(`${API}/api/auditions?active_only=false`).then(r => r.json()),
+        //     fetch(`${API}/api/concours?active_only=false`).then(r => r.json()),
+        // ]);
+        const [concertsRes, auditionsRes] = await Promise.allSettled([
             fetch(`${API}/api/concerts?active_only=true`).then(r => r.json()),
-            fetch(`${API}/api/auditions?active_only=false`).then(r => r.json()),
-            fetch(`${API}/api/concours?active_only=false`).then(r => r.json()),
+            fetch(`${API}/api/auditions?active_only=false`).then(r => r.json())
         ]);
-
+        
         const newSlides = [{ type: 'main' }];
 
         // 가장 가까운 예정 공연 (date >= today)
@@ -56,6 +60,11 @@
                 .sort((a, b) => a.date.localeCompare(b.date));
             if (upcoming.length > 0) {
                 const c = upcoming[0];
+                const image = c.banner_image_url || c.poster_url;
+                if (image) newSlides.push({ type: 'link', image, link: `/concerts/${c.id}` });
+            }
+            if(upcoming.length > 1) {
+                const c = upcoming[1];
                 const image = c.banner_image_url || c.poster_url;
                 if (image) newSlides.push({ type: 'link', image, link: `/concerts/${c.id}` });
             }
@@ -74,16 +83,16 @@
         }
 
         // 가장 가까운 콩쿠르 (end_date >= today)
-        if (concoursRes.status === 'fulfilled' && Array.isArray(concoursRes.value)) {
-            const upcoming = concoursRes.value
-                .filter(c => c.end_date && c.end_date >= today)
-                .sort((a, b) => a.end_date.localeCompare(b.end_date));
-            if (upcoming.length > 0) {
-                const c = upcoming[0];
-                const image = c.banner_image_url || c.poster_url;
-                if (image) newSlides.push({ type: 'link', image, link: `/concours/${c.id}` });
-            }
-        }
+        // if (concoursRes.status === 'fulfilled' && Array.isArray(concoursRes.value)) {
+        //     const upcoming = concoursRes.value
+        //         .filter(c => c.end_date && c.end_date >= today)
+        //         .sort((a, b) => a.end_date.localeCompare(b.end_date));
+        //     if (upcoming.length > 0) {
+        //         const c = upcoming[0];
+        //         const image = c.banner_image_url || c.poster_url;
+        //         if (image) newSlides.push({ type: 'link', image, link: `/concours/${c.id}` });
+        //     }
+        // }
 
         slides = newSlides;
         // Clamp active index in case placeholders were removed

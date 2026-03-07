@@ -268,6 +268,11 @@
         @media(--tablet) {
             grid-template-columns: 1fr;
             gap: 2rem;
+            padding: 2rem 1rem;
+        }
+        @media(--mobile) {
+            gap: 1.5rem;
+            padding: 0.5rem;
         }
     }
 
@@ -301,6 +306,11 @@
             position: static;
             min-width: 300px;
         }
+
+        @media(--mobile) {
+            min-width: 200px;
+            padding: 0.5rem;
+        }
     }
 
     .calendar-header {
@@ -333,6 +343,10 @@
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         gap: 2px;
+
+        @media(--mobile) {
+            gap: 1px;
+        }
     }
 
     .day-label {
