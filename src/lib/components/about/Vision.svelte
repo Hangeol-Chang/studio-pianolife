@@ -91,7 +91,7 @@
         </div>
     </div>
 
-    <div class="vision-grid section-content-wrapper">
+    <div class="vision-grid">
         {#each visions as vision, index}
             <div class="vision-item">
                 <div class="vision-icon">
@@ -112,11 +112,12 @@
         display: grid;
         grid-template-columns: 2fr minmax(380px, 1fr);
         align-items: stretch;
+
         @media(--tablet) {
             grid-template-columns: 1fr minmax(300px, 1fr);
         }
         @media (--mobile) {
-            grid-template-columns: 1fr 6fr;
+            grid-template-columns: 1fr;
         }
     }
 
@@ -187,6 +188,10 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
+
+        @media(--mobile) {
+            position: static;
+        }
     }
 
     .title {
