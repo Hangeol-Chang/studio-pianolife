@@ -14,6 +14,7 @@
     title: '',
     start_date: '',
     end_date: '',
+    brief_description: '',
     content: '',
     apply_link: '',
     poster_media_id: null,
@@ -60,7 +61,7 @@
   // ── 폼 초기화 ──────────────────────────────
   function resetForm() {
     form = {
-      title: '', start_date: '', end_date: '', content: '', apply_link: '',
+      title: '', start_date: '', end_date: '', brief_description: '', content: '', apply_link: '',
       poster_media_id: null, banner_image_media_id: null, is_active: true,
     };
     selectedPosterUrl = '';
@@ -82,6 +83,7 @@
       title: item.title || '',
       start_date: item.start_date || '',
       end_date: item.end_date || '',
+      brief_description: item.brief_description || '',
       content: item.content || '',
       apply_link: item.apply_link || '',
       poster_media_id: null,
@@ -189,6 +191,7 @@
     formData.append('title', form.title);
     if (form.start_date) formData.append('start_date', form.start_date);
     if (form.end_date) formData.append('end_date', form.end_date);
+    if (form.brief_description) formData.append('brief_description', form.brief_description);
     if (form.content) formData.append('content', form.content);
     formData.append('apply_link', form.apply_link || '');
     if (form.poster_media_id) formData.append('poster_media_id', String(form.poster_media_id));
@@ -384,7 +387,12 @@
 
         <!-- 내용 -->
         <div class="form-section">
-          <h3>내용</h3>
+          <h3>간단 설명</h3>
+          <label>
+            Brief Description
+            <textarea bind:value={form.brief_description} placeholder="오디션 간단 설명 (여러 줄 가능)" style="min-height:80px"></textarea>
+          </label>
+          <h3 style="margin-top:1rem">상세 내용</h3>
           <textarea bind:value={form.content} placeholder="오디션 상세 내용을 입력하세요"></textarea>
         </div>
 

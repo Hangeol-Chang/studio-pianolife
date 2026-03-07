@@ -30,6 +30,10 @@
         auditions.filter(a => !a.is_active || (a.end_date && a.end_date < today))
                  .sort((a, b) => (b.start_date ?? '').localeCompare(a.start_date ?? ''))
     );
+
+    const filters = ['auditions',];
+    let activeFilter = $state('auditions');
+
 </script>
 
 <svelte:head>
@@ -37,7 +41,13 @@
 </svelte:head>
 
 <div>
-    <NavSection title="Application" description="Apply to be a part of Fiore's team!" />
+    <NavSection 
+        title="Application" 
+        description="Apply to be a part of Fiore's team!" 
+        {filters}
+        {activeFilter}
+        onFilter={(f) => { activeFilter = f; }}
+    />
 
     <section class="auditions-section">
         {#if loading}
