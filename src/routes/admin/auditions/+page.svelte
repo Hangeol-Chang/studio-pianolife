@@ -385,7 +385,7 @@
         <!-- 내용 -->
         <div class="form-section">
           <h3>내용</h3>
-          <textarea bind:value={form.content} rows="8" placeholder="오디션 상세 내용을 입력하세요"></textarea>
+          <textarea bind:value={form.content} placeholder="오디션 상세 내용을 입력하세요"></textarea>
         </div>
 
         <div class="form-actions">
@@ -533,7 +533,7 @@
       border-radius: 6px; color: #222; font-size: 0.9rem;
       &:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
     }
-    textarea { resize: vertical; font-family: inherit; }
+    textarea { resize: vertical; font-family: inherit; min-height: 200px; }
   }
 
   .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
