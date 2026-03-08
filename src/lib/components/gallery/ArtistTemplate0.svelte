@@ -1,9 +1,9 @@
 <!-- Template 0: Portrait left + vertical title right + horizontal thumbnail strip -->
 <script>
-    let { item } = $props();
+    let { item, reversed = false } = $props();
 </script>
 
-<div class="template">
+<div class="template" class:reversed>
     <div class="top-row">
         <!-- Main portrait left -->
         <div class="main-image">
@@ -41,6 +41,10 @@
 <style lang="scss">
     .template {
         width: 100%;
+
+        &.reversed .top-row {
+            flex-direction: row-reverse;
+        }
     }
 
     .top-row {

@@ -7,7 +7,44 @@
     let activeTab = $state('info');
 
     const artists = $derived(concert.artists || []);
-    const program = $derived(concert.program || []);
+    const rawProgram = $derived(concert.program || []);
+
+    /**
+     * 새 형식:  [{ section, items: [{composer, title:[], player_ids, player_names}] }]
+     * 구형 flat: [{ composer, title, player_ids, ... }]
+     * → 항상 섹션 배열로 정규화
+     */
+    const programSections = $derived.by(() => {
+        if (!rawProgram.length) return [];
+        // 새 형식 판별
+        if ('section' in rawProgram[0]) return rawProgram;
+        // 구형 마이그레이션
+        const sections = [];
+        let cur = null;
+        for (const p of rawProgram) {
+            if (!p.title) continue; // Intermission / 구형 헤더는 섹션으로
+            if (p.composer && !p.title) {
+                cur = { section: p.composer, items: [] };
+                sections.push(cur);
+            } else {
+                if (!cur) { cur = { section: '', items: [] }; sections.push(cur); }
+                cur.items.push({
+                    composer: p.composer || '',
+                    title: Array.isArray(p.title) ? p.title : [p.title],
+                    player_names: p.player_names || [],
+                });
+            }
+        }
+        return sections.length ? sections : [{ section: '', items: rawProgram.map(p => ({
+            composer: p.composer || '',
+            title: Array.isArray(p.title) ? p.title : [p.title || ''],
+            player_names: p.player_names || [],
+        })) }];
+    });
+
+    const showSectionLabels = $derived(
+        programSections.length > 1 || (programSections[0]?.section || '') !== ''
+    );
 
     // 네비게이션 탭 목록 (데이터가 있는 섹션만 표시)
     const navTabs = $derived(
@@ -143,22 +180,33 @@
             <div>
                 <h3 class="underbar">Program</h3>
                 <div class="program-list">
-                    {#each program as item, i}
-                        {#if !item.title}
-                            <div class="program-item program-item--header">
-                                <span class="section-header">{item.composer}</span>
+                    {#each programSections as sec, sIdx}
+                        {#if showSectionLabels && sec.section}
+                            {#if sIdx > 0}
+                                <div class="intermission">— Intermission —</div>
+                            {/if}
+                            <div class="program-item program-item--section">
+                                <span class="section-label">{sec.section}</span>
                             </div>
-                        {:else}
+                        {:else if sIdx > 0 && showSectionLabels}
+                            <div class="intermission">— Intermission —</div>
+                        {/if}
+
+                        {#each (sec.items || []) as item}
                             <div class="program-item">
                                 <p class="piece-row">
                                     {#if item.composer}<span class="piece-composer">{item.composer}</span>{/if}
-                                    <span class="piece-title">{item.title}</span>
+                                    <span class="piece-title">
+                                        {#each (Array.isArray(item.title) ? item.title : [item.title]) as t, ti}
+                                            {#if ti > 0}<br />{/if}{t}
+                                        {/each}
+                                    </span>
                                     {#if item.player_names && item.player_names.length > 0}
                                         <span class="piece-performer">{item.player_names.join(', ')}</span>
                                     {/if}
                                 </p>
                             </div>
-                        {/if}
+                        {/each}
                     {/each}
                 </div>
             </div>
@@ -347,6 +395,17 @@
     .program-item {
         padding: 0.6rem 0 0.6rem 1.5rem;
 
+        &--section {
+            padding-left: 0;
+            margin-top: 1.5rem;
+            .section-label {
+                font-size: 1rem;
+                font-weight: 600;
+                color: #111;
+                letter-spacing: 0.02em;
+            }
+        }
+
         &--header {
             .section-header {
                 font-size: 1rem;
@@ -360,9 +419,11 @@
         .piece-row {
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
 
-            font-size: 0.9rem;
-            line-height: 1.0;
+            // align-items: center;
+            font-size: 1.0rem;
+            line-height: 1.5;
             font-weight: 300;
             color: #555;
             margin: 0;
@@ -377,6 +438,10 @@
                 }
             }
 
+            .piece-title {
+                line-height: 1.5;
+            }
+
             .piece-performer {
                 font-size: 0.82rem;
                 color: #999;
@@ -385,5 +450,14 @@
                 }
             }
         }
+    }
+
+    .intermission {
+        text-align: center;
+        font-size: 0.78rem;
+        letter-spacing: 0.2em;
+        color: #bbb;
+        text-transform: uppercase;
+        margin: 1.5rem 0 0.5rem;
     }
 </style>

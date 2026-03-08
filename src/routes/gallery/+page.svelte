@@ -5,15 +5,10 @@
 
     // Artist Templates
     import ArtistTemplate0 from '@/components/gallery/ArtistTemplate0.svelte';
-    import ArtistTemplate1 from '@/components/gallery/ArtistTemplate1.svelte';
     import ArtistTemplate2 from '@/components/gallery/ArtistTemplate2.svelte';
-    import ArtistTemplate3 from '@/components/gallery/ArtistTemplate3.svelte';
 
     // Concert Templates
     import ConcertTemplate0 from '@/components/gallery/ConcertTemplate0.svelte';
-    import ConcertTemplate1 from '@/components/gallery/ConcertTemplate1.svelte';
-    import ConcertTemplate2 from '@/components/gallery/ConcertTemplate2.svelte';
-    import ConcertTemplate3 from '@/components/gallery/ConcertTemplate3.svelte';
 
     // Concours Templates
     import ConcoursTemplate0 from '@/components/gallery/ConcoursTemplate0.svelte';
@@ -62,16 +57,26 @@
     let loading = $state(true);
     let error = $state(null);
 
-    const ARTIST_TEMPLATES  = [ArtistTemplate0,  ArtistTemplate1,  ArtistTemplate2,  ArtistTemplate3];
-    const CONCERT_TEMPLATES = [ConcertTemplate0, ConcertTemplate1, ConcertTemplate2, ConcertTemplate3];
+    const ARTIST_TEMPLATES  = [
+        { component: ArtistTemplate0, reversed: false },
+        { component: ArtistTemplate0, reversed: true  },
+        { component: ArtistTemplate2, reversed: false },
+        { component: ArtistTemplate2, reversed: true  },
+    ];
+    const CONCERT_TEMPLATES = [
+        { component: ConcertTemplate0, reversed: false },
+        { component: ConcertTemplate0, reversed: true  },
+        { component: ConcertTemplate0, reversed: false },
+        { component: ConcertTemplate0, reversed: true  },
+    ];
     const CONCOURS_TEMPLATES= [ConcoursTemplate0,ConcoursTemplate1,ConcoursTemplate2,ConcoursTemplate3];
 
     function getTemplate(item) {
         const idx = item.id % 4;
         if (item.category === 'artist')   return ARTIST_TEMPLATES[idx];
         if (item.category === 'concert')  return CONCERT_TEMPLATES[idx];
-        if (item.category === 'concours') return CONCOURS_TEMPLATES[idx];
-        return ArtistTemplate0;
+        if (item.category === 'concours') return { component: CONCOURS_TEMPLATES[idx], reversed: false };
+        return { component: ArtistTemplate0, reversed: false };
     }
 
     const filters = ['Artists', 'Concerts', 'Concours'];
@@ -150,10 +155,11 @@
             <div class="status-msg">등록된 항목이 없습니다.</div>
         {:else}
             {#each visibleItems as item (item.category + item.id)}
-                {@const Template = getTemplate(item)}
+                {@const tpl = getTemplate(item)}
+                {@const Tpl = tpl.component}
                 <section class="gallery-group" in:fly={{ y: 30, duration: 600, delay: 80 }}>
                     <div class="container">
-                        <Template {item} />
+                        <Tpl {item} reversed={tpl.reversed} />
                     </div>
                 </section>
             {/each}

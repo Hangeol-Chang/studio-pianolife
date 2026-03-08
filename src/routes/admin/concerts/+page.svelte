@@ -135,10 +135,7 @@ async function loadConcerts() {
       location_data: concert.location_data || null,
       poster_media_id: null,
       banner_image_media_id: null,
-      program: concert.program ? concert.program.map(p => ({
-        ...p,
-        player_ids: p.player_ids || (p.player_id ? [p.player_id] : []),
-      })) : [],
+      program: migrateOldProgram(concert.program || []),
       image_list: concert.image_list ? [...concert.image_list] : [],
       artist_ids: (concert.artists || []).map(a => a.id),
       is_active: concert.is_active ?? true,
@@ -148,55 +145,120 @@ async function loadConcerts() {
     placeQuery = '';
     placeResults = [];
     showPlaceResults = false;
-    programPlayerQuery = (form.program || []).map(() => '');
-    programPlayerOpen = (form.program || []).map(() => false);
+    _syncPlayerState();
     showForm = true;
   }
 
-  // ── Program 관리 ───────────────────────────
-  // 각 프로그램 행의 연주자 검색 상태 (인덱스별)
-  let programPlayerQuery = $state([]);
-  let programPlayerOpen = $state([]);
+  // ── Program 관리 (섹션 기반) ────────────────
+  // form.program = [{ section: "1부", items: [{ composer, title: ["곡1","곡2"], player_ids }] }]
 
-  function addProgram() {
-    form.program = [...form.program, { composer: '', title: '', player_ids: [] }];
-    programPlayerQuery = [...programPlayerQuery, ''];
-    programPlayerOpen = [...programPlayerOpen, false];
+  // 연주자 검색 상태: [secIdx][itemIdx]
+  let programPlayerQuery = $state([]);   // programPlayerQuery[secIdx][itemIdx]
+  let programPlayerOpen  = $state([]);   // programPlayerOpen[secIdx][itemIdx]
+
+  function _syncPlayerState() {
+    programPlayerQuery = form.program.map(sec =>
+      (sec.items || []).map(() => '')
+    );
+    programPlayerOpen = form.program.map(sec =>
+      (sec.items || []).map(() => false)
+    );
   }
 
-  function removeProgram(idx) {
-    form.program = form.program.filter((_, i) => i !== idx);
-    programPlayerQuery = programPlayerQuery.filter((_, i) => i !== idx);
-    programPlayerOpen = programPlayerOpen.filter((_, i) => i !== idx);
+  function addSection() {
+    form.program = [...form.program, { section: '', items: [] }];
+    _syncPlayerState();
   }
 
-  function addProgramPlayer(progIdx, artistId) {
-    const prog = form.program[progIdx];
-    if (!prog.player_ids) prog.player_ids = [];
-    if (!prog.player_ids.includes(artistId)) {
-      form.program[progIdx] = { ...prog, player_ids: [...prog.player_ids, artistId] };
+  function removeSection(sIdx) {
+    form.program = form.program.filter((_, i) => i !== sIdx);
+    _syncPlayerState();
+  }
+
+  function addItem(sIdx) {
+    const sec = form.program[sIdx];
+    form.program[sIdx] = { ...sec, items: [...(sec.items || []), { composer: '', title: [''], player_ids: [] }] };
+    _syncPlayerState();
+  }
+
+  function removeItem(sIdx, iIdx) {
+    const sec = form.program[sIdx];
+    form.program[sIdx] = { ...sec, items: sec.items.filter((_, i) => i !== iIdx) };
+    _syncPlayerState();
+  }
+
+  function addTitleLine(sIdx, iIdx) {
+    const item = form.program[sIdx].items[iIdx];
+    const newTitles = [...(item.title || ['']), ''];
+    form.program[sIdx].items[iIdx] = { ...item, title: newTitles };
+    form.program = [...form.program]; // trigger reactivity
+  }
+
+  function removeTitleLine(sIdx, iIdx, tIdx) {
+    const item = form.program[sIdx].items[iIdx];
+    const newTitles = item.title.filter((_, i) => i !== tIdx);
+    form.program[sIdx].items[iIdx] = { ...item, title: newTitles.length ? newTitles : [''] };
+    form.program = [...form.program];
+  }
+
+  function addProgramPlayer(sIdx, iIdx, artistId) {
+    const item = form.program[sIdx].items[iIdx];
+    if (!(item.player_ids || []).includes(artistId)) {
+      form.program[sIdx].items[iIdx] = { ...item, player_ids: [...(item.player_ids || []), artistId] };
     }
-    // 연결 아티스트에도 자동 추가
     if (!form.artist_ids.includes(artistId)) {
       form.artist_ids = [...form.artist_ids, artistId];
     }
-    programPlayerQuery[progIdx] = '';
-    programPlayerOpen[progIdx] = false;
+    programPlayerQuery[sIdx][iIdx] = '';
+    programPlayerOpen[sIdx][iIdx]  = false;
+    form.program = [...form.program];
   }
 
-  function removeProgramPlayer(progIdx, artistId) {
-    const prog = form.program[progIdx];
-    form.program[progIdx] = { ...prog, player_ids: (prog.player_ids || []).filter(id => id !== artistId) };
+  function removeProgramPlayer(sIdx, iIdx, artistId) {
+    const item = form.program[sIdx].items[iIdx];
+    form.program[sIdx].items[iIdx] = { ...item, player_ids: (item.player_ids || []).filter(id => id !== artistId) };
+    form.program = [...form.program];
   }
 
-  function getProgramPlayerResults(progIdx) {
-    const q = (programPlayerQuery[progIdx] || '').trim().toLowerCase();
+  function getProgramPlayerResults(sIdx, iIdx) {
+    const q = (programPlayerQuery[sIdx]?.[iIdx] || '').trim().toLowerCase();
     if (!q) return [];
-    const taken = form.program[progIdx]?.player_ids || [];
+    const taken = form.program[sIdx]?.items[iIdx]?.player_ids || [];
     return artists.filter(a =>
       !taken.includes(a.id) &&
       ((a.name || '').toLowerCase().includes(q) || (a.name_en || '').toLowerCase().includes(q))
     );
+  }
+
+  /** 구형(flat 배열) → 새 섹션 구조로 마이그레이션 */
+  function migrateOldProgram(oldProgram) {
+    if (!oldProgram || oldProgram.length === 0) return [];
+    // 이미 새 형식인지 확인
+    if (oldProgram[0] && 'section' in oldProgram[0]) return oldProgram;
+
+    // 구형: composer만 있고 title 없는 것을 섹션 헤더로 간주
+    const sections = [];
+    let current = null;
+    for (const p of oldProgram) {
+      if (!p.title || p.title === 'Intermission') continue; // Intermission 스킵
+      if (!p.title && p.composer) {
+        // 섹션 헤더
+        current = { section: p.composer, items: [] };
+        sections.push(current);
+      } else {
+        if (!current) { current = { section: '', items: [] }; sections.push(current); }
+        current.items.push({
+          composer: p.composer || '',
+          title: [p.title || ''],
+          player_ids: p.player_ids || (p.player_id ? [p.player_id] : []),
+        });
+      }
+    }
+    return sections.length ? sections : [{ section: '', items: oldProgram.map(p => ({
+      composer: p.composer || '',
+      title: [p.title || ''],
+      player_ids: p.player_ids || [],
+    })) }];
   }
 
   // ── 미디어 선택 ────────────────────────────
@@ -392,9 +454,15 @@ async function loadConcerts() {
     if (form.poster_media_id) formData.append('poster_media_id', String(form.poster_media_id));
     if (form.banner_image_media_id) formData.append('banner_image_media_id', String(form.banner_image_media_id));
     if (form.program.length > 0) {
-      // player_name / player_names 등 서버가 채워주는 필드는 제거하고 전송
-      const programPayload = form.program.map(({ composer, title, player_ids }) => ({
-        composer, title, player_ids: player_ids || [],
+      const programPayload = form.program.map(sec => ({
+        section: sec.section || '',
+        items: (sec.items || []).map(({ composer, title, player_ids }) => ({
+          composer: composer || '',
+          title: Array.isArray(title)
+            ? title.map(t => String(t ?? '')).filter(t => t.trim())
+            : [String(title ?? '')],
+          player_ids: player_ids || [],
+        })),
       }));
       formData.append('program', JSON.stringify(programPayload));
     }
@@ -552,7 +620,7 @@ async function loadConcerts() {
               <td class="name-cell">{concert.title}</td>
               <td>{concert.date || '-'}</td>
               <td>{concert.location || '-'}</td>
-              <td>{(concert.program || []).length}곡</td>
+              <td>{(concert.program || []).reduce((acc, s) => acc + (s.items?.length ?? (s.title !== undefined ? 1 : 0)), 0)}곡</td>
               <td>{(concert.artists || []).length}명</td>
               <td>
                 <span class="badge" class:active={concert.is_active}>
@@ -767,52 +835,87 @@ async function loadConcerts() {
         <!-- 프로그램 -->
         <div class="form-section">
           <h3>프로그램 (Program)</h3>
-          {#each form.program as item, i}
-            <div class="program-row">
-                <input type="text" bind:value={item.composer} placeholder="작곡가" />
-                <input type="text" bind:value={item.title} placeholder="곡명" />
-                <button class="btn-sm btn-delete program-del" onclick={() => removeProgram(i)}>×</button>
 
-                <div class="prog-player-search">
-                    <input
+          {#each form.program as sec, sIdx}
+            <div class="program-section">
+              <div class="section-header-row">
+                <input
+                  type="text"
+                  class="section-name-input"
+                  bind:value={sec.section}
+                  placeholder="섹션 이름 (예: 1부, 2부)"
+                />
+                <button type="button" class="btn-sm btn-delete" onclick={() => removeSection(sIdx)}>섹션 삭제</button>
+              </div>
+
+              {#each (sec.items || []) as item, iIdx}
+                <div class="program-row">
+                  <div class="prog-left">
+                    <input type="text" bind:value={item.composer} placeholder="작곡가" class="composer-input" />
+
+                    <div class="title-lines">
+                      {#each (item.title || ['']) as t, tIdx}
+                        <div class="title-line">
+                          <input
+                            type="text"
+                            value={t}
+                            oninput={e => { item.title[tIdx] = e.target.value; form.program = [...form.program]; }}
+                            placeholder="곡명"
+                          />
+                          {#if (item.title || ['']).length > 1}
+                            <button type="button" class="btn-icon" onclick={() => removeTitleLine(sIdx, iIdx, tIdx)}>−</button>
+                          {/if}
+                        </div>
+                      {/each}
+                      <button type="button" class="btn-add-title" onclick={() => addTitleLine(sIdx, iIdx)}>+ 곡명 추가</button>
+                    </div>
+
+                    <!-- 연주자 검색 -->
+                    <div class="prog-player-search">
+                      <input
                         type="text"
                         placeholder="연주자 검색..."
-                        value={programPlayerQuery[i] || ''}
-                        oninput={e => { programPlayerQuery[i] = e.target.value; programPlayerOpen[i] = true; }}
-                        onfocus={() => programPlayerOpen[i] = true}
-                    />
-                    {#if programPlayerOpen[i] && getProgramPlayerResults(i).length > 0}
+                        value={programPlayerQuery[sIdx]?.[iIdx] || ''}
+                        oninput={e => { if (!programPlayerQuery[sIdx]) programPlayerQuery[sIdx] = []; programPlayerQuery[sIdx][iIdx] = e.target.value; programPlayerOpen[sIdx][iIdx] = true; }}
+                        onfocus={() => { if (!programPlayerOpen[sIdx]) programPlayerOpen[sIdx] = []; programPlayerOpen[sIdx][iIdx] = true; }}
+                      />
+                      {#if programPlayerOpen[sIdx]?.[iIdx] && getProgramPlayerResults(sIdx, iIdx).length > 0}
                         <ul class="artist-dropdown">
-                            {#each getProgramPlayerResults(i) as a}
-                                <li>
-                                <button type="button" onclick={() => addProgramPlayer(i, a.id)}>
-                                    {a.name}{#if a.name_en} <small>({a.name_en})</small>{/if}
-                                </button>
-                                </li>
-                            {/each}
+                          {#each getProgramPlayerResults(sIdx, iIdx) as a}
+                            <li>
+                              <button type="button" onclick={() => addProgramPlayer(sIdx, iIdx, a.id)}>
+                                {a.name}{#if a.name_en} <small>({a.name_en})</small>{/if}
+                              </button>
+                            </li>
+                          {/each}
                         </ul>
-                    {/if}
-                    {#if (programPlayerQuery[i] || '').trim() && getProgramPlayerResults(i).length === 0 && programPlayerOpen[i]}
-                        <ul class="artist-dropdown">
-                            <li class="no-result">결과 없음</li>
-                        </ul>
-                    {/if}
-                </div>
+                      {/if}
+                      {#if (programPlayerQuery[sIdx]?.[iIdx] || '').trim() && getProgramPlayerResults(sIdx, iIdx).length === 0 && programPlayerOpen[sIdx]?.[iIdx]}
+                        <ul class="artist-dropdown"><li class="no-result">결과 없음</li></ul>
+                      {/if}
+                    </div>
 
-                <div class="program-players">
-                    {#each (item.player_ids || []) as pid}
+                    <div class="program-players">
+                      {#each (item.player_ids || []) as pid}
                         {@const pa = artists.find(a => a.id === pid)}
                         {#if pa}
-                            <span class="artist-tag small">
+                          <span class="artist-tag small">
                             {pa.name}
-                            <button type="button" class="tag-remove" onclick={() => removeProgramPlayer(i, pid)}>&times;</button>
-                            </span>
+                            <button type="button" class="tag-remove" onclick={() => removeProgramPlayer(sIdx, iIdx, pid)}>&times;</button>
+                          </span>
                         {/if}
-                    {/each}
+                      {/each}
+                    </div>
+                  </div>
+                  <button type="button" class="btn-sm btn-delete prog-del" onclick={() => removeItem(sIdx, iIdx)}>×</button>
                 </div>
+              {/each}
+
+              <button type="button" class="btn-secondary btn-sm" onclick={() => addItem(sIdx)}>+ 곡 추가</button>
             </div>
           {/each}
-          <button type="button" class="btn-secondary btn-sm" onclick={addProgram}>+ 프로그램 추가</button>
+
+          <button type="button" class="btn-secondary btn-sm" style="margin-top:0.75rem" onclick={addSection}>+ 섹션 추가</button>
         </div>
 
         <!-- 연결 아티스트 -->
@@ -1213,20 +1316,106 @@ async function loadConcerts() {
     margin: 0 auto;
   }
 
-  /* ── Program 행 ────────────────────── */
-  .program-row {
-    display: grid;
-    grid-template-columns: 1fr 3fr 30px;
-
-    gap: 0.3rem;
+  /* ── Program 섹션 ─────────────────── */
+  .program-section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem;
     margin-bottom: 0.75rem;
-    flex-wrap: nowrap;
+    background: #fafafa;
+  }
 
-    .program-players {
-        grid-column: 2 / -1;
-        align-items: center;;
-        display: flex; gap: 0.4rem; flex-wrap: wrap;
+  .section-header-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+
+    .section-name-input {
+      flex: 1;
+      font-weight: 600;
+      font-size: 0.95rem;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 0.4rem 0.6rem;
+      color: #111;
     }
+  }
+
+  .program-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 0.6rem;
+
+    .prog-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .composer-input {
+      width: 100%;
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      background: #fff;
+      color: #222;
+    }
+
+    .title-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .title-line {
+      display: flex;
+      gap: 0.3rem;
+      align-items: center;
+
+      input {
+        flex: 1;
+        padding: 0.4rem 0.6rem;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        background: #fff;
+        color: #222;
+      }
+    }
+
+    .btn-icon {
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 24px; height: 24px;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      color: #888;
+      flex-shrink: 0;
+      &:hover { background: #fee2e2; border-color: #dc3545; color: #dc3545; }
+    }
+
+    .btn-add-title {
+      align-self: flex-start;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.78rem;
+      color: #2563eb;
+      padding: 0.1rem 0;
+      &:hover { text-decoration: underline; }
+    }
+
     .prog-player-search {
       position: relative;
       input {
@@ -1235,23 +1424,14 @@ async function loadConcerts() {
         font-size: 0.85rem; background: #fff; color: #222;
       }
     }
-    .program-del { 
-        margin-top: 0.2rem; 
+
+    .program-players {
+      display: flex; gap: 0.4rem; flex-wrap: wrap;
     }
 
-    .program-players-wrap {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        width: 100%;
-    }
-
-    input, select {
-      padding: 0.4rem 0.6rem;
-      background: #fff;
-      border: 1px solid #d1d5db;
-      border-radius: 4px;
-      color: #222;
-      font-size: 0.85rem;
+    .prog-del {
+      flex-shrink: 0;
+      margin-top: 0.1rem;
     }
   }
   .artist-tag.small { font-size: 0.8rem; padding: 0.15rem 0.4rem; }
