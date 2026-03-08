@@ -1,9 +1,9 @@
 <!-- Template 2: Text + thumbnail column left, large main image right -->
 <script>
-    let { item } = $props();
+    let { item, reversed = false } = $props();
 </script>
 
-<div class="template">
+<div class="template" class:reversed>
     <div class="body">
         <!-- Left: title + stacked thumbs -->
         <div class="left-col">
@@ -40,7 +40,13 @@
 </div>
 
 <style lang="scss">
-    .template { width: 100%; }
+    .template {
+        width: 100%;
+
+        &.reversed .body {
+            flex-direction: row-reverse;
+        }
+    }
 
     .body {
         display: flex;
