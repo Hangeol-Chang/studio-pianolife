@@ -21,7 +21,6 @@
             subItems: [
                 { name: 'about', href: '/about' },
                 { name: 'membership', href: '/about/membership' },
-                { name: 'Fioreum', href: '/about/fioreum' }
             ]
         },
         { 
@@ -38,26 +37,25 @@
             subItems: null
         },
         { 
-            name: 'Gallery', 
-            href: '/gallery',
-            subItems: [
-                { name: 'artists', href: '/gallery' },
-                { name: 'concerts', href: '/gallery' },
-                { name: 'concours', href: '/gallery' }
-            ]
-        },
-        { 
-            name: 'Contents', 
+            name: 'Media', 
             href: '/contents',
             subItems: [
-                { name: 'interview', href: '/contents' },
-                { name: 'podcast', href: '/contents' }
+                { name: "gallery", href: '/gallery' },
+                { name: "contents", href: '/contents' }
             ]
         },
         { 
             name: 'Application', 
             href: '/application',
             subItems: null
+        },
+        {
+            name: "Fioreum",
+            href: '/fioreum',
+            subItems: [
+                { name: "About", href: '/fioreum' },
+                { name: "대관안내", href: '/fioreum/rent' },
+            ]
         }
     ];
 

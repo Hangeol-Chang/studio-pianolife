@@ -390,6 +390,7 @@
         display: flex;
         flex-direction: column;
         gap: 0;
+        width: fit-content;
     }
 
     .program-item {
@@ -458,6 +459,6 @@
         letter-spacing: 0.2em;
         color: #bbb;
         text-transform: uppercase;
-        margin: 1.5rem 0 0.5rem;
+        margin: 1.5rem 0 0.5rem 1rem;
     }
 </style>

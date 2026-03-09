@@ -114,7 +114,7 @@
     // ── 데이터 fetch ──────────────────────────────────────────
     $effect(() => {
         Promise.all([
-            fetch(`${API}/api/artists/?active_only=true`).then(r => r.json()),
+            fetch(`${API}/api/artists/?active_only=true&role_id=1`).then(r => r.json()),
             fetch(`${API}/api/concerts/?active_only=true`).then(r => r.json()),
             fetch(`${API}/api/concours/?active_only=true`).then(r => r.json()),
         ])
@@ -167,8 +167,6 @@
             <!-- 스크롤 sentinel: 화면에 들어오면 다음 배치 렌더 -->
             {#if hasMore}
                 <div class="sentinel" use:sentinel></div>
-            {:else if filteredItems.length > BATCH}
-                <p class="all-loaded">— 전체 {filteredItems.length}개 —</p>
             {/if}
         {/if}
     </div>

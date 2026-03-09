@@ -124,7 +124,7 @@
         border: none;
         cursor: pointer;
         padding: 0.5rem 0;
-        color: #888;
+        color: #000;
         position: relative;
         transition: color 0.25s;
 
@@ -138,26 +138,13 @@
         }
 
         &:hover {
-            color: #222;
+            color: #333;
             &::after { width: 100%; }
-        }
-        &.active {
-            color: #111;
-            font-weight: 700;
-            &::after { width: 100%; }
-        }
-    }
-
-    /* 이미지 있을 때: 기본 회색(반투명 흰색) → 클릭 시 흰색 */
-    .has-image .filter-btn {
-        color: rgba(255, 255, 255, 0.55);
-
-        &:hover {
-            color: rgba(255, 255, 255, 0.85);
         }
         &.active {
             color: #fff;
-            font-weight: 500;
+            font-weight: 700;
+            &::after { width: 100%; }
         }
     }
 </style>
