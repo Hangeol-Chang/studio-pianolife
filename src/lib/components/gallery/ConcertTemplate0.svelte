@@ -59,7 +59,8 @@
     /* ── 정보 컬럼 ──────────────────────────────────────────── */
     .info-col {
         position: sticky;
-        top: 1rem;
+        top: 5rem;
+        margin-top: 2rem;
         padding: 1.5rem;
         background: #fafafa;
 
@@ -104,7 +105,8 @@
      */
     .thumb-item {
         position: sticky;
-        top: 0;
+        top: 5rem;
+        margin-top: 2rem;
         width: 100%;
         aspect-ratio: 3 / 2;
         overflow: hidden;
