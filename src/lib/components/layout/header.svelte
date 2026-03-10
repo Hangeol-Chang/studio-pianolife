@@ -53,8 +53,8 @@
             name: "Fioreum",
             href: '/fioreum',
             subItems: [
-                { name: "About", href: '/fioreum' },
-                { name: "대관안내", href: '/fioreum/rent' },
+                { name: "About", href: '/fioreum/about' },
+                { name: "대관안내", href: '/fioreum/rental' },
             ]
         }
     ];
