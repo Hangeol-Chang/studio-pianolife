@@ -165,7 +165,6 @@
                 class="hero-image"
                 src={artist.image_url}
                 alt={artist.name}
-                crossorigin="anonymous"
                 onload={(e) => extractGradientFromImg(e.currentTarget)}
                 style="--scroll-y: {scrollY};"
             />
