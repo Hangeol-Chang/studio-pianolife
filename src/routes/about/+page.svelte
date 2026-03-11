@@ -4,6 +4,7 @@
     import heroImage from '$lib/assets/images/about/about_wallpaper.png';
     import Vision from '@/components/about/Vision.svelte';
     import MembershipHero from '@/components/about/MembershipHero.svelte';
+    import History from '@/components/about/History.svelte';
     
     // Timeline Data
     const historyEvents = [
@@ -60,12 +61,7 @@
 
     <MembershipHero />
 
-    <section>
-        <h1 class="section-title-center">History</h1>
-        <h3 class="section-subtitle-center">연혁</h3>
-        <p class="section-subtitle-center">2019년 설립 이래 Fiore의 발자취를 소개합니다.</p>
-        
-    </section>
+    <History />
 </div>
 
 <style lang="scss">
