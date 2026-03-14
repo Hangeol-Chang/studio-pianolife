@@ -1,6 +1,9 @@
 <script>
     import { Clock, MapPin, Calendar } from 'lucide-svelte';
     let { concert } = $props();
+    let imageLoaded = $state(false);
+
+    const posterSrc = $derived(concert.poster_mid_url || concert.mid_url || concert.poster_url || null);
 
     function parseConcertDate(dateStr) {
         if (!dateStr) return null;
@@ -35,9 +38,18 @@
 
 <div class="concert-card">
     <div class="card-poster">
-        {#if concert.poster_mid_url || concert.poster_url}
+        {#if posterSrc}
             <a href="/concerts/{concert.id}">
-                <img src={concert.poster_mid_url || concert.poster_url} alt={concert.title} />
+                <div class="poster-shell" class:is-loaded={imageLoaded}>
+                    <div class="poster-placeholder"></div>
+                    <img
+                        src={posterSrc}
+                        alt={concert.title}
+                        loading="lazy"
+                        decoding="async"
+                        onload={() => { imageLoaded = true; }}
+                    />
+                </div>
             </a>
         {:else}
             <div class="poster-placeholder"></div>
@@ -112,16 +124,47 @@ a {
     overflow: hidden;
     background: #f0f0f0;
 
-    img {
+    .poster-shell {
+        position: relative;
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        display: block;
-        transition: transform 0.3s;
-        cursor: pointer;
 
-        &:hover {
-            transform: scale(1.05);
+        .poster-placeholder {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 160px;
+            background: linear-gradient(90deg, #f4f4f4 25%, #e9e9e9 50%, #f4f4f4 75%);
+            background-size: 200% 100%;
+            animation: posterShimmer 1.4s infinite;
+            opacity: 1;
+            transition: opacity 0.25s ease;
+        }
+
+        img {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s, opacity 0.25s ease;
+            opacity: 0;
+            cursor: pointer;
+
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+
+        &.is-loaded {
+            .poster-placeholder {
+                opacity: 0;
+            }
+
+            img {
+                opacity: 1;
+            }
         }
     }
 
@@ -131,6 +174,11 @@ a {
         min-height: 160px;
         background: linear-gradient(135deg, #e8e8e8, #d0d0d0);
     }
+}
+
+@keyframes posterShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
 .card-body {

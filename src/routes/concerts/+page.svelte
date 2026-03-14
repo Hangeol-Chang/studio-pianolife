@@ -6,24 +6,51 @@
 
     const API = PIANOLIFE_BACKEND_URL || "http://localhost:8000";
 
-    let concerts = $state([]);
-    let loading = $state(true);
+    let upcomingConcerts = $state([]);
+    let prevConcerts = $state([]);
+    let loadingUpcoming = $state(true);
+    let loadingPrev = $state(true);
     let error = $state(null);
 
+    async function loadPrevConcerts(controller) {
+        try {
+            const res = await fetch(`${API}/api/concerts/?active_only=true&schedule=past&summary=true`, {
+                signal: controller.signal
+            });
+            if (!res.ok) throw new Error(`서버 오류(지난 공연): ${res.status}`);
+            prevConcerts = await res.json();
+        } catch (err) {
+            if (err.name !== 'AbortError') error = err.message;
+        } finally {
+            loadingPrev = false;
+        }
+    }
+
     $effect(() => {
-        fetch(`${API}/api/concerts/?active_only=false`)
+        const controller = new AbortController();
+
+        fetch(`${API}/api/concerts/?active_only=true&schedule=upcoming&summary=true`, { signal: controller.signal })
             .then(res => {
-                if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
+                if (!res.ok) throw new Error(`서버 오류(예정 공연): ${res.status}`);
                 return res.json();
             })
-            .then(data => { concerts = data; })
-            .catch(err => { error = err.message; })
-            .finally(() => { loading = false; });
+            .then(data => {
+                upcomingConcerts = data;
+            })
+            .catch(err => {
+                if (err.name !== 'AbortError') error = err.message;
+            })
+            .finally(() => {
+                loadingUpcoming = false;
+                // First paint 이후 지난 공연 로드를 시작해 초기 체감 속도를 높임
+                loadPrevConcerts(controller);
+            });
+
+        return () => controller.abort();
     });
 
     // ── 달력 상태 ─────────────────────────────────────────
     const today = new Date();
-    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
     let viewYear = $state(today.getFullYear());
     let viewMonth = $state(today.getMonth()); // 0-indexed
@@ -46,37 +73,9 @@
 
     /** 예정 공연 중 가장 가까운 것의 배너 or 포스터 이미지 */
     const heroImage = $derived.by(() => {
-        const todayStr = new Date().toISOString().slice(0, 10);
-        const upcoming = concerts
-            .filter(c => c.date && c.date >= todayStr)
-            .sort((a, b) => a.date.localeCompare(b.date));
-        const c = upcoming[0];
-        return c ? (c.banner_image_url || c.poster_url || concertHeroFallback) : concertHeroFallback;
+        const c = upcomingConcerts[0];
+        return c ? (c.banner_image_url || c.poster_mid_url || c.poster_url || concertHeroFallback) : concertHeroFallback;
     });
-
-    /** 날짜가 오늘 이전이면 true */
-    function isConcertPast(dateStr) {
-        const d = parseConcertDate(dateStr);
-        if (!d) return false;
-        const concertDate = new Date(d.year, d.month, d.day);
-        return concertDate < todayDateOnly;
-    }
-
-    function concertTimestamp(dateStr) {
-        const d = parseConcertDate(dateStr);
-        if (!d) return 0;
-        return new Date(d.year, d.month, d.day).getTime();
-    }
-
-    // 예정 / 지난 공연 분리 + 정렬
-    const upcomingConcerts = $derived(
-        concerts.filter(c => !isConcertPast(c.date))
-                .sort((a, b) => concertTimestamp(a.date) - concertTimestamp(b.date))
-    );
-    const prevConcerts = $derived(
-        concerts.filter(c => isConcertPast(c.date))
-                .sort((a, b) => concertTimestamp(b.date) - concertTimestamp(a.date))
-    );
 
     /** 현재 뷰 월에 공연이 있는 day(숫자) Set - 예정 공연만 */
     const concertDaysInView = $derived.by(() => {
@@ -180,7 +179,7 @@
         </div>
 
         <div class="concerts-card-wrapper">
-            {#if loading}
+            {#if loadingUpcoming}
                 {#each { length: 3 } as _}
                     <div class="card-skeleton"></div>
                 {/each}
@@ -195,7 +194,7 @@
     </section>
 
     <!-- ── 지난 공연 (달력 없음, full width) ──────────── -->
-    {#if !loading && prevConcerts.length > 0}
+    {#if !loadingPrev && prevConcerts.length > 0}
         <section class="section-heading section-heading--prev">
             <h2 class="heading-title">Prev.</h2>
         </section>
